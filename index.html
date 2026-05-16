@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Lottery Analyzer · Auto‑save to file</title>
+<title>Lottery Analyzer · Persistent file handle</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -499,7 +499,7 @@
   <div class="header">
     <div class="header-left">
       <h1>Lottery Analyzer</h1>
-      <p>1–40 · 6 per draw · auto‑save to file</p>
+      <p>1–40 · 6 per draw · persistent file</p>
     </div>
     <div class="header-icon">🎲</div>
   </div>
@@ -544,23 +544,29 @@
     <div id="recent-draws"></div>
   </div>
 
-  <!-- SETTINGS PANE: file selection with write permission -->
+  <!-- SETTINGS PANE -->
   <div id="pane-settings" class="pane">
     <div class="setting-group">
       <div class="slabel">📄 Past Draws file (auto‑append)</div>
       <div class="file-row">
-        <button class="file-label" id="selectDrawsFileBtn">📂 Select file</button>
+        <button class="file-label" id="selectDrawsFileBtn">📂 Select new file</button>
         <span id="drawsFileName" class="file-path">No file selected</span>
         <span id="drawsWriteStatus" class="status-badge">⚠️ Not writable</span>
       </div>
-      <div class="hint">Choose your <code>Past_Draws.txt</code>. The app will <strong>append new draws</strong> to it automatically. Requires write permission.</div>
+      <div class="file-row">
+        <button class="file-label" id="clearDrawsHandleBtn">🗑️ Forget file</button>
+      </div>
+      <div class="hint">Choose your <code>Past_Draws.txt</code>. The file handle is stored permanently. New draws will be appended automatically.</div>
     </div>
 
     <div class="setting-group">
       <div class="slabel">⚙️ Arrangement file (read only)</div>
       <div class="file-row">
-        <button class="file-label" id="selectArrFileBtn">📂 Select file</button>
+        <button class="file-label" id="selectArrFileBtn">📂 Select arrangement file</button>
         <span id="arrFileName" class="file-path">No file selected</span>
+      </div>
+      <div class="file-row">
+        <button class="file-label" id="clearArrHandleBtn">🗑️ Forget arrangement</button>
       </div>
       <div class="hint">Machine rows – each line space‑separated numbers. Optional.</div>
     </div>
@@ -572,20 +578,15 @@
 
   <!-- ABOUT PANE -->
   <div id="pane-about" class="pane">
+    <div class="strategy-info"><div class="slabel">Persistent file handles</div>
+      <div class="strategy-text">Once you select a Past Draws file, the app stores a reference using IndexedDB. When you reopen the app, it automatically requests permission and reloads the file. No need to re‑select unless you change the file location.</div>
+    </div>
     <div class="strategy-info"><div class="slabel">Prediction strategies</div>
       <div class="strategy-row"><div class="strategy-num">1</div><div class="strategy-text"><strong>Recency-weighted frequency</strong> — newer draws contribute more weight.</div></div>
       <div class="strategy-row"><div class="strategy-num">2</div><div class="strategy-text"><strong>Row activity boost</strong> — numbers from most active row get +30% weight.</div></div>
       <div class="strategy-row"><div class="strategy-num">3</div><div class="strategy-text"><strong>Normalised probability sampling</strong> — weighted random without replacement.</div></div>
       <div class="strategy-row"><div class="strategy-num">4</div><div class="strategy-text"><strong>Validation filters</strong> — 2–4 odd, 2–4 low (1–25), sum 100–200, no consecutive numbers.</div></div>
       <div class="strategy-row"><div class="strategy-num">5</div><div class="strategy-text"><strong>Generate-and-filter loop</strong> — up to 5k candidates.</div></div>
-    </div>
-    <div class="strategy-info"><div class="slabel">Auto‑save feature</div>
-      <div class="strategy-text">When you add a new draw using the “Add draw” pane, the app <strong>appends it to the selected Past Draws file</strong> on your device. Requires modern browser with File System Access API (Chrome, Edge, Android WebView >= 109). If unsupported, a download fallback is provided.</div>
-    </div>
-    <div class="strategy-info"><div class="slabel">Ball colours</div>
-      <div class="strategy-row"><div class="r-dot" style="background:var(--amber);margin-top:6px;width:8px;height:8px;border-radius:50%;flex-shrink:0"></div><div class="strategy-text">Amber — all-time hot (top 10 frequency)</div></div>
-      <div class="strategy-row"><div class="r-dot" style="background:var(--blue);margin-top:6px;width:8px;height:8px;border-radius:50%;flex-shrink:0"></div><div class="strategy-text">Blue — recently hot (last 20 draws)</div></div>
-      <div class="strategy-row"><div class="r-dot" style="background:var(--green);margin-top:6px;width:8px;height:8px;border-radius:50%;flex-shrink:0"></div><div class="strategy-text">Green — numbers from most active machine row</div></div>
     </div>
   </div>
 </div>
@@ -595,11 +596,231 @@
   // ---------- GLOBAL STATE ----------
   let draws = [];                 // array of number[6]
   let arrangement = [];          // array of number[]
-  let drawsFileHandle = null;    // FileSystemFileHandle for past draws
-  let drawsFileName = "";
+  let drawsFileHandle = null;    // FileSystemFileHandle
+  let arrangementFileHandle = null;
+
   let inputs = ['','','','','',''];
 
-  // ---------- Helper: parse draw text ----------
+  // ---------- IndexedDB helpers ----------
+  const DB_NAME = 'LotteryAnalyzer';
+  const DB_VERSION = 1;
+  const STORE_NAME = 'fileHandles';
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result);
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          db.createObjectStore(STORE_NAME);
+        }
+      };
+    });
+  }
+
+  async function storeHandle(key, handle) {
+    if (!handle) return;
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.put(handle, key);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve();
+      tx.oncomplete = () => db.close();
+    });
+  }
+
+  async function getHandle(key) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readonly');
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.get(key);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve(request.result || null);
+      tx.oncomplete = () => db.close();
+    });
+  }
+
+  async function removeHandle(key) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      const request = store.delete(key);
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => resolve();
+      tx.oncomplete = () => db.close();
+    });
+  }
+
+  // ---------- File handling with persistence ----------
+  async function selectDrawsFile() {
+    if (!window.showOpenFilePicker) {
+      toast('Your browser does not support File System Access API. Cannot persist file handle.');
+      return;
+    }
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{ description: 'Text file', accept: { 'text/plain': ['.txt', '.csv'] } }],
+        multiple: false,
+      });
+      // request readwrite permission
+      let permission = await handle.requestPermission({ mode: 'readwrite' });
+      if (permission !== 'granted') {
+        toast('Write permission denied.');
+        return;
+      }
+      drawsFileHandle = handle;
+      await storeHandle('drawsFile', handle);
+      await loadDrawsFromHandle();
+      document.getElementById('drawsFileName').innerText = handle.name;
+      document.getElementById('drawsWriteStatus').innerHTML = '✅ Writable (auto‑append)';
+      toast(`Draws file set: ${handle.name}`);
+    } catch (err) {
+      if (err.name !== 'AbortError') toast('Selection failed: ' + err.message);
+    }
+  }
+
+  async function clearDrawsHandle() {
+    await removeHandle('drawsFile');
+    drawsFileHandle = null;
+    draws = [];
+    document.getElementById('drawsFileName').innerText = 'No file selected';
+    document.getElementById('drawsWriteStatus').innerHTML = '⚠️ Not writable';
+    fullRender();
+    toast('Draws file forgotten.');
+  }
+
+  async function loadDrawsFromHandle() {
+    if (!drawsFileHandle) return false;
+    try {
+      // re-request permission in case it was revoked
+      let permission = await drawsFileHandle.requestPermission({ mode: 'readwrite' });
+      if (permission !== 'granted') {
+        toast('Permission lost. Please re‑select the file.');
+        drawsFileHandle = null;
+        await removeHandle('drawsFile');
+        document.getElementById('drawsWriteStatus').innerHTML = '⚠️ Not writable';
+        return false;
+      }
+      const file = await drawsFileHandle.getFile();
+      const content = await file.text();
+      const parsed = parseDrawsText(content);
+      if (parsed.length) {
+        draws = parsed;
+        fullRender();
+        toast(`Loaded ${draws.length} draws from ${drawsFileHandle.name}`);
+        return true;
+      } else {
+        toast('Draws file is empty or invalid.');
+        return false;
+      }
+    } catch (err) {
+      console.error(err);
+      toast('Failed to load draws file. It may have been moved. Re‑select.');
+      drawsFileHandle = null;
+      await removeHandle('drawsFile');
+      return false;
+    }
+  }
+
+  async function appendDrawToFile(newDraw) {
+    if (!drawsFileHandle) return false;
+    try {
+      const file = await drawsFileHandle.getFile();
+      let currentContent = await file.text();
+      if (currentContent.length > 0 && !currentContent.endsWith('\n')) currentContent += '\n';
+      const newLine = newDraw.join(' ');
+      const newContent = currentContent + newLine + '\n';
+      const writable = await drawsFileHandle.createWritable();
+      await writable.write(newContent);
+      await writable.close();
+      return true;
+    } catch (err) {
+      console.error('Write failed', err);
+      toast('Write error. Permission may be lost. Please re‑select file.');
+      drawsFileHandle = null;
+      await removeHandle('drawsFile');
+      document.getElementById('drawsWriteStatus').innerHTML = '⚠️ Not writable';
+      return false;
+    }
+  }
+
+  // Arrangement file (read only) – also persistent
+  async function selectArrangementFile() {
+    if (!window.showOpenFilePicker) {
+      toast('File System Access API not supported.');
+      return;
+    }
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{ description: 'Text file', accept: { 'text/plain': ['.txt'] } }],
+      });
+      const permission = await handle.requestPermission({ mode: 'read' });
+      if (permission !== 'granted') return;
+      arrangementFileHandle = handle;
+      await storeHandle('arrangementFile', handle);
+      await loadArrangementFromHandle();
+      document.getElementById('arrFileName').innerText = handle.name;
+      toast(`Arrangement loaded: ${handle.name}`);
+    } catch (err) {
+      if (err.name !== 'AbortError') toast(err.message);
+    }
+  }
+
+  async function clearArrangementHandle() {
+    await removeHandle('arrangementFile');
+    arrangementFileHandle = null;
+    arrangement = [];
+    document.getElementById('arrFileName').innerText = 'No file selected';
+    fullRender();
+    toast('Arrangement file forgotten.');
+  }
+
+  async function loadArrangementFromHandle() {
+    if (!arrangementFileHandle) return false;
+    try {
+      const permission = await arrangementFileHandle.requestPermission({ mode: 'read' });
+      if (permission !== 'granted') {
+        toast('Arrangement permission lost. Reselect.');
+        arrangementFileHandle = null;
+        await removeHandle('arrangementFile');
+        return false;
+      }
+      const file = await arrangementFileHandle.getFile();
+      const content = await file.text();
+      const parsed = parseArrText(content);
+      arrangement = parsed;
+      fullRender();
+      return true;
+    } catch (err) {
+      console.error(err);
+      toast('Failed to load arrangement file.');
+      arrangementFileHandle = null;
+      await removeHandle('arrangementFile');
+      return false;
+    }
+  }
+
+  async function restoreHandles() {
+    const drawsHandle = await getHandle('drawsFile');
+    if (drawsHandle) {
+      drawsFileHandle = drawsHandle;
+      await loadDrawsFromHandle();
+    }
+    const arrHandle = await getHandle('arrangementFile');
+    if (arrHandle) {
+      arrangementFileHandle = arrHandle;
+      await loadArrangementFromHandle();
+    }
+    fullRender();
+  }
+
+  // ---------- Parsing (same as before) ----------
   function parseDrawsText(raw) {
     const lines = raw.trim().split(/\r?\n/);
     const drawsList = [];
@@ -621,146 +842,6 @@
       if (nums.length) rows.push(nums);
     }
     return rows;
-  }
-
-  // ---------- File picker with write permission (File System Access API) ----------
-  async function selectDrawsFile() {
-    if (!window.showOpenFilePicker) {
-      toast('⚠️ Your browser does not support auto‑save. Use fallback: select file then download updated version.');
-      // fallback: traditional input (read only)
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.txt,.csv,text/plain';
-      input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const content = await file.text();
-        const parsed = parseDrawsText(content);
-        if (parsed.length) {
-          draws = parsed;
-          drawsFileName = file.name;
-          document.getElementById('drawsFileName').innerText = drawsFileName;
-          document.getElementById('drawsWriteStatus').innerText = '⚠️ Read only (fallback)';
-          fullRender();
-          toast(`Loaded ${draws.length} draws (read‑only mode)`);
-        } else toast('Invalid draws file');
-      };
-      input.click();
-      return;
-    }
-
-    try {
-      const [handle] = await window.showOpenFilePicker({
-        types: [{ description: 'Text file', accept: { 'text/plain': ['.txt', '.csv'] } }],
-        multiple: false,
-        excludeAcceptAllOption: true,
-      });
-      // request read/write permission
-      let permission = await handle.requestPermission({ mode: 'readwrite' });
-      if (permission !== 'granted') {
-        permission = await handle.requestPermission({ mode: 'readwrite' });
-      }
-      if (permission !== 'granted') {
-        toast('Write permission denied. File will be read only.');
-        document.getElementById('drawsWriteStatus').innerText = '⛔ Permission denied';
-        return;
-      }
-      drawsFileHandle = handle;
-      drawsFileName = handle.name;
-      const file = await handle.getFile();
-      const content = await file.text();
-      const parsed = parseDrawsText(content);
-      if (parsed.length) {
-        draws = parsed;
-        document.getElementById('drawsFileName').innerText = drawsFileName;
-        document.getElementById('drawsWriteStatus').innerHTML = '✅ Writable (auto‑append)';
-        fullRender();
-        toast(`Loaded ${draws.length} draws – new draws will be appended`);
-      } else {
-        toast('Invalid draws file');
-        drawsFileHandle = null;
-      }
-    } catch (err) {
-      console.error(err);
-      toast('File selection cancelled or failed');
-    }
-  }
-
-  // Arrangement file (read only) – traditional picker or modern
-  async function selectArrangementFile() {
-    if (window.showOpenFilePicker) {
-      try {
-        const [handle] = await window.showOpenFilePicker({
-          types: [{ description: 'Text file', accept: { 'text/plain': ['.txt'] } }],
-        });
-        const file = await handle.getFile();
-        const content = await file.text();
-        const parsed = parseArrText(content);
-        arrangement = parsed;
-        document.getElementById('arrFileName').innerText = handle.name;
-        fullRender();
-        toast(`Loaded ${arrangement.length} machine rows`);
-      } catch (err) {
-        toast('Arrangement selection cancelled');
-      }
-    } else {
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = '.txt';
-      input.onchange = async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        const content = await file.text();
-        const parsed = parseArrText(content);
-        arrangement = parsed;
-        document.getElementById('arrFileName').innerText = file.name;
-        fullRender();
-        toast(`Loaded ${arrangement.length} rows (read only)`);
-      };
-      input.click();
-    }
-  }
-
-  // ---------- Append a new draw to the file ----------
-  async function appendDrawToFile(newDraw) {
-    if (!drawsFileHandle) {
-      toast('No writable file selected. Please select Past Draws file first (Settings).');
-      return false;
-    }
-    try {
-      // get current file content
-      const file = await drawsFileHandle.getFile();
-      let currentContent = await file.text();
-      // ensure trailing newline
-      if (currentContent.length > 0 && !currentContent.endsWith('\n')) currentContent += '\n';
-      // format new draw: numbers separated by space
-      const newLine = newDraw.join(' ');
-      const newContent = currentContent + newLine + '\n';
-      // write back
-      const writable = await drawsFileHandle.createWritable();
-      await writable.write(newContent);
-      await writable.close();
-      return true;
-    } catch (err) {
-      console.error('Write failed', err);
-      toast('Failed to write to file. Permission may be lost. Re-select the file.');
-      drawsFileHandle = null;
-      document.getElementById('drawsWriteStatus').innerHTML = '⚠️ Not writable';
-      return false;
-    }
-  }
-
-  // fallback: download updated file if write not possible
-  function downloadUpdatedFile(drawsList) {
-    let content = drawsList.map(d => d.join(' ')).join('\n');
-    const blob = new Blob([content], { type: 'text/plain' });
-    const a = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    a.href = url;
-    a.download = drawsFileName || 'Past_Draws.txt';
-    a.click();
-    URL.revokeObjectURL(url);
-    toast('File downloaded – replace your old file manually');
   }
 
   // ---------- Core analysis (identical) ----------
@@ -874,7 +955,7 @@
                   .sort((a,b)=>b.score - a.score);
   }
 
-  // ---------- UI RENDERING ----------
+  // ---------- UI Rendering ----------
   function renderStats() {
     document.getElementById('stats').innerHTML = `
       <div class="stat"><div class="stat-val">${draws.length}</div><div class="stat-lbl">Past draws</div></div>
@@ -947,34 +1028,19 @@
     if (vals.some(n=>n<1||n>40)) { toast('Numbers 1-40 only'); return; }
     if (new Set(vals).size !== 6) { toast('Numbers must be unique'); return; }
     const sorted = [...vals].sort((a,b)=>a-b);
-    
-    // append to draws array
     draws.push(sorted);
-    
-    // try to save to file
     let saved = false;
     if (drawsFileHandle) {
       saved = await appendDrawToFile(sorted);
-      if (saved) toast(`Draw added and saved to ${drawsFileName}`);
-      else toast('Draw added to memory but could not save to file. Use fallback.');
+      if (saved) toast(`Draw added and saved to ${drawsFileHandle.name}`);
+      else toast('Draw added to memory but file write failed. Reselect file.');
     } else {
-      // fallback: download entire updated file
-      const confirmDownload = confirm('No writable file selected. Do you want to download the updated Past Draws file?');
-      if (confirmDownload) {
-        downloadUpdatedFile(draws);
-        toast('Draw added. Download the file and replace your old one.');
-      } else {
-        toast('Draw added to memory only (not saved to disk).');
-      }
+      toast('No writable file selected. Draw only in memory. Use Settings to select a file.');
     }
-    
     inputs = ['','','','','',''];
     renderNumGrid();
     fullRender();
     document.getElementById('predictions').innerHTML = '';
-    if (!saved && drawsFileHandle === null) {
-      // optionally remind to select file
-    }
   }
 
   function clearInputs() { inputs = ['','','','','','']; renderNumGrid(); }
@@ -1002,11 +1068,14 @@
     btn.classList.add('active');
   };
 
-  // attach button events
+  // attach event listeners
   document.getElementById('selectDrawsFileBtn').addEventListener('click', selectDrawsFile);
+  document.getElementById('clearDrawsHandleBtn').addEventListener('click', clearDrawsHandle);
   document.getElementById('selectArrFileBtn').addEventListener('click', selectArrangementFile);
+  document.getElementById('clearArrHandleBtn').addEventListener('click', clearArrangementHandle);
 
-  // initial empty UI
+  // initial restore
+  restoreHandles().catch(console.error);
   fullRender();
 </script>
 </body>
