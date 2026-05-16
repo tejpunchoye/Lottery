@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Lottery Analyzer · Persistent handles (fixed status)</title>
+<title>Lottery Analyzer · Mobile friendly</title>
 <style>
-  /* === same CSS as previous version – unchanged for brevity === */
+  /* === Same CSS – kept compact === */
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
   :root { --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222222; --surface3: #2a2a2a; --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14); --text: #f0ede8; --text2: #9a9690; --text3: #5a5754; --amber: #e8a020; --amber-bg: rgba(232,160,32,0.12); --amber-border: rgba(232,160,32,0.3); --blue: #4a90d9; --blue-bg: rgba(74,144,217,0.12); --blue-border: rgba(74,144,217,0.3); --green: #4a9e5c; --green-bg: rgba(74,158,92,0.12); --green-border: rgba(74,158,92,0.3); --radius: 10px; --radius-lg: 14px; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -77,6 +77,8 @@
   .file-label:hover { background: var(--surface3); }
   .file-path { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--text2); word-break: break-all; flex: 1; }
   .status-badge { font-size: 10px; background: var(--surface3); padding: 2px 8px; border-radius: 20px; color: var(--text2); }
+  .refresh-btn { background: var(--surface2); border: 1px solid var(--border2); padding: 5px 10px; border-radius: var(--radius); font-size: 10px; cursor: pointer; }
+  .refresh-btn:hover { background: var(--surface3); }
   .arr-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
   .arr-lbl { font-size: 11px; color: var(--text3); width: 36px; flex-shrink: 0; padding-top: 4px; font-family: 'DM Mono', monospace; }
   .arr-badges { display: flex; flex-wrap: wrap; gap: 5px; }
@@ -98,7 +100,7 @@
 <body>
 <div class="app">
   <div class="header">
-    <div class="header-left"><h1>Lottery Analyzer</h1><p>1–40 · 6 per draw · persistent file</p></div>
+    <div class="header-left"><h1>Lottery Analyzer</h1><p>1–40 · persistent files · mobile ready</p></div>
     <div class="header-icon">🎲</div>
   </div>
   <div class="tabs">
@@ -130,22 +132,22 @@
   <div id="pane-settings" class="pane">
     <div class="setting-group">
       <div class="slabel">📄 Past Draws file (auto‑append)</div>
-      <div class="file-row"><button class="file-label" id="selectDrawsFileBtn">📂 Select new file</button><span id="drawsFileName" class="file-path">No file selected</span><span id="drawsWriteStatus" class="status-badge">⚠️ Not writable</span></div>
+      <div class="file-row"><button class="file-label" id="selectDrawsFileBtn">📂 Select file</button><span id="drawsFileName" class="file-path">No file selected</span><span id="drawsWriteStatus" class="status-badge">⚠️ Not writable</span><button class="refresh-btn" id="refreshDrawsBtn">⟳ Activate</button></div>
       <div class="file-row"><button class="file-label" id="clearDrawsHandleBtn">🗑️ Forget file</button></div>
-      <div class="hint">Choose your <code>Past_Draws.txt</code>. The file handle is stored permanently. New draws will be appended automatically.</div>
+      <div class="hint">After selecting a file, tap <strong>Activate</strong> to grant permission and load the data. Required once per session.</div>
     </div>
     <div class="setting-group">
       <div class="slabel">⚙️ Arrangement file (read only)</div>
-      <div class="file-row"><button class="file-label" id="selectArrFileBtn">📂 Select arrangement file</button><span id="arrFileName" class="file-path">No file selected</span></div>
+      <div class="file-row"><button class="file-label" id="selectArrFileBtn">📂 Select file</button><span id="arrFileName" class="file-path">No file selected</span><button class="refresh-btn" id="refreshArrBtn">⟳ Activate</button></div>
       <div class="file-row"><button class="file-label" id="clearArrHandleBtn">🗑️ Forget arrangement</button></div>
-      <div class="hint">Machine rows – each line space‑separated numbers. Optional.</div>
+      <div class="hint">Tap <strong>Activate</strong> after selection to load the arrangement.</div>
     </div>
     <div class="divider"></div>
     <div class="slabel" style="margin-bottom:12px">📌 Loaded arrangement (rows)</div>
     <div id="arr-display"></div>
   </div>
   <div id="pane-about" class="pane">
-    <div class="strategy-info"><div class="slabel">Persistent file handles</div><div class="strategy-text">Once you select a Past Draws file, the app stores a reference using IndexedDB. When you reopen the app, it automatically requests permission and reloads the file. No need to re‑select unless you change the file location.</div></div>
+    <div class="strategy-info"><div class="slabel">Mobile & cross‑tab support</div><div class="strategy-text">File handles are stored in IndexedDB. On mobile, permission must be granted via user click – tap the <strong>Activate</strong> button after selecting a file. After activation, all operations work normally across tabs and reloads (until you clear site data).</div></div>
     <div class="strategy-info"><div class="slabel">Prediction strategies</div><div class="strategy-row"><div class="strategy-num">1</div><div class="strategy-text"><strong>Recency-weighted frequency</strong> — newer draws contribute more weight.</div></div><div class="strategy-row"><div class="strategy-num">2</div><div class="strategy-text"><strong>Row activity boost</strong> — numbers from most active row get +30% weight.</div></div><div class="strategy-row"><div class="strategy-num">3</div><div class="strategy-text"><strong>Normalised probability sampling</strong> — weighted random without replacement.</div></div><div class="strategy-row"><div class="strategy-num">4</div><div class="strategy-text"><strong>Validation filters</strong> — 2–4 odd, 2–4 low (1–25), sum 100–200, no consecutive numbers.</div></div><div class="strategy-row"><div class="strategy-num">5</div><div class="strategy-text"><strong>Generate-and-filter loop</strong> — up to 5k candidates.</div></div></div>
   </div>
 </div>
@@ -155,13 +157,17 @@
   // ---------- GLOBAL STATE ----------
   let draws = [];
   let arrangement = [];
-  let drawsFileHandle = null;
+  let drawsFileHandle = null;       // may be stored but not yet verified
   let arrangementFileHandle = null;
+  let drawsFileName = "";
+  let arrFileName = "";
+  let drawsPermissionValid = false; // tracks if we have active readwrite permission
+  let arrPermissionValid = false;
   let inputs = ['','','','','',''];
 
-  // ---------- IndexedDB (same as before) ----------
+  // ---------- IndexedDB (store handles + names) ----------
   const DB_NAME = 'LotteryAnalyzer';
-  const DB_VERSION = 1;
+  const DB_VERSION = 2;
   const STORE_NAME = 'fileHandles';
 
   function openDB() {
@@ -178,20 +184,19 @@
     });
   }
 
-  async function storeHandle(key, handle) {
-    if (!handle) return;
+  async function storeData(key, data) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readwrite');
       const store = tx.objectStore(STORE_NAME);
-      const request = store.put(handle, key);
+      const request = store.put(data, key);
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve();
       tx.oncomplete = () => db.close();
     });
   }
 
-  async function getHandle(key) {
+  async function getData(key) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readonly');
@@ -203,7 +208,7 @@
     });
   }
 
-  async function removeHandle(key) {
+  async function removeData(key) {
     const db = await openDB();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, 'readwrite');
@@ -215,88 +220,86 @@
     });
   }
 
-  // ---------- Draws file handling (with UI update) ----------
+  // ---------- Draws file handling (user activation required) ----------
   async function selectDrawsFile() {
-    if (!window.showOpenFilePicker) { toast('Browser does not support File System Access API.'); return; }
+    if (!window.showOpenFilePicker) { toast('File System Access API not supported.'); return; }
     try {
       const [handle] = await window.showOpenFilePicker({
         types: [{ description: 'Text file', accept: { 'text/plain': ['.txt', '.csv'] } }],
         multiple: false,
       });
-      let permission = await handle.requestPermission({ mode: 'readwrite' });
-      if (permission !== 'granted') { toast('Write permission denied.'); return; }
+      // Store handle immediately, but do NOT request permission yet
       drawsFileHandle = handle;
-      await storeHandle('drawsFile', handle);
-      await loadDrawsFromHandle();  // this also updates UI
-      toast(`Draws file set: ${handle.name}`);
+      drawsFileName = handle.name;
+      drawsPermissionValid = false;
+      await storeData('drawsHandle', handle);
+      await storeData('drawsName', drawsFileName);
+      updateDrawsUI();
+      toast(`Draws file selected: ${drawsFileName}. Tap "Activate" to load.`);
     } catch (err) {
       if (err.name !== 'AbortError') toast('Selection failed: ' + err.message);
     }
   }
 
-  async function clearDrawsHandle() {
-    await removeHandle('drawsFile');
-    drawsFileHandle = null;
-    draws = [];
-    updateDrawsFileUI();
-    fullRender();
-    toast('Draws file forgotten.');
-  }
-
-  async function loadDrawsFromHandle() {
-    if (!drawsFileHandle) {
-      updateDrawsFileUI();
-      return false;
-    }
+  async function refreshDraws() {
+    if (!drawsFileHandle) { toast('No draws file selected. Select one first.'); return; }
+    // This function is called by user click -> valid user activation
     try {
-      // Request read/write permission again (critical for restoring)
       let permission = await drawsFileHandle.requestPermission({ mode: 'readwrite' });
       if (permission !== 'granted') {
-        toast('Permission lost for draws file. Please re‑select.');
-        drawsFileHandle = null;
-        await removeHandle('drawsFile');
-        updateDrawsFileUI();
+        toast('Permission denied. Please re‑select the file if needed.');
+        drawsPermissionValid = false;
+        updateDrawsUI();
         return false;
       }
+      drawsPermissionValid = true;
       const file = await drawsFileHandle.getFile();
       const content = await file.text();
       const parsed = parseDrawsText(content);
       if (parsed.length) {
         draws = parsed;
-        updateDrawsFileUI();   // sets name + "✅ Writable"
+        updateDrawsUI();
         fullRender();
+        toast(`Loaded ${draws.length} draws from ${drawsFileName}`);
         return true;
       } else {
         toast('Draws file is empty or invalid.');
         draws = [];
-        updateDrawsFileUI();
+        updateDrawsUI();
         return false;
       }
     } catch (err) {
       console.error(err);
       toast('Failed to load draws file. It may have been moved. Re‑select.');
       drawsFileHandle = null;
-      await removeHandle('drawsFile');
-      updateDrawsFileUI();
+      drawsFileName = "";
+      drawsPermissionValid = false;
+      await removeData('drawsHandle');
+      await removeData('drawsName');
+      updateDrawsUI();
       return false;
     }
   }
 
-  function updateDrawsFileUI() {
-    const nameSpan = document.getElementById('drawsFileName');
-    const statusSpan = document.getElementById('drawsWriteStatus');
-    if (drawsFileHandle) {
-      nameSpan.innerText = drawsFileHandle.name;
-      statusSpan.innerHTML = '✅ Writable (auto‑append)';
-    } else {
-      nameSpan.innerText = 'No file selected';
-      statusSpan.innerHTML = '⚠️ Not writable';
-    }
+  async function clearDrawsHandle() {
+    await removeData('drawsHandle');
+    await removeData('drawsName');
+    drawsFileHandle = null;
+    drawsFileName = "";
+    drawsPermissionValid = false;
+    draws = [];
+    updateDrawsUI();
+    fullRender();
+    toast('Draws file forgotten.');
   }
 
   async function appendDrawToFile(newDraw) {
-    if (!drawsFileHandle) return false;
+    if (!drawsFileHandle || !drawsPermissionValid) {
+      toast('Draws file not activated. Go to Settings and tap Activate.');
+      return false;
+    }
     try {
+      // Permission already granted, but we can re-check quickly
       const file = await drawsFileHandle.getFile();
       let currentContent = await file.text();
       if (currentContent.length > 0 && !currentContent.endsWith('\n')) currentContent += '\n';
@@ -308,92 +311,130 @@
       return true;
     } catch (err) {
       console.error('Write failed', err);
-      toast('Write error. Permission may be lost. Please re‑select file.');
-      drawsFileHandle = null;
-      await removeHandle('drawsFile');
-      updateDrawsFileUI();
+      toast('Write error. Permission may be lost. Re‑activate the file in Settings.');
+      drawsPermissionValid = false;
+      updateDrawsUI();
       return false;
     }
   }
 
-  // ---------- Arrangement file (silent restore) ----------
+  function updateDrawsUI() {
+    const nameSpan = document.getElementById('drawsFileName');
+    const statusSpan = document.getElementById('drawsWriteStatus');
+    if (drawsFileName) {
+      nameSpan.innerText = drawsFileName;
+      if (drawsPermissionValid) {
+        statusSpan.innerHTML = '✅ Active & writable';
+      } else {
+        statusSpan.innerHTML = '⚠️ Not active (tap Activate)';
+      }
+    } else {
+      nameSpan.innerText = 'No file selected';
+      statusSpan.innerHTML = '⚠️ Not writable';
+    }
+  }
+
+  // ---------- Arrangement file (read only) ----------
   async function selectArrangementFile() {
     if (!window.showOpenFilePicker) { toast('File System Access API not supported.'); return; }
     try {
       const [handle] = await window.showOpenFilePicker({
         types: [{ description: 'Text file', accept: { 'text/plain': ['.txt'] } }],
       });
-      const permission = await handle.requestPermission({ mode: 'read' });
-      if (permission !== 'granted') return;
       arrangementFileHandle = handle;
-      await storeHandle('arrangementFile', handle);
-      await loadArrangementFromHandle(true);
-      document.getElementById('arrFileName').innerText = handle.name;
-      toast(`Arrangement loaded: ${handle.name}`);
+      arrFileName = handle.name;
+      arrPermissionValid = false;
+      await storeData('arrangementHandle', handle);
+      await storeData('arrangementName', arrFileName);
+      updateArrUI();
+      toast(`Arrangement selected: ${arrFileName}. Tap "Activate" to load.`);
     } catch (err) {
       if (err.name !== 'AbortError') toast(err.message);
     }
   }
 
-  async function clearArrangementHandle() {
-    await removeHandle('arrangementFile');
-    arrangementFileHandle = null;
-    arrangement = [];
-    document.getElementById('arrFileName').innerText = 'No file selected';
-    fullRender();
-    toast('Arrangement file forgotten.');
-  }
-
-  async function loadArrangementFromHandle(showErrorToast = false) {
-    if (!arrangementFileHandle) {
-      document.getElementById('arrFileName').innerText = 'No file selected';
-      return false;
-    }
+  async function refreshArrangement() {
+    if (!arrangementFileHandle) { toast('No arrangement file selected.'); return; }
     try {
       const permission = await arrangementFileHandle.requestPermission({ mode: 'read' });
       if (permission !== 'granted') {
-        if (showErrorToast) toast('Arrangement permission lost. Reselect.');
-        arrangementFileHandle = null;
-        await removeHandle('arrangementFile');
-        document.getElementById('arrFileName').innerText = 'No file selected';
+        toast('Permission denied for arrangement.');
+        arrPermissionValid = false;
+        updateArrUI();
         return false;
       }
+      arrPermissionValid = true;
       const file = await arrangementFileHandle.getFile();
       const content = await file.text();
       const parsed = parseArrText(content);
       arrangement = parsed;
-      document.getElementById('arrFileName').innerText = arrangementFileHandle.name;
+      updateArrUI();
       fullRender();
+      toast(`Loaded ${arrangement.length} rows from ${arrFileName}`);
       return true;
     } catch (err) {
-      console.warn('Arrangement load error (optional):', err);
-      if (showErrorToast) toast('Failed to load arrangement file.');
-      arrangementFileHandle = null;
-      await removeHandle('arrangementFile');
-      document.getElementById('arrFileName').innerText = 'No file selected';
+      console.warn(err);
+      toast('Failed to load arrangement file.');
+      arrangement = [];
+      arrPermissionValid = false;
+      updateArrUI();
       return false;
     }
   }
 
-  async function restoreHandles() {
-    const drawsHandle = await getHandle('drawsFile');
-    if (drawsHandle) {
-      drawsFileHandle = drawsHandle;
-      await loadDrawsFromHandle();
-    } else {
-      updateDrawsFileUI();
-    }
-    const arrHandle = await getHandle('arrangementFile');
-    if (arrHandle) {
-      arrangementFileHandle = arrHandle;
-      await loadArrangementFromHandle(false);
-    } else {
-      document.getElementById('arrFileName').innerText = 'No file selected';
-    }
+  async function clearArrangementHandle() {
+    await removeData('arrangementHandle');
+    await removeData('arrangementName');
+    arrangementFileHandle = null;
+    arrFileName = "";
+    arrPermissionValid = false;
+    arrangement = [];
+    updateArrUI();
     fullRender();
+    toast('Arrangement file forgotten.');
   }
 
-  // ---------- Parsing (unchanged) ----------
+  function updateArrUI() {
+    const nameSpan = document.getElementById('arrFileName');
+    if (arrFileName) {
+      if (arrPermissionValid) {
+        nameSpan.innerText = arrFileName;
+      } else {
+        nameSpan.innerText = arrFileName + ' (⚠️ not active)';
+      }
+    } else {
+      nameSpan.innerText = 'No file selected';
+    }
+  }
+
+  // ---------- Restore from IndexedDB (without requesting permission) ----------
+  async function restoreHandles() {
+    const storedDrawsHandle = await getData('drawsHandle');
+    const storedDrawsName = await getData('drawsName');
+    if (storedDrawsHandle) {
+      drawsFileHandle = storedDrawsHandle;
+      drawsFileName = storedDrawsName || "unknown.txt";
+      drawsPermissionValid = false; // must reactivate on next user click
+    } else {
+      drawsFileName = "";
+    }
+    updateDrawsUI();
+
+    const storedArrHandle = await getData('arrangementHandle');
+    const storedArrName = await getData('arrangementName');
+    if (storedArrHandle) {
+      arrangementFileHandle = storedArrHandle;
+      arrFileName = storedArrName || "unknown.txt";
+      arrPermissionValid = false;
+    } else {
+      arrFileName = "";
+    }
+    updateArrUI();
+    fullRender();
+    if (drawsFileName) toast(`File "${drawsFileName}" is remembered. Tap Activate in Settings to load.`);
+  }
+
+  // ---------- Parsing ----------
   function parseDrawsText(raw) {
     const lines = raw.trim().split(/\r?\n/);
     const drawsList = [];
@@ -417,7 +458,7 @@
     return rows;
   }
 
-  // ---------- Core analysis (identical) ----------
+  // ---------- Core analysis (unchanged) ----------
   function buildWeights(drawsList, arrList) {
     if (!drawsList.length) return {};
     const total = drawsList.length;
@@ -544,7 +585,7 @@
 
   function renderRecentDraws() {
     const el = document.getElementById('recent-draws');
-    if (!draws.length) { el.innerHTML = '<div class="empty">📭 No draws loaded. Select a Past Draws file in Settings.</div>'; return; }
+    if (!draws.length) { el.innerHTML = '<div class="empty">📭 No draws loaded. Select a file and tap Activate in Settings.</div>'; return; }
     el.innerHTML = [...draws].reverse().slice(0,10).map((d,i)=>`<div class="draw-row"><span class="draw-idx">#${draws.length - i}</span><span class="draw-nums">${d.join('  &nbsp;')}</span></div>`).join('');
   }
 
@@ -572,7 +613,14 @@
   }
 
   async function generate() {
-    if (draws.length < 3) { toast('Need at least 3 draws. Load a file or add draws manually.'); return; }
+    if (!drawsPermissionValid) {
+      toast('Draws file not activated. Go to Settings → tap Activate.');
+      return;
+    }
+    if (draws.length < 3) {
+      toast('Need at least 3 draws. Load a valid file first.');
+      return;
+    }
     const btn = document.getElementById('gen-btn');
     btn.innerHTML = '<span class="spin"></span>&nbsp;Generating…';
     btn.disabled = true;
@@ -589,6 +637,10 @@
   }
 
   async function addDraw() {
+    if (!drawsPermissionValid) {
+      toast('Draws file not activated. Go to Settings → tap Activate.');
+      return;
+    }
     const vals = [];
     document.querySelectorAll('.num-inp').forEach(el => { let v = parseInt(el.value,10); if(!isNaN(v)) vals.push(v); });
     if (vals.length !== 6) { toast('Enter exactly 6 numbers'); return; }
@@ -596,14 +648,9 @@
     if (new Set(vals).size !== 6) { toast('Numbers must be unique'); return; }
     const sorted = [...vals].sort((a,b)=>a-b);
     draws.push(sorted);
-    let saved = false;
-    if (drawsFileHandle) {
-      saved = await appendDrawToFile(sorted);
-      if (saved) toast(`Draw added and saved to ${drawsFileHandle.name}`);
-      else toast('Draw added to memory but file write failed. Reselect file.');
-    } else {
-      toast('No writable file selected. Draw only in memory. Use Settings to select a file.');
-    }
+    const saved = await appendDrawToFile(sorted);
+    if (saved) toast(`Draw added and saved to ${drawsFileName}`);
+    else toast('Draw added to memory but file write failed. Re‑activate file in Settings.');
     inputs = ['','','','','',''];
     renderNumGrid();
     fullRender();
@@ -635,9 +682,12 @@
     btn.classList.add('active');
   };
 
+  // Event listeners
   document.getElementById('selectDrawsFileBtn').addEventListener('click', selectDrawsFile);
+  document.getElementById('refreshDrawsBtn').addEventListener('click', refreshDraws);
   document.getElementById('clearDrawsHandleBtn').addEventListener('click', clearDrawsHandle);
   document.getElementById('selectArrFileBtn').addEventListener('click', selectArrangementFile);
+  document.getElementById('refreshArrBtn').addEventListener('click', refreshArrangement);
   document.getElementById('clearArrHandleBtn').addEventListener('click', clearArrangementHandle);
 
   restoreHandles().catch(console.error);
