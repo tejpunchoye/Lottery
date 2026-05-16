@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Lottery Analyzer · Local Files</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0f0f0f;
+    --surface: #1a1a1a;
+    --surface2: #222222;
+    --surface3: #2a2a2a;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0ede8;
+    --text2: #9a9690;
+    --text3: #5a5754;
+    --amber: #e8a020;
+    --amber-bg: rgba(232,160,32,0.12);
+    --amber-border: rgba(232,160,32,0.3);
+    --blue: #4a90d9;
+    --blue-bg: rgba(74,144,217,0.12);
+    --blue-border: rgba(74,144,217,0.3);
+    --green: #4a9e5c;
+    --green-bg: rgba(74,158,92,0.12);
+    --green-border: rgba(74,158,92,0.3);
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+  }
+  .header-left h1 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+  .header-left p {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 2px;
+    font-family: 'DM Mono', monospace;
+  }
+  .header-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .tabs {
+    display: flex;
+    padding: 12px 20px 0;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .tab {
+    flex: 1;
+    padding: 8px 4px 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text3);
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .tab.active { color: var(--text); border-bottom-color: var(--amber); }
+  .tab:hover:not(.active) { color: var(--text2); }
+
+  .pane { display: none; padding: 20px; flex: 1; }
+  .pane.active { display: block; }
+
+  .slabel {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+  .stat-val {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: -0.5px;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 3px;
+  }
+
+  .row-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .row-card .slabel { margin-bottom: 12px; }
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .bar-lbl {
+    font-size: 11px;
+    color: var(--text3);
+    width: 36px;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+  .bar-track {
+    flex: 1;
+    height: 4px;
+    background: var(--surface3);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 4px;
+    background: var(--amber);
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+  .bar-score {
+    font-size: 11px;
+    color: var(--text2);
+    width: 28px;
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+  }
+
+  .gen-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--amber);
+    color: #1a0e00;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: opacity 0.15s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+  .gen-btn:hover { opacity: 0.9; }
+  .gen-btn:active { transform: scale(0.98); }
+  .gen-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .leg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .leg-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .pred-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    margin-bottom: 10px;
+    animation: fadeUp 0.3s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .pred-card:nth-child(1) { animation-delay: 0s; }
+  .pred-card:nth-child(2) { animation-delay: 0.07s; }
+  .pred-card:nth-child(3) { animation-delay: 0.14s; }
+  .pred-num {
+    font-size: 10px;
+    color: var(--text3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+  .ball-row {
+    display: flex;
+    gap: 7px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .ball {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    border: 1px solid;
+    transition: transform 0.15s;
+  }
+  .ball:hover { transform: scale(1.1); }
+  .ball-hot    { background: var(--amber-bg);  border-color: var(--amber-border);  color: var(--amber); }
+  .ball-recent { background: var(--blue-bg);   border-color: var(--blue-border);   color: var(--blue);  }
+  .ball-row-b  { background: var(--green-bg);  border-color: var(--green-border);  color: var(--green); }
+  .ball-fill   { background: var(--surface2);  border-color: var(--border2);       color: var(--text2); }
+
+  .reason {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    align-items: flex-start;
+  }
+  .r-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .r-text { font-size: 12px; color: var(--text2); line-height: 1.6; flex: 1; }
+
+  .num-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .num-inp {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'DM Mono', monospace;
+    text-align: center;
+    padding: 0;
+    transition: border-color 0.15s, background 0.15s;
+    -moz-appearance: textfield;
+  }
+  .num-inp::-webkit-outer-spin-button,
+  .num-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .num-inp:focus { outline: none; border-color: var(--amber); background: var(--surface2); }
+  .num-inp.filled { background: var(--surface2); border-color: var(--border2); }
+
+  .btn-row { display: flex; gap: 8px; margin-bottom: 16px; }
+  .add-btn {
+    flex: 2;
+    padding: 11px;
+    background: var(--amber);
+    color: #1a0e00;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .add-btn:hover { opacity: 0.9; }
+  .clr-btn {
+    flex: 1;
+    padding: 11px;
+    background: none;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .clr-btn:hover { background: var(--surface2); }
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+  .draw-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .draw-row:last-child { border-bottom: none; }
+  .draw-idx {
+    font-size: 11px;
+    color: var(--text3);
+    width: 28px;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+  .draw-nums {
+    font-size: 13px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+  }
+
+  .setting-group { margin-bottom: 20px; }
+  .file-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 8px 0;
+  }
+  .file-label {
+    background: var(--surface2);
+    padding: 8px 12px;
+    border-radius: var(--radius);
+    font-size: 12px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .file-label:hover { background: var(--surface3); }
+  .file-path {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text2);
+    word-break: break-all;
+    flex: 1;
+  }
+  .fetch-btn {
+    padding: 8px 16px;
+    background: var(--amber);
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    color: #1a0e00;
+  }
+  .fetch-btn:hover { opacity: 0.9; }
+
+  .arr-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .arr-lbl { font-size: 11px; color: var(--text3); width: 36px; flex-shrink: 0; padding-top: 4px; font-family: 'DM Mono', monospace; }
+  .arr-badges { display: flex; flex-wrap: wrap; gap: 5px; }
+  .badge {
+    padding: 3px 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .empty { text-align: center; padding: 24px 0; color: var(--text3); font-size: 13px; }
+  .spin {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid rgba(26,14,0,0.3);
+    border-top-color: #1a0e00;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    padding: 9px 18px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 100;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  .no-combo {
+    font-size: 13px;
+    color: var(--text3);
+    padding: 16px;
+    text-align: center;
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius-lg);
+  }
+  .strategy-info {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .strategy-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-bottom: 8px;
+  }
+  .strategy-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--surface3);
+    border: 1px solid var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    flex-shrink: 0;
+  }
+  .strategy-text { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .strategy-text strong { color: var(--text); font-weight: 500; }
+  code { background: var(--surface2); padding: 2px 6px; border-radius: 6px; font-size: 11px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>Lottery Analyzer</h1>
+      <p>1–40 · 6 per draw · local files</p>
+    </div>
+    <div class="header-icon">🎲</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('predict',this)">Predict</button>
+    <button class="tab" onclick="switchTab('add',this)">Add draw</button>
+    <button class="tab" onclick="switchTab('settings',this)">Settings</button>
+    <button class="tab" onclick="switchTab('about',this)">About</button>
+  </div>
+
+  <!-- PREDICT PANE -->
+  <div id="pane-predict" class="pane active">
+    <div class="stat-grid" id="stats"></div>
+    <div class="row-card" id="row-card">
+      <div class="slabel">Row activity</div>
+      <div id="row-bars"></div>
+    </div>
+    <button class="gen-btn" id="gen-btn" onclick="generate()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      Generate 3 predictions
+    </button>
+    <div class="legend">
+      <span class="leg"><span class="leg-dot" style="background:var(--amber)"></span>All-time hot</span>
+      <span class="leg"><span class="leg-dot" style="background:var(--blue)"></span>Recently hot</span>
+      <span class="leg"><span class="leg-dot" style="background:var(--green)"></span>Active row</span>
+      <span class="leg"><span class="leg-dot" style="background:#5a5754"></span>Weighted pick</span>
+    </div>
+    <div id="predictions"></div>
+  </div>
+
+  <!-- ADD DRAW PANE -->
+  <div id="pane-add" class="pane">
+    <div class="slabel">Enter the 6 numbers drawn (1–40)</div>
+    <div class="num-grid" id="num-grid"></div>
+    <div class="btn-row">
+      <button class="add-btn" onclick="addDraw()">Add draw</button>
+      <button class="clr-btn" onclick="clearInputs()">Clear</button>
+    </div>
+    <div class="divider"></div>
+    <div class="slabel">Recent draws (last 10)</div>
+    <div id="recent-draws"></div>
+  </div>
+
+  <!-- SETTINGS PANE: local file pickers -->
+  <div id="pane-settings" class="pane">
+    <div class="setting-group">
+      <div class="slabel">📄 Past draws file</div>
+      <div class="file-row">
+        <label class="file-label" for="drawsFileInput">Choose file</label>
+        <span id="drawsFileName" class="file-path">No file selected</span>
+        <input type="file" id="drawsFileInput" accept=".txt,.csv,text/plain" style="display:none" onchange="loadDrawsFromFile(this)">
+      </div>
+      <div class="hint">Format: one draw per line, 6 numbers separated by spaces or commas.<br>Example: <code>1 9 17 22 29 32</code></div>
+    </div>
+
+    <div class="setting-group">
+      <div class="slabel">⚙️ Arrangement file (machine rows)</div>
+      <div class="file-row">
+        <label class="file-label" for="arrFileInput">Choose file</label>
+        <span id="arrFileName" class="file-path">No file selected</span>
+        <input type="file" id="arrFileInput" accept=".txt,.csv,text/plain" style="display:none" onchange="loadArrangementFromFile(this)">
+      </div>
+      <div class="hint">Each line = one machine row, numbers separated by spaces.<br>Example: <code>5 10 15 20 25 30 35 40</code></div>
+    </div>
+
+    <div class="divider"></div>
+    <div class="slabel" style="margin-bottom:12px">📌 Loaded arrangement (rows)</div>
+    <div id="arr-display"></div>
+  </div>
+
+  <!-- ABOUT PANE -->
+  <div id="pane-about" class="pane">
+    <div class="strategy-info"><div class="slabel">Prediction strategies</div>
+      <div class="strategy-row"><div class="strategy-num">1</div><div class="strategy-text"><strong>Recency-weighted frequency</strong> — newer draws contribute more weight.</div></div>
+      <div class="strategy-row"><div class="strategy-num">2</div><div class="strategy-text"><strong>Row activity boost</strong> — numbers from most active row get +30% weight.</div></div>
+      <div class="strategy-row"><div class="strategy-num">3</div><div class="strategy-text"><strong>Normalised probability sampling</strong> — weighted random without replacement.</div></div>
+      <div class="strategy-row"><div class="strategy-num">4</div><div class="strategy-text"><strong>Validation filters</strong> — 2–4 odd, 2–4 low (1–25), sum 100–200, no consecutive numbers.</div></div>
+      <div class="strategy-row"><div class="strategy-num">5</div><div class="strategy-text"><strong>Generate-and-filter loop</strong> — up to 5k candidates.</div></div>
+    </div>
+    <div class="strategy-info"><div class="slabel">Data sources</div>
+      <div class="strategy-text">All draws & arrangement are loaded from <strong>local files</strong> using the file picker. Once loaded, they are stored in memory. You can also add more draws manually.</div>
+    </div>
+    <div class="strategy-info"><div class="slabel">Ball colours</div>
+      <div class="strategy-row"><div class="r-dot" style="background:var(--amber);margin-top:6px;width:8px;height:8px;border-radius:50%;flex-shrink:0"></div><div class="strategy-text">Amber — all-time hot (top 10 frequency)</div></div>
+      <div class="strategy-row"><div class="r-dot" style="background:var(--blue);margin-top:6px;width:8px;height:8px;border-radius:50%;flex-shrink:0"></div><div class="strategy-text">Blue — recently hot (last 20 draws)</div></div>
+      <div class="strategy-row"><div class="r-dot" style="background:var(--green);margin-top:6px;width:8px;height:8px;border-radius:50%;flex-shrink:0"></div><div class="strategy-text">Green — numbers from most active machine row</div></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  // ---------- GLOBAL STATE ----------
+  let draws = [];            // array of number[6]
+  let arrangement = [];     // array of number[]
+
+  let inputs = ['','','','','',''];
+
+  // ---------- Helper: parse draw text ----------
+  function parseDrawsText(raw) {
+    const lines = raw.trim().split(/\r?\n/);
+    const drawsList = [];
+    for (let line of lines) {
+      line = line.trim().replace(/,/g, ' ');
+      const nums = line.split(/\s+/).map(Number).filter(n => !isNaN(n) && n >= 1 && n <= 40);
+      if (nums.length === 6) drawsList.push(nums.sort((a,b)=>a-b));
+    }
+    return drawsList;
+  }
+
+  function parseArrText(raw) {
+    const lines = raw.trim().split(/\r?\n/);
+    const rows = [];
+    for (let line of lines) {
+      line = line.trim();
+      if (!line) continue;
+      const nums = line.split(/\s+/).map(Number).filter(n => !isNaN(n) && n >= 1 && n <= 40);
+      if (nums.length) rows.push(nums);
+    }
+    return rows;
+  }
+
+  // ---------- File load handlers ----------
+  function loadDrawsFromFile(inputEl) {
+    const file = inputEl.files[0];
+    if (!file) return;
+    const fileNameSpan = document.getElementById('drawsFileName');
+    fileNameSpan.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target.result;
+      const parsed = parseDrawsText(content);
+      if (parsed.length === 0) {
+        toast('❌ No valid draws found. Need 6 numbers per line.');
+        return;
+      }
+      draws = parsed;
+      toast(`✅ Loaded ${draws.length} draws from ${file.name}`);
+      fullRender();
+      document.getElementById('predictions').innerHTML = ''; // clear old predictions
+    };
+    reader.onerror = () => toast('Error reading file');
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  function loadArrangementFromFile(inputEl) {
+    const file = inputEl.files[0];
+    if (!file) return;
+    const fileNameSpan = document.getElementById('arrFileName');
+    fileNameSpan.textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target.result;
+      const parsed = parseArrText(content);
+      arrangement = parsed;
+      toast(`✅ Loaded ${arrangement.length} machine rows from ${file.name}`);
+      fullRender();
+      document.getElementById('predictions').innerHTML = '';
+    };
+    reader.onerror = () => toast('Error reading arrangement file');
+    reader.readAsText(file, 'UTF-8');
+  }
+
+  // ---------- Core analysis (identical logic, using global draws/arr) ----------
+  function buildWeights(drawsList, arrList) {
+    if (!drawsList.length) return {};
+    const total = drawsList.length;
+    const raw = {};
+    drawsList.forEach((draw, i) => {
+      const w = (i + 1) / total;
+      draw.forEach(n => { raw[n] = (raw[n] || 0) + w; });
+    });
+    if (arrList.length) {
+      const rowScores = arrList.map(row => row.reduce((s, n) => s + (raw[n] || 0), 0));
+      const maxScore = Math.max(...rowScores, 1);
+      arrList.forEach((row, ri) => {
+        const boost = 1 + 0.3 * (rowScores[ri] / maxScore);
+        row.forEach(n => { if (raw[n]) raw[n] *= boost; });
+      });
+    }
+    const totalWeight = Object.values(raw).reduce((s, v) => s + v, 0);
+    if (totalWeight === 0) return {};
+    const weights = {};
+    Object.entries(raw).forEach(([k, v]) => { weights[+k] = v / totalWeight; });
+    return weights;
+  }
+
+  function weightedSample(weights, n) {
+    const nums = Object.keys(weights).map(Number);
+    const probs = nums.map(k => weights[k]);
+    const picked = new Set();
+    while (picked.size < n) {
+      const avail = [], ap = [];
+      nums.forEach((num, i) => { if (!picked.has(num)) { avail.push(num); ap.push(probs[i]); } });
+      const s = ap.reduce((a,b)=>a+b,0);
+      if (s === 0) break;
+      let r = Math.random(), cumul = 0, chosen = avail[0];
+      for (let i=0; i<avail.length; i++) {
+        cumul += ap[i]/s;
+        if (r <= cumul) { chosen = avail[i]; break; }
+      }
+      picked.add(chosen);
+    }
+    return [...picked].sort((a,b)=>a-b);
+  }
+
+  function isValid(combo) {
+    const s = [...combo].sort((a,b)=>a-b);
+    const odd = s.filter(x=>x%2!==0).length;
+    if (odd<2 || odd>4) return false;
+    const low = s.filter(x=>x<=25).length;
+    if (low<2 || low>4) return false;
+    for (let i=0;i<s.length-1;i++) if (s[i+1]-s[i]===1) return false;
+    const sum = s.reduce((a,b)=>a+b,0);
+    if (sum<100 || sum>200) return false;
+    return true;
+  }
+
+  function classify(drawsList, arrList) {
+    const freq = {};
+    drawsList.forEach(d=>d.forEach(n=>{freq[n]=(freq[n]||0)+1;}));
+    const hotSet = new Set(Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).map(e=>+e[0]));
+    const rf = {};
+    drawsList.slice(-20).forEach(d=>d.forEach(n=>{rf[n]=(rf[n]||0)+1;}));
+    const recentSet = new Set(Object.entries(rf).sort((a,b)=>b[1]-a[1]).slice(0,10).map(e=>+e[0]));
+    let rowBoostSet = new Set();
+    if (arrList.length) {
+      const rs = arrList.map(row=>row.reduce((s,n)=>s+(freq[n]||0),0));
+      rowBoostSet = new Set(arrList[rs.indexOf(Math.max(...rs))]);
+    }
+    return { hotSet, recentSet, rowBoostSet };
+  }
+
+  function genCombos(drawsList, arrList, count=3) {
+    if (drawsList.length < 3) return [];
+    const weights = buildWeights(drawsList, arrList);
+    if (Object.keys(weights).length === 0) return [];
+    const { hotSet, recentSet, rowBoostSet } = classify(drawsList, arrList);
+    const valid = [];
+    let attempts = 0;
+    while (valid.length < count && attempts < 5000) {
+      const combo = weightedSample(weights, 6);
+      if (combo.length === 6 && isValid(combo)) {
+        const key = combo.join(',');
+        if (!valid.find(c=>c.combo.join(',')===key)) {
+          const hotIn = combo.filter(n=>hotSet.has(n) && !recentSet.has(n));
+          const recentIn = combo.filter(n=>recentSet.has(n));
+          const rowIn = combo.filter(n=>rowBoostSet.has(n) && !hotSet.has(n) && !recentSet.has(n));
+          const fillIn = combo.filter(n=>!hotSet.has(n) && !recentSet.has(n) && !rowBoostSet.has(n));
+          const odd = combo.filter(x=>x%2!==0).length;
+          const low = combo.filter(x=>x<=25).length;
+          const sum = combo.reduce((a,b)=>a+b,0);
+          const reasons = [];
+          if (hotIn.length) reasons.push({ t: `${hotIn.join(', ')} ranked most drawn across all ${drawsList.length} draws.`, c: '#e8a020' });
+          if (recentIn.length) reasons.push({ t: `${recentIn.join(', ')} trending in last 20 draws.`, c: '#4a90d9' });
+          if (rowIn.length) reasons.push({ t: `${rowIn.join(', ')} from most active machine row.`, c: '#4a9e5c' });
+          if (fillIn.length) reasons.push({ t: `${fillIn.join(', ')} chosen by recency-weighted probability.`, c: '#5a5754' });
+          reasons.push({ t: `Balance: ${odd} odd / ${6-odd} even · ${low} low / ${6-low} high · sum ${sum}`, c: '#5a5754' });
+          valid.push({ combo, hotSet, recentSet, rowBoostSet, reasons });
+        }
+      }
+      attempts++;
+    }
+    return valid;
+  }
+
+  function rowActivity(drawsList, arrList) {
+    if (!arrList.length) return [];
+    const freq = {};
+    drawsList.forEach(d=>d.forEach(n=>{freq[n]=(freq[n]||0)+1;}));
+    return arrList.map((row,i)=>({ label: `Row ${i+1}`, score: row.reduce((s,n)=>s+(freq[n]||0),0) }))
+                  .sort((a,b)=>b.score - a.score);
+  }
+
+  // ---------- UI RENDERING ----------
+  function renderStats() {
+    document.getElementById('stats').innerHTML = `
+      <div class="stat"><div class="stat-val">${draws.length}</div><div class="stat-lbl">Past draws</div></div>
+      <div class="stat"><div class="stat-val">${arrangement.length}</div><div class="stat-lbl">Machine rows</div></div>`;
+  }
+
+  function renderRowBars() {
+    const rows = rowActivity(draws, arrangement);
+    const card = document.getElementById('row-card');
+    if (!rows.length || draws.length===0) { card.style.display = 'none'; return; }
+    card.style.display = 'block';
+    const max = rows[0].score || 1;
+    document.getElementById('row-bars').innerHTML = rows.map(r => `
+      <div class="bar-row"><span class="bar-lbl">${r.label}</span><div class="bar-track"><div class="bar-fill" style="width:${Math.round(r.score/max*100)}%"></div></div><span class="bar-score">${r.score}</span></div>`).join('');
+  }
+
+  function renderRecentDraws() {
+    const el = document.getElementById('recent-draws');
+    if (!draws.length) { el.innerHTML = '<div class="empty">📭 No draws loaded. Use Settings → choose Past Draws file.</div>'; return; }
+    el.innerHTML = [...draws].reverse().slice(0,10).map((d,i)=>`<div class="draw-row"><span class="draw-idx">#${draws.length - i}</span><span class="draw-nums">${d.join('  &nbsp;')}</span></div>`).join('');
+  }
+
+  function renderArr() {
+    const el = document.getElementById('arr-display');
+    if (!arrangement.length) { el.innerHTML = '<div class="empty">⚙️ No arrangement loaded (optional).</div>'; return; }
+    el.innerHTML = arrangement.map((row,i)=>`<div class="arr-row"><span class="arr-lbl">Row ${i+1}</span><div class="arr-badges">${row.map(n=>`<span class="badge">${n}</span>`).join('')}</div></div>`).join('');
+  }
+
+  function renderNumGrid() {
+    document.getElementById('num-grid').innerHTML = inputs.map((v,i)=>`<input class="num-inp${v?' filled':''}" type="number" min="1" max="40" value="${v}" placeholder="${i+1}" oninput="window.updateInput(${i}, this.value)">`).join('');
+  }
+  window.updateInput = (idx, val) => {
+    const clean = val.replace(/[^0-9]/g,'').slice(0,2);
+    inputs[idx] = clean;
+    const inp = document.querySelector(`.num-grid input:nth-child(${idx+1})`);
+    if (inp) { inp.value = clean; inp.className = 'num-inp' + (clean ? ' filled' : ''); }
+  };
+
+  function ballClass(n, hotSet, recentSet, rowBoostSet) {
+    if (recentSet?.has(n)) return 'ball-recent';
+    if (hotSet?.has(n)) return 'ball-hot';
+    if (rowBoostSet?.has(n)) return 'ball-row-b';
+    return 'ball-fill';
+  }
+
+  async function generate() {
+    if (draws.length < 3) { toast('Need at least 3 draws. Load a file or add draws manually.'); return; }
+    const btn = document.getElementById('gen-btn');
+    btn.innerHTML = '<span class="spin"></span>&nbsp;Generating…';
+    btn.disabled = true;
+    setTimeout(() => {
+      const combos = genCombos(draws, arrangement, 3);
+      const el = document.getElementById('predictions');
+      if (!combos.length) el.innerHTML = '<div class="no-combo">⚠️ No valid combos. Try more draws or adjust data.</div>';
+      else {
+        el.innerHTML = combos.map((p,idx)=>`
+          <div class="pred-card"><div class="pred-num">combination ${idx+1}</div>
+          <div class="ball-row">${p.combo.map(n=>`<div class="ball ${ballClass(n, p.hotSet, p.recentSet, p.rowBoostSet)}">${n}</div>`).join('')}</div>
+          ${p.reasons.map(r=>`<div class="reason"><div class="r-dot" style="background:${r.c}"></div><div class="r-text">${r.t}</div></div>`).join('')}</div>`).join('');
+      }
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg> Regenerate`;
+      btn.disabled = false;
+    }, 60);
+  }
+
+  function addDraw() {
+    const vals = [];
+    document.querySelectorAll('.num-inp').forEach(el => { let v = parseInt(el.value,10); if(!isNaN(v)) vals.push(v); });
+    if (vals.length !== 6) { toast('Enter exactly 6 numbers'); return; }
+    if (vals.some(n=>n<1||n>40)) { toast('Numbers 1-40 only'); return; }
+    if (new Set(vals).size !== 6) { toast('Numbers must be unique'); return; }
+    const sorted = [...vals].sort((a,b)=>a-b);
+    draws.push(sorted);
+    inputs = ['','','','','',''];
+    renderNumGrid();
+    fullRender();
+    toast('Draw added: ' + sorted.join('  '));
+    document.getElementById('predictions').innerHTML = '';
+  }
+  function clearInputs() { inputs = ['','','','','','']; renderNumGrid(); }
+
+  function fullRender() {
+    renderStats();
+    renderRowBars();
+    renderRecentDraws();
+    renderArr();
+    renderNumGrid();
+  }
+
+  function toast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  window.switchTab = function(name, btn) {
+    document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('pane-'+name).classList.add('active');
+    btn.classList.add('active');
+  };
+
+  // Attach file input triggers
+  document.getElementById('drawsFileInput').addEventListener('click', (e) => e.stopPropagation());
+  document.getElementById('arrFileInput').addEventListener('click', (e) => e.stopPropagation());
+  document.querySelector('label[for="drawsFileInput"]').addEventListener('click', () => document.getElementById('drawsFileInput').click());
+  document.querySelector('label[for="arrFileInput"]').addEventListener('click', () => document.getElementById('arrFileInput').click());
+
+  // initial empty UI
+  fullRender();
+</script>
+</body>
+</html>
