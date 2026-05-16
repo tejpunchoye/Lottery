@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Lottery Analyzer · Local Files</title>
+<title>Lottery Analyzer · Auto‑save to file</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 
@@ -393,17 +393,13 @@
     word-break: break-all;
     flex: 1;
   }
-  .fetch-btn {
-    padding: 8px 16px;
-    background: var(--amber);
-    border: none;
-    border-radius: var(--radius);
-    font-weight: 600;
-    font-size: 12px;
-    cursor: pointer;
-    color: #1a0e00;
+  .status-badge {
+    font-size: 10px;
+    background: var(--surface3);
+    padding: 2px 8px;
+    border-radius: 20px;
+    color: var(--text2);
   }
-  .fetch-btn:hover { opacity: 0.9; }
 
   .arr-row {
     display: flex;
@@ -503,7 +499,7 @@
   <div class="header">
     <div class="header-left">
       <h1>Lottery Analyzer</h1>
-      <p>1–40 · 6 per draw · local files</p>
+      <p>1–40 · 6 per draw · auto‑save to file</p>
     </div>
     <div class="header-icon">🎲</div>
   </div>
@@ -540,7 +536,7 @@
     <div class="slabel">Enter the 6 numbers drawn (1–40)</div>
     <div class="num-grid" id="num-grid"></div>
     <div class="btn-row">
-      <button class="add-btn" onclick="addDraw()">Add draw</button>
+      <button class="add-btn" onclick="addDraw()">Add draw & save to file</button>
       <button class="clr-btn" onclick="clearInputs()">Clear</button>
     </div>
     <div class="divider"></div>
@@ -548,26 +544,25 @@
     <div id="recent-draws"></div>
   </div>
 
-  <!-- SETTINGS PANE: local file pickers -->
+  <!-- SETTINGS PANE: file selection with write permission -->
   <div id="pane-settings" class="pane">
     <div class="setting-group">
-      <div class="slabel">📄 Past draws file</div>
+      <div class="slabel">📄 Past Draws file (auto‑append)</div>
       <div class="file-row">
-        <label class="file-label" for="drawsFileInput">Choose file</label>
+        <button class="file-label" id="selectDrawsFileBtn">📂 Select file</button>
         <span id="drawsFileName" class="file-path">No file selected</span>
-        <input type="file" id="drawsFileInput" accept=".txt,.csv,text/plain" style="display:none" onchange="loadDrawsFromFile(this)">
+        <span id="drawsWriteStatus" class="status-badge">⚠️ Not writable</span>
       </div>
-      <div class="hint">Format: one draw per line, 6 numbers separated by spaces or commas.<br>Example: <code>1 9 17 22 29 32</code></div>
+      <div class="hint">Choose your <code>Past_Draws.txt</code>. The app will <strong>append new draws</strong> to it automatically. Requires write permission.</div>
     </div>
 
     <div class="setting-group">
-      <div class="slabel">⚙️ Arrangement file (machine rows)</div>
+      <div class="slabel">⚙️ Arrangement file (read only)</div>
       <div class="file-row">
-        <label class="file-label" for="arrFileInput">Choose file</label>
+        <button class="file-label" id="selectArrFileBtn">📂 Select file</button>
         <span id="arrFileName" class="file-path">No file selected</span>
-        <input type="file" id="arrFileInput" accept=".txt,.csv,text/plain" style="display:none" onchange="loadArrangementFromFile(this)">
       </div>
-      <div class="hint">Each line = one machine row, numbers separated by spaces.<br>Example: <code>5 10 15 20 25 30 35 40</code></div>
+      <div class="hint">Machine rows – each line space‑separated numbers. Optional.</div>
     </div>
 
     <div class="divider"></div>
@@ -584,8 +579,8 @@
       <div class="strategy-row"><div class="strategy-num">4</div><div class="strategy-text"><strong>Validation filters</strong> — 2–4 odd, 2–4 low (1–25), sum 100–200, no consecutive numbers.</div></div>
       <div class="strategy-row"><div class="strategy-num">5</div><div class="strategy-text"><strong>Generate-and-filter loop</strong> — up to 5k candidates.</div></div>
     </div>
-    <div class="strategy-info"><div class="slabel">Data sources</div>
-      <div class="strategy-text">All draws & arrangement are loaded from <strong>local files</strong> using the file picker. Once loaded, they are stored in memory. You can also add more draws manually.</div>
+    <div class="strategy-info"><div class="slabel">Auto‑save feature</div>
+      <div class="strategy-text">When you add a new draw using the “Add draw” pane, the app <strong>appends it to the selected Past Draws file</strong> on your device. Requires modern browser with File System Access API (Chrome, Edge, Android WebView >= 109). If unsupported, a download fallback is provided.</div>
     </div>
     <div class="strategy-info"><div class="slabel">Ball colours</div>
       <div class="strategy-row"><div class="r-dot" style="background:var(--amber);margin-top:6px;width:8px;height:8px;border-radius:50%;flex-shrink:0"></div><div class="strategy-text">Amber — all-time hot (top 10 frequency)</div></div>
@@ -598,9 +593,10 @@
 
 <script>
   // ---------- GLOBAL STATE ----------
-  let draws = [];            // array of number[6]
-  let arrangement = [];     // array of number[]
-
+  let draws = [];                 // array of number[6]
+  let arrangement = [];          // array of number[]
+  let drawsFileHandle = null;    // FileSystemFileHandle for past draws
+  let drawsFileName = "";
   let inputs = ['','','','','',''];
 
   // ---------- Helper: parse draw text ----------
@@ -627,48 +623,147 @@
     return rows;
   }
 
-  // ---------- File load handlers ----------
-  function loadDrawsFromFile(inputEl) {
-    const file = inputEl.files[0];
-    if (!file) return;
-    const fileNameSpan = document.getElementById('drawsFileName');
-    fileNameSpan.textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target.result;
-      const parsed = parseDrawsText(content);
-      if (parsed.length === 0) {
-        toast('❌ No valid draws found. Need 6 numbers per line.');
+  // ---------- File picker with write permission (File System Access API) ----------
+  async function selectDrawsFile() {
+    if (!window.showOpenFilePicker) {
+      toast('⚠️ Your browser does not support auto‑save. Use fallback: select file then download updated version.');
+      // fallback: traditional input (read only)
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.txt,.csv,text/plain';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const content = await file.text();
+        const parsed = parseDrawsText(content);
+        if (parsed.length) {
+          draws = parsed;
+          drawsFileName = file.name;
+          document.getElementById('drawsFileName').innerText = drawsFileName;
+          document.getElementById('drawsWriteStatus').innerText = '⚠️ Read only (fallback)';
+          fullRender();
+          toast(`Loaded ${draws.length} draws (read‑only mode)`);
+        } else toast('Invalid draws file');
+      };
+      input.click();
+      return;
+    }
+
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{ description: 'Text file', accept: { 'text/plain': ['.txt', '.csv'] } }],
+        multiple: false,
+        excludeAcceptAllOption: true,
+      });
+      // request read/write permission
+      let permission = await handle.requestPermission({ mode: 'readwrite' });
+      if (permission !== 'granted') {
+        permission = await handle.requestPermission({ mode: 'readwrite' });
+      }
+      if (permission !== 'granted') {
+        toast('Write permission denied. File will be read only.');
+        document.getElementById('drawsWriteStatus').innerText = '⛔ Permission denied';
         return;
       }
-      draws = parsed;
-      toast(`✅ Loaded ${draws.length} draws from ${file.name}`);
-      fullRender();
-      document.getElementById('predictions').innerHTML = ''; // clear old predictions
-    };
-    reader.onerror = () => toast('Error reading file');
-    reader.readAsText(file, 'UTF-8');
+      drawsFileHandle = handle;
+      drawsFileName = handle.name;
+      const file = await handle.getFile();
+      const content = await file.text();
+      const parsed = parseDrawsText(content);
+      if (parsed.length) {
+        draws = parsed;
+        document.getElementById('drawsFileName').innerText = drawsFileName;
+        document.getElementById('drawsWriteStatus').innerHTML = '✅ Writable (auto‑append)';
+        fullRender();
+        toast(`Loaded ${draws.length} draws – new draws will be appended`);
+      } else {
+        toast('Invalid draws file');
+        drawsFileHandle = null;
+      }
+    } catch (err) {
+      console.error(err);
+      toast('File selection cancelled or failed');
+    }
   }
 
-  function loadArrangementFromFile(inputEl) {
-    const file = inputEl.files[0];
-    if (!file) return;
-    const fileNameSpan = document.getElementById('arrFileName');
-    fileNameSpan.textContent = file.name;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const content = e.target.result;
-      const parsed = parseArrText(content);
-      arrangement = parsed;
-      toast(`✅ Loaded ${arrangement.length} machine rows from ${file.name}`);
-      fullRender();
-      document.getElementById('predictions').innerHTML = '';
-    };
-    reader.onerror = () => toast('Error reading arrangement file');
-    reader.readAsText(file, 'UTF-8');
+  // Arrangement file (read only) – traditional picker or modern
+  async function selectArrangementFile() {
+    if (window.showOpenFilePicker) {
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          types: [{ description: 'Text file', accept: { 'text/plain': ['.txt'] } }],
+        });
+        const file = await handle.getFile();
+        const content = await file.text();
+        const parsed = parseArrText(content);
+        arrangement = parsed;
+        document.getElementById('arrFileName').innerText = handle.name;
+        fullRender();
+        toast(`Loaded ${arrangement.length} machine rows`);
+      } catch (err) {
+        toast('Arrangement selection cancelled');
+      }
+    } else {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.txt';
+      input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const content = await file.text();
+        const parsed = parseArrText(content);
+        arrangement = parsed;
+        document.getElementById('arrFileName').innerText = file.name;
+        fullRender();
+        toast(`Loaded ${arrangement.length} rows (read only)`);
+      };
+      input.click();
+    }
   }
 
-  // ---------- Core analysis (identical logic, using global draws/arr) ----------
+  // ---------- Append a new draw to the file ----------
+  async function appendDrawToFile(newDraw) {
+    if (!drawsFileHandle) {
+      toast('No writable file selected. Please select Past Draws file first (Settings).');
+      return false;
+    }
+    try {
+      // get current file content
+      const file = await drawsFileHandle.getFile();
+      let currentContent = await file.text();
+      // ensure trailing newline
+      if (currentContent.length > 0 && !currentContent.endsWith('\n')) currentContent += '\n';
+      // format new draw: numbers separated by space
+      const newLine = newDraw.join(' ');
+      const newContent = currentContent + newLine + '\n';
+      // write back
+      const writable = await drawsFileHandle.createWritable();
+      await writable.write(newContent);
+      await writable.close();
+      return true;
+    } catch (err) {
+      console.error('Write failed', err);
+      toast('Failed to write to file. Permission may be lost. Re-select the file.');
+      drawsFileHandle = null;
+      document.getElementById('drawsWriteStatus').innerHTML = '⚠️ Not writable';
+      return false;
+    }
+  }
+
+  // fallback: download updated file if write not possible
+  function downloadUpdatedFile(drawsList) {
+    let content = drawsList.map(d => d.join(' ')).join('\n');
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    a.href = url;
+    a.download = drawsFileName || 'Past_Draws.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('File downloaded – replace your old file manually');
+  }
+
+  // ---------- Core analysis (identical) ----------
   function buildWeights(drawsList, arrList) {
     if (!drawsList.length) return {};
     const total = drawsList.length;
@@ -798,7 +893,7 @@
 
   function renderRecentDraws() {
     const el = document.getElementById('recent-draws');
-    if (!draws.length) { el.innerHTML = '<div class="empty">📭 No draws loaded. Use Settings → choose Past Draws file.</div>'; return; }
+    if (!draws.length) { el.innerHTML = '<div class="empty">📭 No draws loaded. Select a Past Draws file in Settings.</div>'; return; }
     el.innerHTML = [...draws].reverse().slice(0,10).map((d,i)=>`<div class="draw-row"><span class="draw-idx">#${draws.length - i}</span><span class="draw-nums">${d.join('  &nbsp;')}</span></div>`).join('');
   }
 
@@ -845,20 +940,43 @@
     }, 60);
   }
 
-  function addDraw() {
+  async function addDraw() {
     const vals = [];
     document.querySelectorAll('.num-inp').forEach(el => { let v = parseInt(el.value,10); if(!isNaN(v)) vals.push(v); });
     if (vals.length !== 6) { toast('Enter exactly 6 numbers'); return; }
     if (vals.some(n=>n<1||n>40)) { toast('Numbers 1-40 only'); return; }
     if (new Set(vals).size !== 6) { toast('Numbers must be unique'); return; }
     const sorted = [...vals].sort((a,b)=>a-b);
+    
+    // append to draws array
     draws.push(sorted);
+    
+    // try to save to file
+    let saved = false;
+    if (drawsFileHandle) {
+      saved = await appendDrawToFile(sorted);
+      if (saved) toast(`Draw added and saved to ${drawsFileName}`);
+      else toast('Draw added to memory but could not save to file. Use fallback.');
+    } else {
+      // fallback: download entire updated file
+      const confirmDownload = confirm('No writable file selected. Do you want to download the updated Past Draws file?');
+      if (confirmDownload) {
+        downloadUpdatedFile(draws);
+        toast('Draw added. Download the file and replace your old one.');
+      } else {
+        toast('Draw added to memory only (not saved to disk).');
+      }
+    }
+    
     inputs = ['','','','','',''];
     renderNumGrid();
     fullRender();
-    toast('Draw added: ' + sorted.join('  '));
     document.getElementById('predictions').innerHTML = '';
+    if (!saved && drawsFileHandle === null) {
+      // optionally remind to select file
+    }
   }
+
   function clearInputs() { inputs = ['','','','','','']; renderNumGrid(); }
 
   function fullRender() {
@@ -884,11 +1002,9 @@
     btn.classList.add('active');
   };
 
-  // Attach file input triggers
-  document.getElementById('drawsFileInput').addEventListener('click', (e) => e.stopPropagation());
-  document.getElementById('arrFileInput').addEventListener('click', (e) => e.stopPropagation());
-  document.querySelector('label[for="drawsFileInput"]').addEventListener('click', () => document.getElementById('drawsFileInput').click());
-  document.querySelector('label[for="arrFileInput"]').addEventListener('click', () => document.getElementById('arrFileInput').click());
+  // attach button events
+  document.getElementById('selectDrawsFileBtn').addEventListener('click', selectDrawsFile);
+  document.getElementById('selectArrFileBtn').addEventListener('click', selectArrangementFile);
 
   // initial empty UI
   fullRender();
