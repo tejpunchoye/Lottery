@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Lottery Analyzer · Persistent handles (fixed)</title>
+<title>Lottery Analyzer · Persistent handles (fixed status)</title>
 <style>
-  /* same CSS as before, unchanged – omitted for brevity but identical to previous version */
+  /* === same CSS as previous version – unchanged for brevity === */
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
   :root { --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222222; --surface3: #2a2a2a; --border: rgba(255,255,255,0.08); --border2: rgba(255,255,255,0.14); --text: #f0ede8; --text2: #9a9690; --text3: #5a5754; --amber: #e8a020; --amber-bg: rgba(232,160,32,0.12); --amber-border: rgba(232,160,32,0.3); --blue: #4a90d9; --blue-bg: rgba(74,144,217,0.12); --blue-border: rgba(74,144,217,0.3); --green: #4a9e5c; --green-bg: rgba(74,158,92,0.12); --green-border: rgba(74,158,92,0.3); --radius: 10px; --radius-lg: 14px; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -159,7 +159,7 @@
   let arrangementFileHandle = null;
   let inputs = ['','','','','',''];
 
-  // ---------- IndexedDB ----------
+  // ---------- IndexedDB (same as before) ----------
   const DB_NAME = 'LotteryAnalyzer';
   const DB_VERSION = 1;
   const STORE_NAME = 'fileHandles';
@@ -215,7 +215,7 @@
     });
   }
 
-  // ---------- File handling ----------
+  // ---------- Draws file handling (with UI update) ----------
   async function selectDrawsFile() {
     if (!window.showOpenFilePicker) { toast('Browser does not support File System Access API.'); return; }
     try {
@@ -227,9 +227,7 @@
       if (permission !== 'granted') { toast('Write permission denied.'); return; }
       drawsFileHandle = handle;
       await storeHandle('drawsFile', handle);
-      await loadDrawsFromHandle();
-      document.getElementById('drawsFileName').innerText = handle.name;
-      document.getElementById('drawsWriteStatus').innerHTML = '✅ Writable (auto‑append)';
+      await loadDrawsFromHandle();  // this also updates UI
       toast(`Draws file set: ${handle.name}`);
     } catch (err) {
       if (err.name !== 'AbortError') toast('Selection failed: ' + err.message);
@@ -240,21 +238,24 @@
     await removeHandle('drawsFile');
     drawsFileHandle = null;
     draws = [];
-    document.getElementById('drawsFileName').innerText = 'No file selected';
-    document.getElementById('drawsWriteStatus').innerHTML = '⚠️ Not writable';
+    updateDrawsFileUI();
     fullRender();
     toast('Draws file forgotten.');
   }
 
   async function loadDrawsFromHandle() {
-    if (!drawsFileHandle) return false;
+    if (!drawsFileHandle) {
+      updateDrawsFileUI();
+      return false;
+    }
     try {
+      // Request read/write permission again (critical for restoring)
       let permission = await drawsFileHandle.requestPermission({ mode: 'readwrite' });
       if (permission !== 'granted') {
-        toast('Permission lost. Please re‑select the draws file.');
+        toast('Permission lost for draws file. Please re‑select.');
         drawsFileHandle = null;
         await removeHandle('drawsFile');
-        document.getElementById('drawsWriteStatus').innerHTML = '⚠️ Not writable';
+        updateDrawsFileUI();
         return false;
       }
       const file = await drawsFileHandle.getFile();
@@ -262,11 +263,13 @@
       const parsed = parseDrawsText(content);
       if (parsed.length) {
         draws = parsed;
+        updateDrawsFileUI();   // sets name + "✅ Writable"
         fullRender();
-        toast(`Loaded ${draws.length} draws from ${drawsFileHandle.name}`);
         return true;
       } else {
         toast('Draws file is empty or invalid.');
+        draws = [];
+        updateDrawsFileUI();
         return false;
       }
     } catch (err) {
@@ -274,7 +277,20 @@
       toast('Failed to load draws file. It may have been moved. Re‑select.');
       drawsFileHandle = null;
       await removeHandle('drawsFile');
+      updateDrawsFileUI();
       return false;
+    }
+  }
+
+  function updateDrawsFileUI() {
+    const nameSpan = document.getElementById('drawsFileName');
+    const statusSpan = document.getElementById('drawsWriteStatus');
+    if (drawsFileHandle) {
+      nameSpan.innerText = drawsFileHandle.name;
+      statusSpan.innerHTML = '✅ Writable (auto‑append)';
+    } else {
+      nameSpan.innerText = 'No file selected';
+      statusSpan.innerHTML = '⚠️ Not writable';
     }
   }
 
@@ -295,12 +311,12 @@
       toast('Write error. Permission may be lost. Please re‑select file.');
       drawsFileHandle = null;
       await removeHandle('drawsFile');
-      document.getElementById('drawsWriteStatus').innerHTML = '⚠️ Not writable';
+      updateDrawsFileUI();
       return false;
     }
   }
 
-  // Arrangement (optional) – no error toasts on restore failures
+  // ---------- Arrangement file (silent restore) ----------
   async function selectArrangementFile() {
     if (!window.showOpenFilePicker) { toast('File System Access API not supported.'); return; }
     try {
@@ -311,7 +327,7 @@
       if (permission !== 'granted') return;
       arrangementFileHandle = handle;
       await storeHandle('arrangementFile', handle);
-      await loadArrangementFromHandle(true); // show toast on success
+      await loadArrangementFromHandle(true);
       document.getElementById('arrFileName').innerText = handle.name;
       toast(`Arrangement loaded: ${handle.name}`);
     } catch (err) {
@@ -329,26 +345,32 @@
   }
 
   async function loadArrangementFromHandle(showErrorToast = false) {
-    if (!arrangementFileHandle) return false;
+    if (!arrangementFileHandle) {
+      document.getElementById('arrFileName').innerText = 'No file selected';
+      return false;
+    }
     try {
       const permission = await arrangementFileHandle.requestPermission({ mode: 'read' });
       if (permission !== 'granted') {
         if (showErrorToast) toast('Arrangement permission lost. Reselect.');
         arrangementFileHandle = null;
         await removeHandle('arrangementFile');
+        document.getElementById('arrFileName').innerText = 'No file selected';
         return false;
       }
       const file = await arrangementFileHandle.getFile();
       const content = await file.text();
       const parsed = parseArrText(content);
       arrangement = parsed;
+      document.getElementById('arrFileName').innerText = arrangementFileHandle.name;
       fullRender();
       return true;
     } catch (err) {
       console.warn('Arrangement load error (optional):', err);
-      if (showErrorToast) toast('Failed to load arrangement file. It may be corrupted.');
+      if (showErrorToast) toast('Failed to load arrangement file.');
       arrangementFileHandle = null;
       await removeHandle('arrangementFile');
+      document.getElementById('arrFileName').innerText = 'No file selected';
       return false;
     }
   }
@@ -358,23 +380,20 @@
     if (drawsHandle) {
       drawsFileHandle = drawsHandle;
       await loadDrawsFromHandle();
+    } else {
+      updateDrawsFileUI();
     }
     const arrHandle = await getHandle('arrangementFile');
     if (arrHandle) {
       arrangementFileHandle = arrHandle;
-      await loadArrangementFromHandle(false); // silent fail
-      if (arrangementFileHandle) {
-        document.getElementById('arrFileName').innerText = arrangementFileHandle.name;
-      } else {
-        document.getElementById('arrFileName').innerText = 'No file selected';
-      }
+      await loadArrangementFromHandle(false);
     } else {
       document.getElementById('arrFileName').innerText = 'No file selected';
     }
     fullRender();
   }
 
-  // ---------- Parsing ----------
+  // ---------- Parsing (unchanged) ----------
   function parseDrawsText(raw) {
     const lines = raw.trim().split(/\r?\n/);
     const drawsList = [];
@@ -398,7 +417,7 @@
     return rows;
   }
 
-  // ---------- Core analysis (unchanged) ----------
+  // ---------- Core analysis (identical) ----------
   function buildWeights(drawsList, arrList) {
     if (!drawsList.length) return {};
     const total = drawsList.length;
@@ -509,7 +528,7 @@
                   .sort((a,b)=>b.score - a.score);
   }
 
-  // ---------- UI ----------
+  // ---------- UI Rendering ----------
   function renderStats() {
     document.getElementById('stats').innerHTML = `<div class="stat"><div class="stat-val">${draws.length}</div><div class="stat-lbl">Past draws</div></div><div class="stat"><div class="stat-val">${arrangement.length}</div><div class="stat-lbl">Machine rows</div></div>`;
   }
