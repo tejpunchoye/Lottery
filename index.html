@@ -1,1262 +1,2177 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Draw Grid Explorer Pro</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#f1f4f9;
-  --surface:#ffffff;
-  --surface2:#fafbfc;
-  --border:#e2e7ed;
-  --border2:#c8d0da;
-  --text:#0a0c10;
-  --text2:#5a6270;
-  --text3:#8a94a5;
-  --amber:#e8a020;
-  --amber-bg:#fff8ec;
-  --amber-text:#7a4400;
-  --blue:#2563eb;
-  --blue-bg:#eff6ff;
-  --blue-text:#1e40af;
-  --green:#059669;
-  --green-bg:#ecfdf5;
-  --green-text:#065f46;
-  --rose:#e11d48;
-  --rose-bg:#fff1f4;
-  --rose-text:#9f1239;
-  --purple:#7c3aed;
-  --purple-bg:#f5f3ff;
-  --purple-text:#4c1d95;
-  --radius-sm:8px;
-  --radius-md:12px;
-  --radius-lg:16px;
-  --shadow-sm:0 2px 8px rgba(0,0,0,0.05),0 1px 2px rgba(0,0,0,0.06);
-  --shadow-md:0 12px 24px -6px rgba(0,0,0,0.08),0 4px 8px -4px rgba(0,0,0,0.04);
-  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  --font-mono:"JetBrains Mono","SF Mono",Consolas,monospace;
-}
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+    />
+    <title>Draw Grid Explorer Pro</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      :root {
+        --bg: #f1f4f9;
+        --surface: #ffffff;
+        --surface2: #fafbfc;
+        --border: #e2e7ed;
+        --border2: #c8d0da;
+        --text: #0a0c10;
+        --text2: #5a6270;
+        --text3: #8a94a5;
+        --amber: #e8a020;
+        --amber-bg: #fff8ec;
+        --amber-text: #7a4400;
+        --blue: #2563eb;
+        --blue-bg: #eff6ff;
+        --blue-text: #1e40af;
+        --green: #059669;
+        --green-bg: #ecfdf5;
+        --green-text: #065f46;
+        --rose: #e11d48;
+        --rose-bg: #fff1f4;
+        --rose-text: #9f1239;
+        --purple: #7c3aed;
+        --purple-bg: #f5f3ff;
+        --purple-text: #4c1d95;
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --shadow-sm:
+          0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.06);
+        --shadow-md:
+          0 12px 24px -6px rgba(0, 0, 0, 0.08),
+          0 4px 8px -4px rgba(0, 0, 0, 0.04);
+        --font-sans:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --font-mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
+      }
 
-@media (prefers-color-scheme: dark) {
-  :root{
-    --bg:#0f0f0f;
-    --surface:#1a1a1a;
-    --surface2:#222222;
-    --border:rgba(255,255,255,0.08);
-    --border2:rgba(255,255,255,0.14);
-    --text:#f0ede8;
-    --text2:#9a9690;
-    --text3:#5a5754;
-    --amber:#e8a020;
-    --amber-bg:rgba(232,160,32,0.12);
-    --amber-text:#fac775;
-    --blue:#4a90d9;
-    --blue-bg:rgba(74,144,217,0.12);
-    --blue-text:#93c5fd;
-    --green:#4a9e5c;
-    --green-bg:rgba(74,158,92,0.12);
-    --green-text:#6ee7b7;
-    --rose:#fb7185;
-    --rose-bg:rgba(251,113,133,0.12);
-    --rose-text:#fda4af;
-    --purple:#a78bfa;
-    --purple-bg:rgba(167,139,250,0.12);
-    --purple-text:#c4b5fd;
-  }
-}
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0f0f0f;
+          --surface: #1a1a1a;
+          --surface2: #222222;
+          --border: rgba(255, 255, 255, 0.08);
+          --border2: rgba(255, 255, 255, 0.14);
+          --text: #f0ede8;
+          --text2: #9a9690;
+          --text3: #5a5754;
+          --amber: #e8a020;
+          --amber-bg: rgba(232, 160, 32, 0.12);
+          --amber-text: #fac775;
+          --blue: #4a90d9;
+          --blue-bg: rgba(74, 144, 217, 0.12);
+          --blue-text: #93c5fd;
+          --green: #4a9e5c;
+          --green-bg: rgba(74, 158, 92, 0.12);
+          --green-text: #6ee7b7;
+          --rose: #fb7185;
+          --rose-bg: rgba(251, 113, 133, 0.12);
+          --rose-text: #fda4af;
+          --purple: #a78bfa;
+          --purple-bg: rgba(167, 139, 250, 0.12);
+          --purple-text: #c4b5fd;
+        }
+      }
 
-body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:var(--font-sans);
-  font-size:14px;
-  line-height:1.5;
-  min-height:100vh;
-}
-.app{max-width:740px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font-sans);
+        font-size: 14px;
+        line-height: 1.5;
+        min-height: 100vh;
+      }
+      .app {
+        max-width: 740px;
+        margin: 0 auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
 
-/* HEADER */
-.header{
-  padding:18px 20px 14px;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;
-  background:var(--surface);
-  z-index:10;
-  box-shadow:var(--shadow-sm);
-}
-.header-left h1{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-0.02em}
-.header-left p{font-size:11px;color:var(--text3);margin-top:2px;font-family:var(--font-mono)}
-.header-icon{font-size:24px;line-height:1}
+      /* HEADER */
+      .header {
+        padding: 18px 20px 14px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        background: var(--surface);
+        z-index: 10;
+        box-shadow: var(--shadow-sm);
+      }
+      .header-left h1 {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+      .header-left p {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 2px;
+        font-family: var(--font-mono);
+      }
+      .header-icon {
+        font-size: 24px;
+        line-height: 1;
+      }
 
-/* TABS */
-.tabs{
-  display:flex;padding:10px 20px 0;gap:4px;
-  border-bottom:1px solid var(--border);
-  background:var(--surface);
-  position:sticky;top:57px;z-index:9;
-}
-.tab{
-  flex:1;padding:7px 4px 11px;background:none;border:none;cursor:pointer;
-  color:var(--text3);font-size:12px;font-weight:500;font-family:var(--font-sans);
-  border-bottom:2px solid transparent;transition:color .15s,border-color .15s;
-  letter-spacing:.02em;
-}
-.tab.active{color:var(--text);border-bottom-color:var(--amber)}
-.tab:hover:not(.active){color:var(--text2)}
+      /* TABS */
+      .tabs {
+        display: flex;
+        padding: 10px 20px 0;
+        gap: 4px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+        position: sticky;
+        top: 57px;
+        z-index: 9;
+      }
+      .tab {
+        flex: 1;
+        padding: 7px 4px 11px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: var(--text3);
+        font-size: 12px;
+        font-weight: 500;
+        font-family: var(--font-sans);
+        border-bottom: 2px solid transparent;
+        transition:
+          color 0.15s,
+          border-color 0.15s;
+        letter-spacing: 0.02em;
+      }
+      .tab.active {
+        color: var(--text);
+        border-bottom-color: var(--amber);
+      }
+      .tab:hover:not(.active) {
+        color: var(--text2);
+      }
 
-/* PANES */
-.pane{display:none;padding:20px;flex:1}
-.pane.active{display:block}
-.slabel{
-  font-size:10px;font-weight:600;color:var(--text3);
-  letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;
-}
+      /* PANES */
+      .pane {
+        display: none;
+        padding: 20px;
+        flex: 1;
+      }
+      .pane.active {
+        display: block;
+      }
+      .slabel {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text3);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
 
-/* STAT CARDS */
-.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.stat{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--radius-md);padding:12px 14px;
-}
-.stat-val{font-size:22px;font-weight:700;color:var(--text);font-family:var(--font-mono);letter-spacing:-0.5px}
-.stat-lbl{font-size:11px;color:var(--text3);margin-top:3px}
+      /* STAT CARDS */
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .stat {
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 12px 14px;
+      }
+      .stat-val {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text);
+        font-family: var(--font-mono);
+        letter-spacing: -0.5px;
+      }
+      .stat-lbl {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 3px;
+      }
 
-/* SLIDER */
-.slider-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:16px;
-  box-shadow:var(--shadow-sm);
-}
-.slider-row{display:flex;align-items:center;gap:14px}
-.slider-row input[type=range]{
-  flex:1;height:6px;-webkit-appearance:none;
-  background:var(--border);border-radius:4px;outline:none;cursor:pointer;
-}
-.slider-row input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:18px;height:18px;
-  background:var(--rose);border-radius:50%;cursor:pointer;
-  border:3px solid var(--surface);
-  box-shadow:0 0 0 1px rgba(225,29,72,0.25);
-}
-.slider-row input[type=range]::-moz-range-thumb{
-  width:18px;height:18px;background:var(--rose);border-radius:50%;
-  border:3px solid var(--surface);cursor:pointer;
-}
-.slider-val{
-  font-family:var(--font-mono);font-size:13px;font-weight:700;
-  min-width:68px;text-align:right;color:var(--text);white-space:nowrap;
-}
-.mark-row{display:flex;justify-content:space-between;margin-top:8px}
-.mark{
-  font-size:10px;color:var(--text3);cursor:pointer;
-  padding:2px 6px;border-radius:20px;font-family:var(--font-mono);
-  transition:color .15s,background .15s;border:1px solid transparent;
-}
-.mark:hover{color:var(--rose-text);background:var(--rose-bg);border-color:rgba(225,29,72,0.2)}
+      /* SLIDER */
+      .slider-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 16px 18px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow-sm);
+      }
+      .slider-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .slider-row input[type="range"] {
+        flex: 1;
+        height: 6px;
+        -webkit-appearance: none;
+        background: var(--border);
+        border-radius: 4px;
+        outline: none;
+        cursor: pointer;
+      }
+      .slider-row input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        background: var(--rose);
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid var(--surface);
+        box-shadow: 0 0 0 1px rgba(225, 29, 72, 0.25);
+      }
+      .slider-row input[type="range"]::-moz-range-thumb {
+        width: 18px;
+        height: 18px;
+        background: var(--rose);
+        border-radius: 50%;
+        border: 3px solid var(--surface);
+        cursor: pointer;
+      }
+      .slider-val {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        font-weight: 700;
+        min-width: 68px;
+        text-align: right;
+        color: var(--text);
+        white-space: nowrap;
+      }
+      .mark-row {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 8px;
+      }
+      .mark {
+        font-size: 10px;
+        color: var(--text3);
+        cursor: pointer;
+        padding: 2px 6px;
+        border-radius: 20px;
+        font-family: var(--font-mono);
+        transition:
+          color 0.15s,
+          background 0.15s;
+        border: 1px solid transparent;
+      }
+      .mark:hover {
+        color: var(--rose-text);
+        background: var(--rose-bg);
+        border-color: rgba(225, 29, 72, 0.2);
+      }
 
-/* GRID */
-.grid-outer{overflow-x:auto;padding:4px 0 8px}
-.big-grid{
-  display:grid;grid-template-columns:repeat(8,1fr);gap:5px;
-  padding:12px;background:var(--surface2);
-  border-radius:var(--radius-md);border:1px solid var(--border);
-  min-width:340px;position:relative;
-}
-.big-cell{
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  aspect-ratio:1/1;border-radius:6px;position:relative;
-  transition:transform .15s;border:1px solid transparent;
-  background:rgba(255,255,255,0.3);
-}
-.big-cell .cn{font-size:15px;font-weight:700;color:var(--text);font-family:var(--font-mono);line-height:1.2;transition:color .3s}
-.big-cell .cw{font-size:8px;color:var(--text3);margin-top:1px;font-family:var(--font-mono)}
-.big-cell.undrawn .cn{color:var(--text3);font-weight:400}
-.big-cell.undrawn .cw{visibility:hidden}
-.big-cell:not(.undrawn):hover{transform:scale(1.06);z-index:2;border-color:var(--rose)}
-.cluster-svg{position:absolute;top:0;left:0;pointer-events:none;width:100%;height:100%}
-.grid-info{font-size:11px;color:var(--text3);margin-top:8px;font-family:var(--font-mono)}
+      /* GRID */
+      .grid-outer {
+        overflow-x: auto;
+        padding: 4px 0 8px;
+      }
+      .big-grid {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 5px;
+        padding: 12px;
+        background: var(--surface2);
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        min-width: 340px;
+        position: relative;
+      }
+      .big-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        aspect-ratio: 1/1;
+        border-radius: 6px;
+        position: relative;
+        transition: transform 0.15s;
+        border: 1px solid transparent;
+        background: rgba(255, 255, 255, 0.3);
+      }
+      .big-cell .cn {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        font-family: var(--font-mono);
+        line-height: 1.2;
+        transition: color 0.3s;
+      }
+      .big-cell .cw {
+        font-size: 8px;
+        color: var(--text3);
+        margin-top: 1px;
+        font-family: var(--font-mono);
+      }
+      .big-cell.undrawn .cn {
+        color: var(--text3);
+        font-weight: 400;
+      }
+      .big-cell.undrawn .cw {
+        visibility: hidden;
+      }
+      .big-cell:not(.undrawn):hover {
+        transform: scale(1.06);
+        z-index: 2;
+        border-color: var(--rose);
+      }
+      .cluster-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        width: 100%;
+        height: 100%;
+      }
+      .grid-info {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 8px;
+        font-family: var(--font-mono);
+      }
 
-/* ROW ACTIVITY */
-.row-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:16px;
-  box-shadow:var(--shadow-sm);
-}
-.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.bar-row:last-child{margin-bottom:0}
-.bar-lbl{font-size:11px;color:var(--text3);width:38px;flex-shrink:0;font-family:var(--font-mono)}
-.bar-track{flex:1;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;border:1px solid var(--border)}
-.bar-fill{height:4px;background:var(--amber);border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1)}
-.bar-score{font-size:11px;color:var(--text2);width:28px;text-align:right;font-family:var(--font-mono);flex-shrink:0}
+      /* ROW ACTIVITY */
+      .row-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow-sm);
+      }
+      .bar-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+      }
+      .bar-row:last-child {
+        margin-bottom: 0;
+      }
+      .bar-lbl {
+        font-size: 11px;
+        color: var(--text3);
+        width: 38px;
+        flex-shrink: 0;
+        font-family: var(--font-mono);
+      }
+      .bar-track {
+        flex: 1;
+        height: 4px;
+        background: var(--surface2);
+        border-radius: 2px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+      }
+      .bar-fill {
+        height: 4px;
+        background: var(--amber);
+        border-radius: 2px;
+        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .bar-score {
+        font-size: 11px;
+        color: var(--text2);
+        width: 28px;
+        text-align: right;
+        font-family: var(--font-mono);
+        flex-shrink: 0;
+      }
 
-/* GENERATE */
-.gen-btn{
-  width:100%;padding:12px;background:linear-gradient(135deg,var(--rose),#be123c);
-  color:white;border:none;border-radius:var(--radius-md);
-  font-size:13px;font-weight:600;font-family:var(--font-sans);cursor:pointer;
-  margin-bottom:14px;display:flex;align-items:center;justify-content:center;
-  gap:8px;transition:opacity .15s,transform .1s;
-  box-shadow:0 4px 12px rgba(225,29,72,0.25);letter-spacing:.01em;
-}
-.gen-btn:hover{opacity:.93;transform:translateY(-1px);box-shadow:0 6px 16px rgba(225,29,72,0.3)}
-.gen-btn:active{transform:scale(.98);box-shadow:none}
-.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+      /* GENERATE */
+      .gen-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, var(--rose), #be123c);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 600;
+        font-family: var(--font-sans);
+        cursor: pointer;
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
+        letter-spacing: 0.01em;
+      }
+      .gen-btn:hover {
+        opacity: 0.93;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(225, 29, 72, 0.3);
+      }
+      .gen-btn:active {
+        transform: scale(0.98);
+        box-shadow: none;
+      }
+      .gen-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
 
-.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
-.leg{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3)}
-.leg-dot{width:7px;height:7px;border-radius:50%}
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .leg {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+        color: var(--text3);
+      }
+      .leg-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+      }
 
-/* PREDICTION CARDS */
-.pred-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:16px;margin-bottom:10px;
-  box-shadow:var(--shadow-sm);
-  animation:fadeUp .3s ease both;
-}
-.pred-card:nth-child(2){animation-delay:.07s}
-.pred-card:nth-child(3){animation-delay:.14s}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.pred-lbl{
-  font-size:10px;color:var(--text3);letter-spacing:.1em;
-  text-transform:uppercase;margin-bottom:10px;font-family:var(--font-mono);
-}
-.ball-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-.ball{
-  width:44px;height:44px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:700;font-family:var(--font-mono);
-  border:2px solid;transition:transform .15s;
-}
-.ball:hover{transform:scale(1.1)}
-.ball-cluster{background:var(--rose-bg);border-color:var(--rose);color:var(--rose-text)}
-.ball-hot{background:var(--amber-bg);border-color:var(--amber);color:var(--amber-text)}
-.ball-recent{background:var(--blue-bg);border-color:var(--blue);color:var(--blue-text)}
-.ball-fill{background:var(--surface2);border-color:var(--border2);color:var(--text2)}
-.reason-row{display:flex;gap:7px;align-items:flex-start;margin-top:4px}
-.r-dot{width:5px;height:5px;border-radius:50%;margin-top:6px;flex-shrink:0}
-.r-text{font-size:11px;color:var(--text2);line-height:1.6;flex:1}
-.no-combo{
-  font-size:13px;color:var(--text3);padding:20px;text-align:center;
-  border:1px dashed var(--border2);border-radius:var(--radius-lg);
-}
+      /* PREDICTION CARDS */
+      .pred-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        margin-bottom: 10px;
+        box-shadow: var(--shadow-sm);
+        animation: fadeUp 0.3s ease both;
+      }
+      .pred-card:nth-child(2) {
+        animation-delay: 0.07s;
+      }
+      .pred-card:nth-child(3) {
+        animation-delay: 0.14s;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .pred-lbl {
+        font-size: 10px;
+        color: var(--text3);
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        font-family: var(--font-mono);
+      }
+      .ball-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .ball {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        border: 2px solid;
+        transition: transform 0.15s;
+      }
+      .ball:hover {
+        transform: scale(1.1);
+      }
+      .ball-cluster {
+        background: var(--rose-bg);
+        border-color: var(--rose);
+        color: var(--rose-text);
+      }
+      .ball-hot {
+        background: var(--amber-bg);
+        border-color: var(--amber);
+        color: var(--amber-text);
+      }
+      .ball-recent {
+        background: var(--blue-bg);
+        border-color: var(--blue);
+        color: var(--blue-text);
+      }
+      .ball-fill {
+        background: var(--surface2);
+        border-color: var(--border2);
+        color: var(--text2);
+      }
+      .reason-row {
+        display: flex;
+        gap: 7px;
+        align-items: flex-start;
+        margin-top: 4px;
+      }
+      .r-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        margin-top: 6px;
+        flex-shrink: 0;
+      }
+      .r-text {
+        font-size: 11px;
+        color: var(--text2);
+        line-height: 1.6;
+        flex: 1;
+      }
+      .no-combo {
+        font-size: 13px;
+        color: var(--text3);
+        padding: 20px;
+        text-align: center;
+        border: 1px dashed var(--border2);
+        border-radius: var(--radius-lg);
+      }
 
-/* ADD DRAW */
-.num-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:12px}
-.num-inp{
-  width:100%;aspect-ratio:1;
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--radius-sm);color:var(--text);
-  font-size:18px;font-weight:700;font-family:var(--font-mono);
-  text-align:center;padding:0;-moz-appearance:textfield;
-  transition:border-color .15s,background .15s;
-}
-.num-inp::-webkit-outer-spin-button,.num-inp::-webkit-inner-spin-button{-webkit-appearance:none}
-.num-inp:focus{outline:none;border-color:var(--rose);background:var(--surface)}
-.num-inp.filled{background:var(--rose-bg);border-color:rgba(225,29,72,0.4);color:var(--rose-text)}
-.btn-row2{display:flex;gap:8px;margin-bottom:16px}
-.add-btn{
-  flex:2;padding:11px;background:linear-gradient(135deg,var(--rose),#be123c);
-  color:white;border:none;border-radius:var(--radius-md);
-  font-size:13px;font-weight:600;cursor:pointer;
-  box-shadow:0 4px 12px rgba(225,29,72,0.2);
-}
-.add-btn:hover{opacity:.9}
-.add-btn:active{transform:scale(.98)}
-.clr-btn{
-  flex:1;padding:11px;background:none;
-  border:1px solid var(--border2);color:var(--text2);
-  border-radius:var(--radius-md);font-size:13px;font-weight:500;cursor:pointer;
-}
-.clr-btn:hover{background:var(--surface2)}
-.divider{height:1px;background:var(--border);margin:16px 0}
-.draw-row{
-  display:flex;align-items:center;gap:10px;padding:8px 0;
-  border-bottom:1px solid var(--border);
-}
-.draw-row:last-child{border-bottom:none}
-.draw-idx{font-size:11px;color:var(--text3);width:28px;flex-shrink:0;font-family:var(--font-mono)}
-.draw-nums{font-size:13px;color:var(--text2);font-family:var(--font-mono);letter-spacing:.04em}
-.empty{text-align:center;padding:24px 0;color:var(--text3);font-size:13px}
+      /* ADD DRAW */
+      .num-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .num-inp {
+        width: 100%;
+        aspect-ratio: 1;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        font-size: 18px;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        text-align: center;
+        padding: 0;
+        -moz-appearance: textfield;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .num-inp::-webkit-outer-spin-button,
+      .num-inp::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
+      .num-inp:focus {
+        outline: none;
+        border-color: var(--rose);
+        background: var(--surface);
+      }
+      .num-inp.filled {
+        background: var(--rose-bg);
+        border-color: rgba(225, 29, 72, 0.4);
+        color: var(--rose-text);
+      }
+      .btn-row2 {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+      .add-btn {
+        flex: 2;
+        padding: 11px;
+        background: linear-gradient(135deg, var(--rose), #be123c);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2);
+      }
+      .add-btn:hover {
+        opacity: 0.9;
+      }
+      .add-btn:active {
+        transform: scale(0.98);
+      }
+      .clr-btn {
+        flex: 1;
+        padding: 11px;
+        background: none;
+        border: 1px solid var(--border2);
+        color: var(--text2);
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .clr-btn:hover {
+        background: var(--surface2);
+      }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 16px 0;
+      }
+      .draw-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .draw-row:last-child {
+        border-bottom: none;
+      }
+      .draw-idx {
+        font-size: 11px;
+        color: var(--text3);
+        width: 28px;
+        flex-shrink: 0;
+        font-family: var(--font-mono);
+      }
+      .draw-nums {
+        font-size: 13px;
+        color: var(--text2);
+        font-family: var(--font-mono);
+        letter-spacing: 0.04em;
+      }
+      .empty {
+        text-align: center;
+        padding: 24px 0;
+        color: var(--text3);
+        font-size: 13px;
+      }
 
-/* SETTINGS */
-.setting-group{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;
-  box-shadow:var(--shadow-sm);
-}
-.file-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:8px 0}
-.file-label{
-  background:var(--surface2);padding:8px 14px;border-radius:var(--radius-sm);
-  font-size:12px;border:1px solid var(--border);cursor:pointer;color:var(--text);
-  transition:background .15s;white-space:nowrap;
-}
-.file-label:hover{background:var(--border)}
-.file-path{font-size:11px;font-family:var(--font-mono);color:var(--text2);word-break:break-all;flex:1}
-.status-badge{
-  font-size:10px;background:var(--surface2);padding:3px 10px;
-  border-radius:20px;color:var(--text2);border:1px solid var(--border);
-  white-space:nowrap;font-weight:600;
-}
-.status-badge.ok{background:var(--green-bg);color:var(--green-text);border-color:rgba(5,150,105,0.3)}
-.refresh-btn{
-  background:var(--surface2);border:1px solid var(--border2);
-  padding:6px 12px;border-radius:var(--radius-sm);font-size:11px;
-  cursor:pointer;color:var(--text2);transition:background .15s;
-}
-.refresh-btn:hover{background:var(--border)}
-.hint{font-size:11px;color:var(--text3);margin-top:8px;line-height:1.7}
-.hint strong{color:var(--text2);font-weight:600}
-.arr-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
-.arr-lbl{font-size:11px;color:var(--text3);width:38px;flex-shrink:0;padding-top:4px;font-family:var(--font-mono)}
-.arr-badges{display:flex;flex-wrap:wrap;gap:4px}
-.badge{
-  padding:3px 8px;background:var(--surface2);border:1px solid var(--border2);
-  border-radius:6px;font-size:11px;color:var(--text2);font-family:var(--font-mono);
-}
+      /* SETTINGS */
+      .setting-group {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: var(--shadow-sm);
+      }
+      .file-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 8px 0;
+      }
+      .file-label {
+        background: var(--surface2);
+        padding: 8px 14px;
+        border-radius: var(--radius-sm);
+        font-size: 12px;
+        border: 1px solid var(--border);
+        cursor: pointer;
+        color: var(--text);
+        transition: background 0.15s;
+        white-space: nowrap;
+      }
+      .file-label:hover {
+        background: var(--border);
+      }
+      .file-path {
+        font-size: 11px;
+        font-family: var(--font-mono);
+        color: var(--text2);
+        word-break: break-all;
+        flex: 1;
+      }
+      .status-badge {
+        font-size: 10px;
+        background: var(--surface2);
+        padding: 3px 10px;
+        border-radius: 20px;
+        color: var(--text2);
+        border: 1px solid var(--border);
+        white-space: nowrap;
+        font-weight: 600;
+      }
+      .status-badge.ok {
+        background: var(--green-bg);
+        color: var(--green-text);
+        border-color: rgba(5, 150, 105, 0.3);
+      }
+      .refresh-btn {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        padding: 6px 12px;
+        border-radius: var(--radius-sm);
+        font-size: 11px;
+        cursor: pointer;
+        color: var(--text2);
+        transition: background 0.15s;
+      }
+      .refresh-btn:hover {
+        background: var(--border);
+      }
+      .hint {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 8px;
+        line-height: 1.7;
+      }
+      .hint strong {
+        color: var(--text2);
+        font-weight: 600;
+      }
+      .arr-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .arr-lbl {
+        font-size: 11px;
+        color: var(--text3);
+        width: 38px;
+        flex-shrink: 0;
+        padding-top: 4px;
+        font-family: var(--font-mono);
+      }
+      .arr-badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .badge {
+        padding: 3px 8px;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        border-radius: 6px;
+        font-size: 11px;
+        color: var(--text2);
+        font-family: var(--font-mono);
+      }
 
-/* TOAST */
-.toast{
-  position:fixed;bottom:24px;left:50%;
-  transform:translateX(-50%) translateY(10px);
-  background:var(--surface);border:1px solid var(--border2);color:var(--text);
-  padding:9px 18px;border-radius:100px;font-size:12px;font-weight:600;
-  opacity:0;transition:opacity .2s,transform .2s;
-  pointer-events:none;white-space:nowrap;z-index:100;
-  box-shadow:var(--shadow-md);
-}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+      /* TOAST */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        padding: 9px 18px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 600;
+        opacity: 0;
+        transition:
+          opacity 0.2s,
+          transform 0.2s;
+        pointer-events: none;
+        white-space: nowrap;
+        z-index: 100;
+        box-shadow: var(--shadow-md);
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
 
-/* RESPONSIVE */
-@media (max-width:540px){
-  .stat-grid{grid-template-columns:1fr 1fr}
-  .stat-grid .stat:last-child{grid-column:span 2}
-  .big-cell .cn{font-size:12px}
-  .big-cell .cw{font-size:7px}
-  .ball{width:38px;height:38px;font-size:13px}
-  .header-left h1{font-size:16px}
-  .tab{font-size:11px}
-  .gen-btn{font-size:12px;padding:11px}
-}
-@media (max-width:380px){
-  .num-grid{grid-template-columns:repeat(3,1fr)}
-  .big-grid{gap:3px;padding:8px;min-width:280px}
-  .big-cell .cn{font-size:11px}
-  .ball{width:34px;height:34px;font-size:12px}
-  .btn-row2{flex-direction:column}
-}
-</style>
-</head>
-<body>
-<div class="app">
-
-  <!-- HEADER -->
-  <div class="header">
-    <div class="header-left">
-      <h1>Draw Grid Explorer</h1>
-      <p id="hdr-sub">1–40 · visual clusters · file persistence</p>
-    </div>
-    <div class="header-icon">🎲</div>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('grid',this)">Grid &amp; Predict</button>
-    <button class="tab" onclick="switchTab('add',this)">Add draw</button>
-    <button class="tab" onclick="switchTab('settings',this)">Settings</button>
-  </div>
-
-  <!-- ── GRID & PREDICT (merged) ── -->
-  <div id="pane-grid" class="pane active">
-    <div class="stat-grid" id="stats"></div>
-
-    <!-- Shared slider controlling both grid heat-map and predictions -->
-    <div class="slider-card">
-      <div class="slider-row">
-        <input type="range" id="drawSlider" min="5" max="150" value="150" step="1">
-        <span class="slider-val" id="sliderVal">150 / 150</span>
+      /* RESPONSIVE */
+      @media (max-width: 540px) {
+        .stat-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .stat-grid .stat:last-child {
+          grid-column: span 2;
+        }
+        .big-cell .cn {
+          font-size: 12px;
+        }
+        .big-cell .cw {
+          font-size: 7px;
+        }
+        .ball {
+          width: 38px;
+          height: 38px;
+          font-size: 13px;
+        }
+        .header-left h1 {
+          font-size: 16px;
+        }
+        .tab {
+          font-size: 11px;
+        }
+        .gen-btn {
+          font-size: 12px;
+          padding: 11px;
+        }
+      }
+      @media (max-width: 380px) {
+        .num-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .big-grid {
+          gap: 3px;
+          padding: 8px;
+          min-width: 280px;
+        }
+        .big-cell .cn {
+          font-size: 11px;
+        }
+        .ball {
+          width: 34px;
+          height: 34px;
+          font-size: 12px;
+        }
+        .btn-row2 {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- HEADER -->
+      <div class="header">
+        <div class="header-left">
+          <h1>Draw Grid Explorer</h1>
+          <p id="hdr-sub">1–40 · visual clusters · file persistence</p>
+        </div>
+        <div class="header-icon">🎲</div>
       </div>
-      <div class="mark-row">
-        <span class="mark" data-v="26">3 mo (26)</span>
-        <span class="mark" data-v="52">6 mo (52)</span>
-        <span class="mark" data-v="104">1 yr (104)</span>
-        <span class="mark" data-v="150">All (150)</span>
-      </div>
-    </div>
 
-    <!-- Heat-map grid -->
-    <div class="grid-outer">
-      <div class="big-grid" id="bigGrid"></div>
-    </div>
-    <p class="grid-info" id="grid-info"></p>
-
-    <div style="height:20px"></div>
-
-    <!-- Row activity (shown only when arrangement loaded) -->
-    <div class="row-card" id="row-card" style="display:none">
-      <div class="slabel">Row activity</div>
-      <div id="row-bars"></div>
-    </div>
-
-    <button class="gen-btn" id="gen-btn" onclick="generate()">
-      <i class="ti ti-bolt" aria-hidden="true"></i>
-      Generate 3 predictions
-    </button>
-
-    <div class="legend">
-      <span class="leg"><span class="leg-dot" style="background:var(--rose)"></span>Cluster</span>
-      <span class="leg"><span class="leg-dot" style="background:var(--amber)"></span>Hot</span>
-      <span class="leg"><span class="leg-dot" style="background:var(--blue)"></span>Recent</span>
-      <span class="leg"><span class="leg-dot" style="background:#8a94a5"></span>Weighted</span>
-    </div>
-
-    <div id="predictions"></div>
-  </div>
-
-  <!-- ── GRID ── -->
-  <div id="pane-grid" class="pane">
-    <div class="slider-card">
-      <div class="slider-row">
-        <input type="range" id="gridSlider" min="5" max="150" value="150" step="1">
-        <span class="slider-val" id="gridSliderVal">150 / 150</span>
-      </div>
-      <div class="mark-row">
-        <span class="mark" data-slider="grid" data-v="26">3 mo</span>
-        <span class="mark" data-slider="grid" data-v="52">6 mo</span>
-        <span class="mark" data-slider="grid" data-v="104">1 yr</span>
-        <span class="mark" data-slider="grid" data-v="150">All</span>
-      </div>
-    </div>
-    <div class="grid-outer">
-      <div class="big-grid" id="bigGrid"></div>
-    </div>
-    <p class="grid-info" id="grid-info"></p>
-  </div>
-
-  <!-- ── ADD DRAW ── -->
-  <div id="pane-add" class="pane">
-    <div class="slabel">Enter the 6 numbers drawn (1–40)</div>
-    <div class="num-grid" id="num-grid"></div>
-    <div class="btn-row2">
-      <button class="add-btn" onclick="addDraw()">
-        <i class="ti ti-plus" aria-hidden="true"></i> Add draw
-      </button>
-      <button class="clr-btn" onclick="clearInputs()">Clear</button>
-    </div>
-    <div class="divider"></div>
-    <div class="slabel">Recent draws (last 10)</div>
-    <div id="recent-draws"></div>
-  </div>
-
-  <!-- ── SETTINGS ── -->
-  <div id="pane-settings" class="pane">
-
-    <div class="setting-group">
-      <div class="slabel">Past draws file (auto-append)</div>
-      <div class="file-row">
-        <button class="file-label" id="selectDrawsBtn">
-          <i class="ti ti-folder-open" aria-hidden="true"></i> Select file
+      <!-- TABS -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('grid', this)">
+          Grid &amp; Predict
         </button>
-        <span id="drawsFileName" class="file-path">No file selected</span>
-        <span id="drawsStatus" class="status-badge">Not active</span>
-      </div>
-      <div class="file-row">
-        <button class="refresh-btn" id="refreshDrawsBtn">
-          <i class="ti ti-refresh" aria-hidden="true"></i> Activate
-        </button>
-        <button class="refresh-btn" id="clearDrawsBtn">
-          <i class="ti ti-trash" aria-hidden="true"></i> Forget
+        <button class="tab" onclick="switchTab('add', this)">Add draw</button>
+        <button class="tab" onclick="switchTab('settings', this)">
+          Settings
         </button>
       </div>
-      <p class="hint">
-        Select a plain-text file (one draw per line, 6 space-separated numbers 1–40).
-        Tap <strong>Activate</strong> to grant read/write permission and load draws.
-        The app also loads the <strong>150 built-in draws</strong> by default.
-        Adding new draws will append them to your file automatically.
-      </p>
+
+      <!-- ── GRID & PREDICT (merged) ── -->
+      <div id="pane-grid" class="pane active">
+        <div class="stat-grid" id="stats"></div>
+
+        <!-- Shared slider controlling both grid heat-map and predictions -->
+        <div class="slider-card">
+          <div class="slider-row">
+            <input
+              type="range"
+              id="drawSlider"
+              min="5"
+              max="150"
+              value="150"
+              step="1"
+            />
+            <span class="slider-val" id="sliderVal">150 / 150</span>
+          </div>
+          <div class="mark-row">
+            <span class="mark" data-v="26">3 mo (26)</span>
+            <span class="mark" data-v="52">6 mo (52)</span>
+            <span class="mark" data-v="104">1 yr (104)</span>
+            <span class="mark" data-v="150">All (150)</span>
+          </div>
+        </div>
+
+        <!-- Heat-map grid -->
+        <div class="grid-outer">
+          <div class="big-grid" id="bigGrid"></div>
+        </div>
+        <p class="grid-info" id="grid-info"></p>
+
+        <div style="height: 20px"></div>
+
+        <!-- Row activity (shown only when arrangement loaded) -->
+        <div class="row-card" id="row-card" style="display: none">
+          <div class="slabel">Row activity</div>
+          <div id="row-bars"></div>
+        </div>
+
+        <button class="gen-btn" id="gen-btn" onclick="generate()">
+          <i class="ti ti-bolt" aria-hidden="true"></i>
+          Generate 3 predictions
+        </button>
+
+        <div class="legend">
+          <span class="leg"
+            ><span class="leg-dot" style="background: var(--rose)"></span
+            >Cluster</span
+          >
+          <span class="leg"
+            ><span class="leg-dot" style="background: var(--amber)"></span
+            >Hot</span
+          >
+          <span class="leg"
+            ><span class="leg-dot" style="background: var(--blue)"></span
+            >Recent</span
+          >
+          <span class="leg"
+            ><span class="leg-dot" style="background: #8a94a5"></span
+            >Weighted</span
+          >
+        </div>
+
+        <div id="predictions"></div>
+      </div>
+
+      <!-- ── ADD DRAW ── -->
+      <div id="pane-add" class="pane">
+        <div class="slabel">Enter the 6 numbers drawn (1–40)</div>
+        <div class="num-grid" id="num-grid"></div>
+        <div class="btn-row2">
+          <button class="add-btn" onclick="addDraw()">
+            <i class="ti ti-plus" aria-hidden="true"></i> Add draw
+          </button>
+          <button class="clr-btn" onclick="clearInputs()">Clear</button>
+        </div>
+        <div class="divider"></div>
+        <div class="slabel">Recent draws (last 10)</div>
+        <div id="recent-draws"></div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div id="pane-settings" class="pane">
+        <div class="setting-group">
+          <div class="slabel">Past draws file (auto-append)</div>
+          <div class="file-row">
+            <button class="file-label" id="selectDrawsBtn">
+              <i class="ti ti-folder-open" aria-hidden="true"></i> Select file
+            </button>
+            <span id="drawsFileName" class="file-path">No file selected</span>
+            <span id="drawsStatus" class="status-badge">Not active</span>
+          </div>
+          <div class="file-row">
+            <button class="refresh-btn" id="refreshDrawsBtn">
+              <i class="ti ti-refresh" aria-hidden="true"></i> Activate
+            </button>
+            <button class="refresh-btn" id="clearDrawsBtn">
+              <i class="ti ti-trash" aria-hidden="true"></i> Forget
+            </button>
+          </div>
+          <p class="hint">
+            Select a plain-text file (one draw per line, 6 space-separated
+            numbers 1–40). Tap <strong>Activate</strong> to grant read/write
+            permission and load draws. The app also loads the
+            <strong>150 built-in draws</strong> by default. Adding new draws
+            will append them to your file automatically.
+          </p>
+        </div>
+
+        <div class="setting-group">
+          <div class="slabel">Arrangement file (read only, optional)</div>
+          <div class="file-row">
+            <button class="file-label" id="selectArrBtn">
+              <i class="ti ti-folder-open" aria-hidden="true"></i> Select file
+            </button>
+            <span id="arrFileName" class="file-path">No file selected</span>
+          </div>
+          <div class="file-row">
+            <button class="refresh-btn" id="refreshArrBtn">
+              <i class="ti ti-refresh" aria-hidden="true"></i> Activate
+            </button>
+            <button class="refresh-btn" id="clearArrBtn">
+              <i class="ti ti-trash" aria-hidden="true"></i> Forget
+            </button>
+          </div>
+          <p class="hint">
+            Each line in this file is a row of numbers representing how balls
+            are arranged on the machine. Numbers in the most active row get a
+            <strong>+30% weight boost</strong> in predictions. Tap
+            <strong>Activate</strong> after selection.
+          </p>
+        </div>
+
+        <div class="divider"></div>
+        <div class="slabel" style="margin-bottom: 12px">
+          Loaded arrangement rows
+        </div>
+        <div id="arr-display"></div>
+      </div>
     </div>
+    <div class="toast" id="toast"></div>
 
-    <div class="setting-group">
-      <div class="slabel">Arrangement file (read only, optional)</div>
-      <div class="file-row">
-        <button class="file-label" id="selectArrBtn">
-          <i class="ti ti-folder-open" aria-hidden="true"></i> Select file
-        </button>
-        <span id="arrFileName" class="file-path">No file selected</span>
-      </div>
-      <div class="file-row">
-        <button class="refresh-btn" id="refreshArrBtn">
-          <i class="ti ti-refresh" aria-hidden="true"></i> Activate
-        </button>
-        <button class="refresh-btn" id="clearArrBtn">
-          <i class="ti ti-trash" aria-hidden="true"></i> Forget
-        </button>
-      </div>
-      <p class="hint">
-        Each line in this file is a row of numbers representing how balls are arranged on the machine.
-        Numbers in the most active row get a <strong>+30% weight boost</strong> in predictions.
-        Tap <strong>Activate</strong> after selection.
-      </p>
-    </div>
-
-    <div class="divider"></div>
-    <div class="slabel" style="margin-bottom:12px">Loaded arrangement rows</div>
-    <div id="arr-display"></div>
-  </div>
-
-</div>
-<div class="toast" id="toast"></div>
-
-<script>
-/* ═══════════════════════════════════════════════════════════
+    <script>
+      /* ═══════════════════════════════════════════════════════════
    BUILT-IN DATA (150 draws)
    ═══════════════════════════════════════════════════════════ */
-const BUILTIN = [
-  [1,9,17,22,29,32],[8,22,26,30,37,40],[3,5,24,26,29,39],[11,12,13,32,33,35],
-  [7,15,22,35,36,39],[12,16,24,29,32,34],[9,24,25,29,36,38],[1,6,7,8,22,28],
-  [5,6,13,14,15,26],[6,21,25,30,34,37],[8,13,24,31,32,34],[12,19,30,34,35,38],
-  [8,11,12,21,28,35],[15,23,24,29,32,40],[7,11,17,18,19,21],[10,12,13,28,33,36],
-  [2,10,12,13,20,28],[1,5,11,13,34,36],[12,17,19,21,26,32],[11,19,21,23,33,40],
-  [15,21,22,30,33,34],[7,19,20,24,31,40],[5,13,15,20,35,38],[1,13,20,25,32,35],
-  [3,8,16,23,32,33],[2,8,9,13,21,22],[4,16,26,31,33,39],[7,9,21,27,31,40],
-  [2,5,20,29,31,37],[5,23,30,33,36,39],[5,6,15,25,26,32],[8,14,17,23,32,40],
-  [16,22,23,27,32,36],[4,7,8,14,17,22],[2,11,21,26,30,35],[5,9,10,13,28,36],
-  [6,12,21,27,31,35],[10,21,25,26,30,33],[7,9,18,21,25,33],[17,21,25,27,36,40],
-  [18,22,26,27,33,39],[7,20,24,29,30,31],[1,2,11,15,22,36],[6,7,9,22,37,39],
-  [2,7,14,15,27,30],[3,16,30,31,35,36],[1,19,20,26,30,40],[7,8,9,10,11,12],
-  [8,10,26,34,35,38],[6,8,11,20,28,34],[3,12,15,21,22,39],[2,10,13,24,29,31],
-  [2,12,15,24,35,39],[12,18,25,30,31,33],[2,6,18,21,22,36],[4,13,21,30,38,39],
-  [5,9,19,33,37,39],[6,16,19,30,36,37],[7,12,13,18,32,36],[1,9,17,22,23,26],
-  [3,7,10,12,23,33],[2,6,7,14,17,25],[13,16,21,22,29,32],[1,2,23,24,28,31],
-  [2,18,22,28,35,37],[10,13,14,22,31,40],[8,13,22,31,35,39],[1,6,16,20,28,38],
-  [1,3,11,20,22,32],[2,4,7,10,25,36],[2,3,4,14,15,33],[7,12,16,19,27,30],
-  [11,20,21,27,38,40],[1,6,7,18,30,33],[1,4,15,16,37,39],[10,11,18,19,32,37],
-  [1,14,15,19,28,29],[3,4,23,29,35,39],[15,20,21,25,31,32],[1,2,9,15,22,32],
-  [2,5,11,22,23,30],[1,2,11,16,29,39],[1,2,6,19,22,37],[7,11,13,17,30,33],
-  [5,9,11,20,25,30],[5,6,9,14,23,24],[5,10,12,21,33,35],[2,23,24,25,30,36],
-  [13,16,17,22,28,33],[8,13,14,19,28,40],[5,8,11,25,31,34],[4,20,22,24,29,34],
-  [5,6,15,22,24,39],[8,10,15,21,35,38],[3,7,11,18,30,33],[6,12,15,16,19,34],
-  [3,18,29,30,31,35],[5,6,8,21,34,39],[1,10,16,24,31,32],[6,15,19,23,29,39],
-  [1,17,24,28,34,36],[5,6,7,11,16,33],[1,5,6,12,18,35],[5,8,12,13,15,28],
-  [7,8,13,27,31,37],[6,9,20,21,26,37],[19,20,25,26,27,37],[7,18,19,23,30,36],
-  [2,16,32,35,36,39],[14,16,20,32,34,35],[6,13,17,19,35,37],[3,8,10,29,31,32],
-  [3,12,20,32,33,38],[12,20,26,28,32,38],[5,6,15,16,19,28],[8,11,19,27,36,38],
-  [4,5,12,14,29,40],[2,4,13,16,27,40],[7,12,19,30,37,39],[1,11,16,25,26,27],
-  [2,5,23,26,27,38],[2,9,13,29,37,38],[5,16,22,31,39,40],[1,11,28,29,37,39],
-  [7,8,15,16,20,26],[2,14,23,24,26,34],[7,8,14,19,24,28],[2,9,12,14,27,36],
-  [6,16,22,28,32,35],[2,11,14,17,18,24],[3,4,8,19,21,26],[2,12,18,22,25,27],
-  [20,21,25,26,28,34],[2,7,15,19,26,29],[4,8,21,24,35,37],[10,12,16,18,29,35],
-  [2,15,25,26,32,37],[1,8,14,27,33,40],[3,7,9,26,35,36],[17,19,22,25,29,33],
-  [2,3,8,13,14,35],[15,19,25,27,29,33],[2,3,14,15,27,31],[1,6,18,34,36,37],
-  [9,25,26,34,35,37],[1,9,21,22,29,31],[5,14,21,27,34,35],[10,18,24,26,27,28],
-  [4,11,14,22,26,37],[5,19,21,24,26,36]
-];
+      const BUILTIN = [
+        [1, 9, 17, 22, 29, 32],
+        [8, 22, 26, 30, 37, 40],
+        [3, 5, 24, 26, 29, 39],
+        [11, 12, 13, 32, 33, 35],
+        [7, 15, 22, 35, 36, 39],
+        [12, 16, 24, 29, 32, 34],
+        [9, 24, 25, 29, 36, 38],
+        [1, 6, 7, 8, 22, 28],
+        [5, 6, 13, 14, 15, 26],
+        [6, 21, 25, 30, 34, 37],
+        [8, 13, 24, 31, 32, 34],
+        [12, 19, 30, 34, 35, 38],
+        [8, 11, 12, 21, 28, 35],
+        [15, 23, 24, 29, 32, 40],
+        [7, 11, 17, 18, 19, 21],
+        [10, 12, 13, 28, 33, 36],
+        [2, 10, 12, 13, 20, 28],
+        [1, 5, 11, 13, 34, 36],
+        [12, 17, 19, 21, 26, 32],
+        [11, 19, 21, 23, 33, 40],
+        [15, 21, 22, 30, 33, 34],
+        [7, 19, 20, 24, 31, 40],
+        [5, 13, 15, 20, 35, 38],
+        [1, 13, 20, 25, 32, 35],
+        [3, 8, 16, 23, 32, 33],
+        [2, 8, 9, 13, 21, 22],
+        [4, 16, 26, 31, 33, 39],
+        [7, 9, 21, 27, 31, 40],
+        [2, 5, 20, 29, 31, 37],
+        [5, 23, 30, 33, 36, 39],
+        [5, 6, 15, 25, 26, 32],
+        [8, 14, 17, 23, 32, 40],
+        [16, 22, 23, 27, 32, 36],
+        [4, 7, 8, 14, 17, 22],
+        [2, 11, 21, 26, 30, 35],
+        [5, 9, 10, 13, 28, 36],
+        [6, 12, 21, 27, 31, 35],
+        [10, 21, 25, 26, 30, 33],
+        [7, 9, 18, 21, 25, 33],
+        [17, 21, 25, 27, 36, 40],
+        [18, 22, 26, 27, 33, 39],
+        [7, 20, 24, 29, 30, 31],
+        [1, 2, 11, 15, 22, 36],
+        [6, 7, 9, 22, 37, 39],
+        [2, 7, 14, 15, 27, 30],
+        [3, 16, 30, 31, 35, 36],
+        [1, 19, 20, 26, 30, 40],
+        [7, 8, 9, 10, 11, 12],
+        [8, 10, 26, 34, 35, 38],
+        [6, 8, 11, 20, 28, 34],
+        [3, 12, 15, 21, 22, 39],
+        [2, 10, 13, 24, 29, 31],
+        [2, 12, 15, 24, 35, 39],
+        [12, 18, 25, 30, 31, 33],
+        [2, 6, 18, 21, 22, 36],
+        [4, 13, 21, 30, 38, 39],
+        [5, 9, 19, 33, 37, 39],
+        [6, 16, 19, 30, 36, 37],
+        [7, 12, 13, 18, 32, 36],
+        [1, 9, 17, 22, 23, 26],
+        [3, 7, 10, 12, 23, 33],
+        [2, 6, 7, 14, 17, 25],
+        [13, 16, 21, 22, 29, 32],
+        [1, 2, 23, 24, 28, 31],
+        [2, 18, 22, 28, 35, 37],
+        [10, 13, 14, 22, 31, 40],
+        [8, 13, 22, 31, 35, 39],
+        [1, 6, 16, 20, 28, 38],
+        [1, 3, 11, 20, 22, 32],
+        [2, 4, 7, 10, 25, 36],
+        [2, 3, 4, 14, 15, 33],
+        [7, 12, 16, 19, 27, 30],
+        [11, 20, 21, 27, 38, 40],
+        [1, 6, 7, 18, 30, 33],
+        [1, 4, 15, 16, 37, 39],
+        [10, 11, 18, 19, 32, 37],
+        [1, 14, 15, 19, 28, 29],
+        [3, 4, 23, 29, 35, 39],
+        [15, 20, 21, 25, 31, 32],
+        [1, 2, 9, 15, 22, 32],
+        [2, 5, 11, 22, 23, 30],
+        [1, 2, 11, 16, 29, 39],
+        [1, 2, 6, 19, 22, 37],
+        [7, 11, 13, 17, 30, 33],
+        [5, 9, 11, 20, 25, 30],
+        [5, 6, 9, 14, 23, 24],
+        [5, 10, 12, 21, 33, 35],
+        [2, 23, 24, 25, 30, 36],
+        [13, 16, 17, 22, 28, 33],
+        [8, 13, 14, 19, 28, 40],
+        [5, 8, 11, 25, 31, 34],
+        [4, 20, 22, 24, 29, 34],
+        [5, 6, 15, 22, 24, 39],
+        [8, 10, 15, 21, 35, 38],
+        [3, 7, 11, 18, 30, 33],
+        [6, 12, 15, 16, 19, 34],
+        [3, 18, 29, 30, 31, 35],
+        [5, 6, 8, 21, 34, 39],
+        [1, 10, 16, 24, 31, 32],
+        [6, 15, 19, 23, 29, 39],
+        [1, 17, 24, 28, 34, 36],
+        [5, 6, 7, 11, 16, 33],
+        [1, 5, 6, 12, 18, 35],
+        [5, 8, 12, 13, 15, 28],
+        [7, 8, 13, 27, 31, 37],
+        [6, 9, 20, 21, 26, 37],
+        [19, 20, 25, 26, 27, 37],
+        [7, 18, 19, 23, 30, 36],
+        [2, 16, 32, 35, 36, 39],
+        [14, 16, 20, 32, 34, 35],
+        [6, 13, 17, 19, 35, 37],
+        [3, 8, 10, 29, 31, 32],
+        [3, 12, 20, 32, 33, 38],
+        [12, 20, 26, 28, 32, 38],
+        [5, 6, 15, 16, 19, 28],
+        [8, 11, 19, 27, 36, 38],
+        [4, 5, 12, 14, 29, 40],
+        [2, 4, 13, 16, 27, 40],
+        [7, 12, 19, 30, 37, 39],
+        [1, 11, 16, 25, 26, 27],
+        [2, 5, 23, 26, 27, 38],
+        [2, 9, 13, 29, 37, 38],
+        [5, 16, 22, 31, 39, 40],
+        [1, 11, 28, 29, 37, 39],
+        [7, 8, 15, 16, 20, 26],
+        [2, 14, 23, 24, 26, 34],
+        [7, 8, 14, 19, 24, 28],
+        [2, 9, 12, 14, 27, 36],
+        [6, 16, 22, 28, 32, 35],
+        [2, 11, 14, 17, 18, 24],
+        [3, 4, 8, 19, 21, 26],
+        [2, 12, 18, 22, 25, 27],
+        [20, 21, 25, 26, 28, 34],
+        [2, 7, 15, 19, 26, 29],
+        [4, 8, 21, 24, 35, 37],
+        [10, 12, 16, 18, 29, 35],
+        [2, 15, 25, 26, 32, 37],
+        [1, 8, 14, 27, 33, 40],
+        [3, 7, 9, 26, 35, 36],
+        [17, 19, 22, 25, 29, 33],
+        [2, 3, 8, 13, 14, 35],
+        [15, 19, 25, 27, 29, 33],
+        [2, 3, 14, 15, 27, 31],
+        [1, 6, 18, 34, 36, 37],
+        [9, 25, 26, 34, 35, 37],
+        [1, 9, 21, 22, 29, 31],
+        [5, 14, 21, 27, 34, 35],
+        [10, 18, 24, 26, 27, 28],
+        [4, 11, 14, 22, 26, 37],
+        [5, 19, 21, 24, 26, 36],
+      ];
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    GRID LAYOUT
    ═══════════════════════════════════════════════════════════ */
-const GRID_ROWS = [
-  [5,10,15,20,25,30,35,40],
-  [4, 9,14,19,24,29,34,39],
-  [3, 8,13,18,23,28,33,38],
-  [2, 7,12,17,22,27,32,37],
-  [1, 6,11,16,21,26,31,36],
-];
-const POS = {};
-GRID_ROWS.forEach((row, r) => row.forEach((n, c) => { POS[n] = { row: r, col: c }; }));
-const CLUSTER_COLORS = ['#e11d48','#2563eb','#059669','#7c3aed'];
-const DIRS8 = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
+      const GRID_ROWS = [
+        [5, 10, 15, 20, 25, 30, 35, 40],
+        [4, 9, 14, 19, 24, 29, 34, 39],
+        [3, 8, 13, 18, 23, 28, 33, 38],
+        [2, 7, 12, 17, 22, 27, 32, 37],
+        [1, 6, 11, 16, 21, 26, 31, 36],
+      ];
+      const POS = {};
+      GRID_ROWS.forEach((row, r) =>
+        row.forEach((n, c) => {
+          POS[n] = { row: r, col: c };
+        }),
+      );
+      const CLUSTER_COLORS = ["#e11d48", "#2563eb", "#059669", "#7c3aed"];
+      const DIRS8 = [
+        [-1, -1],
+        [-1, 0],
+        [-1, 1],
+        [0, -1],
+        [0, 1],
+        [1, -1],
+        [1, 0],
+        [1, 1],
+      ];
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    STATE
    ═══════════════════════════════════════════════════════════ */
-let draws = [...BUILTIN];
-let arrangement = [];
-let drawsHandle = null, arrHandle = null;
-let drawsName = '', arrName = '';
-let drawsOk = false;
-let inputs = ['','','','','',''];
-let currentRange = 150;
-let gridRange = 150;
+      let draws = [...BUILTIN];
+      let arrangement = [];
+      let drawsHandle = null,
+        arrHandle = null;
+      let drawsName = "",
+        arrName = "";
+      let drawsOk = false;
+      let inputs = ["", "", "", "", "", ""];
+      let currentRange = 150;
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    INDEXEDDB
    ═══════════════════════════════════════════════════════════ */
-const DB_NAME = 'DrawGridExplorerPro', DB_VER = 1, DB_STORE = 'handles';
-function openDB() {
-  return new Promise((res, rej) => {
-    const r = indexedDB.open(DB_NAME, DB_VER);
-    r.onerror = () => rej(r.error);
-    r.onsuccess = () => res(r.result);
-    r.onupgradeneeded = e => {
-      if (!e.target.result.objectStoreNames.contains(DB_STORE))
-        e.target.result.createObjectStore(DB_STORE);
-    };
-  });
-}
-async function dbSet(k, v) {
-  const db = await openDB();
-  return new Promise((res, rej) => {
-    const tx = db.transaction(DB_STORE, 'readwrite');
-    const r = tx.objectStore(DB_STORE).put(v, k);
-    r.onerror = () => rej(r.error); r.onsuccess = () => res();
-    tx.oncomplete = () => db.close();
-  });
-}
-async function dbGet(k) {
-  const db = await openDB();
-  return new Promise((res, rej) => {
-    const tx = db.transaction(DB_STORE, 'readonly');
-    const r = tx.objectStore(DB_STORE).get(k);
-    r.onerror = () => rej(r.error); r.onsuccess = () => res(r.result || null);
-    tx.oncomplete = () => db.close();
-  });
-}
-async function dbDel(k) {
-  const db = await openDB();
-  return new Promise((res, rej) => {
-    const tx = db.transaction(DB_STORE, 'readwrite');
-    const r = tx.objectStore(DB_STORE).delete(k);
-    r.onerror = () => rej(r.error); r.onsuccess = () => res();
-    tx.oncomplete = () => db.close();
-  });
-}
+      const DB_NAME = "DrawGridExplorerPro",
+        DB_VER = 1,
+        DB_STORE = "handles";
+      function openDB() {
+        return new Promise((res, rej) => {
+          const r = indexedDB.open(DB_NAME, DB_VER);
+          r.onerror = () => rej(r.error);
+          r.onsuccess = () => res(r.result);
+          r.onupgradeneeded = (e) => {
+            if (!e.target.result.objectStoreNames.contains(DB_STORE))
+              e.target.result.createObjectStore(DB_STORE);
+          };
+        });
+      }
+      async function dbSet(k, v) {
+        const db = await openDB();
+        return new Promise((res, rej) => {
+          const tx = db.transaction(DB_STORE, "readwrite");
+          const r = tx.objectStore(DB_STORE).put(v, k);
+          r.onerror = () => rej(r.error);
+          r.onsuccess = () => res();
+          tx.oncomplete = () => db.close();
+        });
+      }
+      async function dbGet(k) {
+        const db = await openDB();
+        return new Promise((res, rej) => {
+          const tx = db.transaction(DB_STORE, "readonly");
+          const r = tx.objectStore(DB_STORE).get(k);
+          r.onerror = () => rej(r.error);
+          r.onsuccess = () => res(r.result || null);
+          tx.oncomplete = () => db.close();
+        });
+      }
+      async function dbDel(k) {
+        const db = await openDB();
+        return new Promise((res, rej) => {
+          const tx = db.transaction(DB_STORE, "readwrite");
+          const r = tx.objectStore(DB_STORE).delete(k);
+          r.onerror = () => rej(r.error);
+          r.onsuccess = () => res();
+          tx.oncomplete = () => db.close();
+        });
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    FILE HANDLING — DRAWS
    ═══════════════════════════════════════════════════════════ */
-document.getElementById('selectDrawsBtn').addEventListener('click', async () => {
-  if (!window.showOpenFilePicker) { toast('File picker not supported in this browser.'); return; }
-  try {
-    const [h] = await window.showOpenFilePicker({
-      types: [{ description: 'Text file', accept: { 'text/plain': ['.txt', '.csv'] } }],
-    });
-    drawsHandle = h; drawsName = h.name; drawsOk = false;
-    await dbSet('drawsH', h); await dbSet('drawsN', drawsName);
-    updateDrawsUI();
-    toast(`Selected: ${drawsName}. Tap Activate to load.`);
-  } catch (e) { if (e.name !== 'AbortError') toast('Selection failed: ' + e.message); }
-});
+      document
+        .getElementById("selectDrawsBtn")
+        .addEventListener("click", async () => {
+          if (!window.showOpenFilePicker) {
+            toast("File picker not supported in this browser.");
+            return;
+          }
+          try {
+            const [h] = await window.showOpenFilePicker({
+              types: [
+                {
+                  description: "Text file",
+                  accept: { "text/plain": [".txt", ".csv"] },
+                },
+              ],
+            });
+            drawsHandle = h;
+            drawsName = h.name;
+            drawsOk = false;
+            await dbSet("drawsH", h);
+            await dbSet("drawsN", drawsName);
+            updateDrawsUI();
+            toast(`Selected: ${drawsName}. Tap Activate to load.`);
+          } catch (e) {
+            if (e.name !== "AbortError")
+              toast("Selection failed: " + e.message);
+          }
+        });
 
-document.getElementById('refreshDrawsBtn').addEventListener('click', async () => {
-  if (!drawsHandle) { toast('No draws file selected. Choose one first.'); return; }
-  try {
-    const p = await drawsHandle.requestPermission({ mode: 'readwrite' });
-    if (p !== 'granted') { toast('Permission denied.'); drawsOk = false; updateDrawsUI(); return; }
-    drawsOk = true;
-    const file = await drawsHandle.getFile();
-    const content = await file.text();
-    const parsed = parseDrawsText(content);
-    // Merge: built-in + file draws (deduplicate by sorted string)
-    const builtinKeys = new Set(BUILTIN.map(d => d.join(',')));
-    const newDraws = parsed.filter(d => !builtinKeys.has(d.join(',')));
-    draws = [...BUILTIN, ...newDraws];
-    updateDrawsUI();
-    fullRender();
-    toast(`Loaded ${parsed.length} draws from file (${newDraws.length} new).`);
-  } catch (e) {
-    console.error(e);
-    toast('Failed to load. Re-select the file.');
-    drawsOk = false; drawsHandle = null; drawsName = '';
-    await dbDel('drawsH'); await dbDel('drawsN');
-    updateDrawsUI();
-  }
-});
+      document
+        .getElementById("refreshDrawsBtn")
+        .addEventListener("click", async () => {
+          if (!drawsHandle) {
+            toast("No draws file selected. Choose one first.");
+            return;
+          }
+          try {
+            const p = await drawsHandle.requestPermission({
+              mode: "readwrite",
+            });
+            if (p !== "granted") {
+              toast("Permission denied.");
+              drawsOk = false;
+              updateDrawsUI();
+              return;
+            }
+            drawsOk = true;
+            const file = await drawsHandle.getFile();
+            const content = await file.text();
+            const parsed = parseDrawsText(content);
+            // Merge: built-in + file draws (deduplicate by sorted string)
+            const builtinKeys = new Set(BUILTIN.map((d) => d.join(",")));
+            const newDraws = parsed.filter(
+              (d) => !builtinKeys.has(d.join(",")),
+            );
+            draws = [...BUILTIN, ...newDraws];
+            updateDrawsUI();
+            fullRender();
+            toast(
+              `Loaded ${parsed.length} draws from file (${newDraws.length} new).`,
+            );
+          } catch (e) {
+            console.error(e);
+            toast("Failed to load. Re-select the file.");
+            drawsOk = false;
+            drawsHandle = null;
+            drawsName = "";
+            await dbDel("drawsH");
+            await dbDel("drawsN");
+            updateDrawsUI();
+          }
+        });
 
-document.getElementById('clearDrawsBtn').addEventListener('click', async () => {
-  await dbDel('drawsH'); await dbDel('drawsN');
-  drawsHandle = null; drawsName = ''; drawsOk = false;
-  draws = [...BUILTIN];
-  updateDrawsUI(); fullRender();
-  toast('File forgotten. Showing built-in data only.');
-});
+      document
+        .getElementById("clearDrawsBtn")
+        .addEventListener("click", async () => {
+          await dbDel("drawsH");
+          await dbDel("drawsN");
+          drawsHandle = null;
+          drawsName = "";
+          drawsOk = false;
+          draws = [...BUILTIN];
+          updateDrawsUI();
+          fullRender();
+          toast("File forgotten. Showing built-in data only.");
+        });
 
-async function appendToFile(d) {
-  if (!drawsHandle || !drawsOk) return false;
-  try {
-    const file = await drawsHandle.getFile();
-    let c = await file.text();
-    if (c.length && !c.endsWith('\n')) c += '\n';
-    const wr = await drawsHandle.createWritable();
-    await wr.write(c + d.join(' ') + '\n');
-    await wr.close();
-    return true;
-  } catch (e) {
-    console.error(e);
-    drawsOk = false; updateDrawsUI();
-    return false;
-  }
-}
+      async function appendToFile(d) {
+        if (!drawsHandle || !drawsOk) return false;
+        try {
+          const file = await drawsHandle.getFile();
+          let c = await file.text();
+          if (c.length && !c.endsWith("\n")) c += "\n";
+          const wr = await drawsHandle.createWritable();
+          await wr.write(c + d.join(" ") + "\n");
+          await wr.close();
+          return true;
+        } catch (e) {
+          console.error(e);
+          drawsOk = false;
+          updateDrawsUI();
+          return false;
+        }
+      }
 
-function updateDrawsUI() {
-  const n = document.getElementById('drawsFileName');
-  const s = document.getElementById('drawsStatus');
-  n.textContent = drawsName || 'No file selected';
-  s.textContent = drawsOk ? '✅ Active & writable' : '⚠️ Not active';
-  s.className = 'status-badge' + (drawsOk ? ' ok' : '');
-}
+      function updateDrawsUI() {
+        const n = document.getElementById("drawsFileName");
+        const s = document.getElementById("drawsStatus");
+        n.textContent = drawsName || "No file selected";
+        s.textContent = drawsOk ? "✅ Active & writable" : "⚠️ Not active";
+        s.className = "status-badge" + (drawsOk ? " ok" : "");
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    FILE HANDLING — ARRANGEMENT
    ═══════════════════════════════════════════════════════════ */
-document.getElementById('selectArrBtn').addEventListener('click', async () => {
-  if (!window.showOpenFilePicker) { toast('File picker not supported.'); return; }
-  try {
-    const [h] = await window.showOpenFilePicker({
-      types: [{ description: 'Text file', accept: { 'text/plain': ['.txt'] } }],
-    });
-    arrHandle = h; arrName = h.name;
-    await dbSet('arrH', h); await dbSet('arrN', arrName);
-    updateArrUI();
-    toast(`Selected: ${arrName}. Tap Activate.`);
-  } catch (e) { if (e.name !== 'AbortError') toast(e.message); }
-});
+      document
+        .getElementById("selectArrBtn")
+        .addEventListener("click", async () => {
+          if (!window.showOpenFilePicker) {
+            toast("File picker not supported.");
+            return;
+          }
+          try {
+            const [h] = await window.showOpenFilePicker({
+              types: [
+                {
+                  description: "Text file",
+                  accept: { "text/plain": [".txt"] },
+                },
+              ],
+            });
+            arrHandle = h;
+            arrName = h.name;
+            await dbSet("arrH", h);
+            await dbSet("arrN", arrName);
+            updateArrUI();
+            toast(`Selected: ${arrName}. Tap Activate.`);
+          } catch (e) {
+            if (e.name !== "AbortError") toast(e.message);
+          }
+        });
 
-document.getElementById('refreshArrBtn').addEventListener('click', async () => {
-  if (!arrHandle) { toast('No arrangement file selected.'); return; }
-  try {
-    const p = await arrHandle.requestPermission({ mode: 'read' });
-    if (p !== 'granted') { toast('Permission denied.'); return; }
-    const file = await arrHandle.getFile();
-    const content = await file.text();
-    arrangement = parseArrText(content);
-    updateArrUI(); fullRender();
-    toast(`Loaded ${arrangement.length} rows from ${arrName}.`);
-  } catch (e) { toast('Failed to load arrangement.'); }
-});
+      document
+        .getElementById("refreshArrBtn")
+        .addEventListener("click", async () => {
+          if (!arrHandle) {
+            toast("No arrangement file selected.");
+            return;
+          }
+          try {
+            const p = await arrHandle.requestPermission({ mode: "read" });
+            if (p !== "granted") {
+              toast("Permission denied.");
+              return;
+            }
+            const file = await arrHandle.getFile();
+            const content = await file.text();
+            arrangement = parseArrText(content);
+            updateArrUI();
+            fullRender();
+            toast(`Loaded ${arrangement.length} rows from ${arrName}.`);
+          } catch (e) {
+            toast("Failed to load arrangement.");
+          }
+        });
 
-document.getElementById('clearArrBtn').addEventListener('click', async () => {
-  await dbDel('arrH'); await dbDel('arrN');
-  arrHandle = null; arrName = ''; arrangement = [];
-  updateArrUI(); fullRender();
-  toast('Arrangement forgotten.');
-});
+      document
+        .getElementById("clearArrBtn")
+        .addEventListener("click", async () => {
+          await dbDel("arrH");
+          await dbDel("arrN");
+          arrHandle = null;
+          arrName = "";
+          arrangement = [];
+          updateArrUI();
+          fullRender();
+          toast("Arrangement forgotten.");
+        });
 
-function updateArrUI() {
-  document.getElementById('arrFileName').textContent = arrName || 'No file selected';
-}
+      function updateArrUI() {
+        document.getElementById("arrFileName").textContent =
+          arrName || "No file selected";
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    RESTORE FROM INDEXEDDB (on load)
    ═══════════════════════════════════════════════════════════ */
-async function restoreHandles() {
-  try {
-    const h = await dbGet('drawsH'); const n = await dbGet('drawsN');
-    if (h) { drawsHandle = h; drawsName = n || 'unknown'; drawsOk = false; updateDrawsUI(); }
-  } catch (e) {}
-  try {
-    const h = await dbGet('arrH'); const n = await dbGet('arrN');
-    if (h) { arrHandle = h; arrName = n || 'unknown'; updateArrUI(); }
-  } catch (e) {}
-}
+      async function restoreHandles() {
+        try {
+          const h = await dbGet("drawsH");
+          const n = await dbGet("drawsN");
+          if (h) {
+            drawsHandle = h;
+            drawsName = n || "unknown";
+            drawsOk = false;
+            updateDrawsUI();
+          }
+        } catch (e) {}
+        try {
+          const h = await dbGet("arrH");
+          const n = await dbGet("arrN");
+          if (h) {
+            arrHandle = h;
+            arrName = n || "unknown";
+            updateArrUI();
+          }
+        } catch (e) {}
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    PARSING
    ═══════════════════════════════════════════════════════════ */
-function parseDrawsText(raw) {
-  return raw.trim().split(/\r?\n/)
-    .map(l => l.trim().replace(/,/g, ' ').split(/\s+/).map(Number).filter(n => !isNaN(n) && n >= 1 && n <= 40))
-    .filter(a => a.length === 6)
-    .map(a => [...a].sort((a, b) => a - b));
-}
-function parseArrText(raw) {
-  return raw.trim().split(/\r?\n/)
-    .map(l => l.trim().split(/\s+/).map(Number).filter(n => !isNaN(n) && n >= 1 && n <= 40))
-    .filter(a => a.length > 0);
-}
+      function parseDrawsText(raw) {
+        return raw
+          .trim()
+          .split(/\r?\n/)
+          .map((l) =>
+            l
+              .trim()
+              .replace(/,/g, " ")
+              .split(/\s+/)
+              .map(Number)
+              .filter((n) => !isNaN(n) && n >= 1 && n <= 40),
+          )
+          .filter((a) => a.length === 6)
+          .map((a) => [...a].sort((a, b) => a - b));
+      }
+      function parseArrText(raw) {
+        return raw
+          .trim()
+          .split(/\r?\n/)
+          .map((l) =>
+            l
+              .trim()
+              .split(/\s+/)
+              .map(Number)
+              .filter((n) => !isNaN(n) && n >= 1 && n <= 40),
+          )
+          .filter((a) => a.length > 0);
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    CORE ANALYSIS
    ═══════════════════════════════════════════════════════════ */
-function windowDraws(range) {
-  const n = Math.min(range, draws.length);
-  return draws.slice(Math.max(0, draws.length - n));
-}
+      function windowDraws(range) {
+        const n = Math.min(range, draws.length);
+        return draws.slice(Math.max(0, draws.length - n));
+      }
 
-function computeRawWeights(ds) {
-  const sc = {};
-  for (let n = 1; n <= 40; n++) sc[n] = 0;
-  ds.forEach((nums, i) => { const w = i + 1; nums.forEach(n => { sc[n] += w; }); });
-  return sc;
-}
+      function computeRawWeights(ds) {
+        const sc = {};
+        for (let n = 1; n <= 40; n++) sc[n] = 0;
+        ds.forEach((nums, i) => {
+          const w = i + 1;
+          nums.forEach((n) => {
+            sc[n] += w;
+          });
+        });
+        return sc;
+      }
 
-function findClusters(sc, peak) {
-  if (peak <= 0) return [];
-  const thr = peak * 0.5;
-  const cands = new Set();
-  for (let n = 1; n <= 40; n++) if (sc[n] >= thr && sc[n] > 0) cands.add(n);
-  if (!cands.size) return [];
-  const byC = {};
-  cands.forEach(n => { const { row, col } = POS[n]; byC[`${row},${col}`] = n; });
-  const visited = new Set();
-  const comps = [];
-  cands.forEach(start => {
-    if (visited.has(start)) return;
-    const q = [start], comp = [];
-    visited.add(start);
-    while (q.length) {
-      const cur = q.shift(); comp.push(cur);
-      const { row, col } = POS[cur];
-      DIRS8.forEach(([dr, dc]) => {
-        const key = `${row+dr},${col+dc}`;
-        const nb = byC[key];
-        if (nb !== undefined && !visited.has(nb)) { visited.add(nb); q.push(nb); }
-      });
-    }
-    comps.push(comp);
-  });
-  return comps
-    .map(c => ({ c: [...c].sort((a, b) => sc[b] - sc[a]).slice(0, 5), t: 0 }))
-    .map(o => { o.t = o.c.reduce((s, n) => s + sc[n], 0); return o; })
-    .sort((a, b) => b.t - a.t)
-    .slice(0, 4)
-    .map(o => o.c);
-}
+      function findClusters(sc, peak) {
+        if (peak <= 0) return [];
+        const thr = peak * 0.5;
+        const cands = new Set();
+        for (let n = 1; n <= 40; n++)
+          if (sc[n] >= thr && sc[n] > 0) cands.add(n);
+        if (!cands.size) return [];
+        const byC = {};
+        cands.forEach((n) => {
+          const { row, col } = POS[n];
+          byC[`${row},${col}`] = n;
+        });
+        const visited = new Set();
+        const comps = [];
+        cands.forEach((start) => {
+          if (visited.has(start)) return;
+          const q = [start],
+            comp = [];
+          visited.add(start);
+          while (q.length) {
+            const cur = q.shift();
+            comp.push(cur);
+            const { row, col } = POS[cur];
+            DIRS8.forEach(([dr, dc]) => {
+              const key = `${row + dr},${col + dc}`;
+              const nb = byC[key];
+              if (nb !== undefined && !visited.has(nb)) {
+                visited.add(nb);
+                q.push(nb);
+              }
+            });
+          }
+          comps.push(comp);
+        });
+        return comps
+          .map((c) => ({
+            c: [...c].sort((a, b) => sc[b] - sc[a]).slice(0, 5),
+            t: 0,
+          }))
+          .map((o) => {
+            o.t = o.c.reduce((s, n) => s + sc[n], 0);
+            return o;
+          })
+          .sort((a, b) => b.t - a.t)
+          .slice(0, 4)
+          .map((o) => o.c);
+      }
 
-function buildPredWeights(ds) {
-  const total = ds.length;
-  const raw = {};
-  ds.forEach((draw, i) => {
-    const w = (i + 1) / total;
-    draw.forEach(n => { raw[n] = (raw[n] || 0) + w; });
-  });
-  if (arrangement.length) {
-    const rs = arrangement.map(row => row.reduce((s, n) => s + (raw[n] || 0), 0));
-    const mx = Math.max(...rs, 1);
-    arrangement.forEach((row, ri) => {
-      const boost = 1 + 0.3 * (rs[ri] / mx);
-      row.forEach(n => { if (raw[n]) raw[n] *= boost; });
-    });
-  }
-  const tot = Object.values(raw).reduce((a, b) => a + b, 0);
-  if (!tot) return {};
-  const weights = {};
-  Object.entries(raw).forEach(([k, v]) => { weights[+k] = v / tot; });
-  return weights;
-}
+      function buildPredWeights(ds) {
+        const total = ds.length;
+        const raw = {};
+        ds.forEach((draw, i) => {
+          const w = (i + 1) / total;
+          draw.forEach((n) => {
+            raw[n] = (raw[n] || 0) + w;
+          });
+        });
+        if (arrangement.length) {
+          const rs = arrangement.map((row) =>
+            row.reduce((s, n) => s + (raw[n] || 0), 0),
+          );
+          const mx = Math.max(...rs, 1);
+          arrangement.forEach((row, ri) => {
+            const boost = 1 + 0.3 * (rs[ri] / mx);
+            row.forEach((n) => {
+              if (raw[n]) raw[n] *= boost;
+            });
+          });
+        }
+        const tot = Object.values(raw).reduce((a, b) => a + b, 0);
+        if (!tot) return {};
+        const weights = {};
+        Object.entries(raw).forEach(([k, v]) => {
+          weights[+k] = v / tot;
+        });
+        return weights;
+      }
 
-function rowActivity(ds) {
-  if (!arrangement.length) return [];
-  const freq = {};
-  ds.forEach(d => d.forEach(n => { freq[n] = (freq[n] || 0) + 1; }));
-  return arrangement
-    .map((row, i) => ({ label: `Row ${i + 1}`, score: row.reduce((s, n) => s + (freq[n] || 0), 0) }))
-    .sort((a, b) => b.score - a.score);
-}
+      function rowActivity(ds) {
+        if (!arrangement.length) return [];
+        const freq = {};
+        ds.forEach((d) =>
+          d.forEach((n) => {
+            freq[n] = (freq[n] || 0) + 1;
+          }),
+        );
+        return arrangement
+          .map((row, i) => ({
+            label: `Row ${i + 1}`,
+            score: row.reduce((s, n) => s + (freq[n] || 0), 0),
+          }))
+          .sort((a, b) => b.score - a.score);
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    PREDICTION ENGINE
    ═══════════════════════════════════════════════════════════ */
-function isValid(combo) {
-  const s = [...combo].sort((a, b) => a - b);
-  const odd = s.filter(x => x % 2 !== 0).length;
-  if (odd < 2 || odd > 4) return false;
-  const low = s.filter(x => x <= 25).length;
-  if (low < 2 || low > 4) return false;
-  const sum = s.reduce((a, b) => a + b, 0);
-  if (sum < 100 || sum > 200) return false;
-  return true;
-}
+      function isValid(combo) {
+        const s = [...combo].sort((a, b) => a - b);
+        const odd = s.filter((x) => x % 2 !== 0).length;
+        if (odd < 2 || odd > 4) return false;
+        const low = s.filter((x) => x <= 25).length;
+        if (low < 2 || low > 4) return false;
+        const sum = s.reduce((a, b) => a + b, 0);
+        if (sum < 100 || sum > 200) return false;
+        return true;
+      }
 
-function weightedPick(pool, probs, n) {
-  const avail = [...pool], ap = [...probs], res = [];
-  for (let i = 0; i < n; i++) {
-    if (!avail.length) break;
-    const s = ap.reduce((a, b) => a + b, 0);
-    let r = Math.random() * s, cum = 0, ci = 0;
-    for (let j = 0; j < avail.length; j++) { cum += ap[j]; if (r <= cum) { ci = j; break; } }
-    res.push(avail[ci]); avail.splice(ci, 1); ap.splice(ci, 1);
-  }
-  return res;
-}
+      function weightedPick(pool, probs, n) {
+        const avail = [...pool],
+          ap = [...probs],
+          res = [];
+        for (let i = 0; i < n; i++) {
+          if (!avail.length) break;
+          const s = ap.reduce((a, b) => a + b, 0);
+          let r = Math.random() * s,
+            cum = 0,
+            ci = 0;
+          for (let j = 0; j < avail.length; j++) {
+            cum += ap[j];
+            if (r <= cum) {
+              ci = j;
+              break;
+            }
+          }
+          res.push(avail[ci]);
+          avail.splice(ci, 1);
+          ap.splice(ci, 1);
+        }
+        return res;
+      }
 
-function uniformPick(pool, n) {
-  const s = [...pool];
-  for (let i = s.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [s[i], s[j]] = [s[j], s[i]];
-  }
-  return s.slice(0, n);
-}
+      function uniformPick(pool, n) {
+        const s = [...pool];
+        for (let i = s.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [s[i], s[j]] = [s[j], s[i]];
+        }
+        return s.slice(0, n);
+      }
 
-function genHybrid(ds, sc, peak, clusters) {
-  const cSet = new Set(); clusters.forEach(c => c.forEach(n => cSet.add(n)));
-  const cPool = [...cSet];
-  const oPool = [];
-  for (let n = 1; n <= 40; n++) if (!cSet.has(n)) oPool.push(n);
-  if (cPool.length >= 4 && oPool.length >= 2) {
-    const cw = cPool.map(n => sc[n]);
-    for (let a = 0; a < 3000; a++) {
-      const combo = [...weightedPick(cPool, cw, 4), ...uniformPick(oPool, 2)];
-      if (combo.length === 6 && isValid(combo)) return combo;
-    }
-  }
-  // Fallback: top weighted numbers
-  const thr = peak * 0.5;
-  const all = [];
-  for (let n = 1; n <= 40; n++) if (sc[n] >= thr) all.push(n);
-  if (all.length < 6) return null;
-  const aw = all.map(n => sc[n]);
-  for (let a = 0; a < 2000; a++) {
-    const combo = weightedPick(all, aw, 6);
-    if (combo.length === 6 && isValid(combo)) return combo;
-  }
-  return [...all].sort((a, b) => sc[b] - sc[a]).slice(0, 6);
-}
+      function genHybrid(ds, sc, peak, clusters) {
+        const cSet = new Set();
+        clusters.forEach((c) => c.forEach((n) => cSet.add(n)));
+        const cPool = [...cSet];
+        const oPool = [];
+        for (let n = 1; n <= 40; n++) if (!cSet.has(n)) oPool.push(n);
+        if (cPool.length >= 4 && oPool.length >= 2) {
+          const cw = cPool.map((n) => sc[n]);
+          for (let a = 0; a < 3000; a++) {
+            const combo = [
+              ...weightedPick(cPool, cw, 4),
+              ...uniformPick(oPool, 2),
+            ];
+            if (combo.length === 6 && isValid(combo)) return combo;
+          }
+        }
+        // Fallback: top weighted numbers
+        const thr = peak * 0.5;
+        const all = [];
+        for (let n = 1; n <= 40; n++) if (sc[n] >= thr) all.push(n);
+        if (all.length < 6) return null;
+        const aw = all.map((n) => sc[n]);
+        for (let a = 0; a < 2000; a++) {
+          const combo = weightedPick(all, aw, 6);
+          if (combo.length === 6 && isValid(combo)) return combo;
+        }
+        return [...all].sort((a, b) => sc[b] - sc[a]).slice(0, 6);
+      }
 
-function genMix(ds) {
-  const freq = {};
-  for (let n = 1; n <= 40; n++) freq[n] = 0;
-  ds.forEach(d => d.forEach(n => freq[n]++));
-  const rf = {};
-  for (let n = 1; n <= 40; n++) rf[n] = 0;
-  ds.slice(-20).forEach(d => d.forEach(n => rf[n]++));
-  const top = obj => Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([n]) => +n);
-  const oh = top(freq), rh = top(rf);
-  if (oh.length < 3 || rh.length < 3) return oh.slice(0, 6).sort((a, b) => a - b);
-  for (let a = 0; a < 3000; a++) {
-    const combo = [...uniformPick(oh, 3), ...uniformPick(rh, 3)];
-    if (new Set(combo).size === 6 && isValid(combo)) return combo;
-  }
-  return oh.slice(0, 6).sort((a, b) => a - b);
-}
+      function genMix(ds) {
+        const freq = {};
+        for (let n = 1; n <= 40; n++) freq[n] = 0;
+        ds.forEach((d) => d.forEach((n) => freq[n]++));
+        const rf = {};
+        for (let n = 1; n <= 40; n++) rf[n] = 0;
+        ds.slice(-20).forEach((d) => d.forEach((n) => rf[n]++));
+        const top = (obj) =>
+          Object.entries(obj)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([n]) => +n);
+        const oh = top(freq),
+          rh = top(rf);
+        if (oh.length < 3 || rh.length < 3)
+          return oh.slice(0, 6).sort((a, b) => a - b);
+        for (let a = 0; a < 3000; a++) {
+          const combo = [...uniformPick(oh, 3), ...uniformPick(rh, 3)];
+          if (new Set(combo).size === 6 && isValid(combo)) return combo;
+        }
+        return oh.slice(0, 6).sort((a, b) => a - b);
+      }
 
-function classifyBall(n, hotSet, recentSet, clusterSet) {
-  if (clusterSet.has(n)) return 'cluster';
-  if (recentSet.has(n)) return 'recent';
-  if (hotSet.has(n)) return 'hot';
-  return 'fill';
-}
+      function classifyBall(n, hotSet, recentSet, clusterSet) {
+        if (clusterSet.has(n)) return "cluster";
+        if (recentSet.has(n)) return "recent";
+        if (hotSet.has(n)) return "hot";
+        return "fill";
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    GENERATE ACTION
    ═══════════════════════════════════════════════════════════ */
-function generate() {
-  const ds = windowDraws(currentRange);
-  if (ds.length < 3) { toast('Need at least 3 draws in the current window.'); return; }
-  const sc = computeRawWeights(ds);
-  const peak = Math.max(1, ...Object.values(sc));
-  const clusters = findClusters(sc, peak);
-  const freq = {};
-  for (let n = 1; n <= 40; n++) freq[n] = 0;
-  ds.forEach(d => d.forEach(n => freq[n]++));
-  const rf = {};
-  for (let n = 1; n <= 40; n++) rf[n] = 0;
-  ds.slice(-20).forEach(d => d.forEach(n => rf[n]++));
-  const hotSet = new Set(Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([k]) => +k));
-  const recentSet = new Set(Object.entries(rf).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([k]) => +k));
-  const clusterSet = new Set(); clusters.forEach(c => c.forEach(n => clusterSet.add(n)));
-  const btn = document.getElementById('gen-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Generating…';
-  setTimeout(() => {
-    const results = [];
-    // Predictions 1 & 2: Hybrid
-    for (let i = 0; i < 2; i++) {
-      let c = genHybrid(ds, sc, peak, clusters);
-      if (!c) c = genMix(ds);
-      if (c) {
-        c.sort((a, b) => a - b);
-        results.push({ combo: c, label: `Prediction ${i + 1}`, strategy: 'Hybrid · 4 clusters + 2 random' });
-      }
-    }
-    // Prediction 3: Mix
-    const c3 = genMix(ds);
-    if (c3) {
-      c3.sort((a, b) => a - b);
-      results.push({ combo: c3, label: 'Prediction 3', strategy: 'Mix · 3 hot + 3 recent' });
-    }
-    const el = document.getElementById('predictions');
-    if (!results.length) {
-      el.innerHTML = '<div class="no-combo">No valid combinations found. Try widening the draw window.</div>';
-    } else {
-      el.innerHTML = results.map(r => {
-        const balls = r.combo.map(n => {
-          const cls = classifyBall(n, hotSet, recentSet, clusterSet);
-          return `<div class="ball ball-${cls}" title="${cls}">${n}</div>`;
-        }).join('');
-        const cNums = r.combo.filter(n => clusterSet.has(n));
-        const hNums = r.combo.filter(n => hotSet.has(n) && !clusterSet.has(n) && !recentSet.has(n));
-        const rNums = r.combo.filter(n => recentSet.has(n) && !clusterSet.has(n));
-        const fNums = r.combo.filter(n => !clusterSet.has(n) && !hotSet.has(n) && !recentSet.has(n));
-        const reasons = [];
-        if (cNums.length) reasons.push({ t: `${cNums.join(', ')} from active grid clusters.`, c: '#e11d48' });
-        if (hNums.length) reasons.push({ t: `${hNums.join(', ')} most drawn across all ${ds.length} draws.`, c: '#e8a020' });
-        if (rNums.length) reasons.push({ t: `${rNums.join(', ')} trending in the last 20 draws.`, c: '#2563eb' });
-        if (fNums.length) reasons.push({ t: `${fNums.join(', ')} chosen by recency-weighted probability.`, c: '#8a94a5' });
-        const sum = r.combo.reduce((a, b) => a + b, 0);
-        const odd = r.combo.filter(x => x % 2 !== 0).length;
-        const low = r.combo.filter(x => x <= 25).length;
-        reasons.push({ t: `Balance: ${odd} odd / ${6 - odd} even · ${low} low / ${6 - low} high · sum ${sum}`, c: '#8a94a5' });
-        return `<div class="pred-card">
+      function generate() {
+        const ds = windowDraws(currentRange);
+        if (ds.length < 3) {
+          toast("Need at least 3 draws in the current window.");
+          return;
+        }
+        const sc = computeRawWeights(ds);
+        const peak = Math.max(1, ...Object.values(sc));
+        const clusters = findClusters(sc, peak);
+        const freq = {};
+        for (let n = 1; n <= 40; n++) freq[n] = 0;
+        ds.forEach((d) => d.forEach((n) => freq[n]++));
+        const rf = {};
+        for (let n = 1; n <= 40; n++) rf[n] = 0;
+        ds.slice(-20).forEach((d) => d.forEach((n) => rf[n]++));
+        const hotSet = new Set(
+          Object.entries(freq)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([k]) => +k),
+        );
+        const recentSet = new Set(
+          Object.entries(rf)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([k]) => +k),
+        );
+        const clusterSet = new Set();
+        clusters.forEach((c) => c.forEach((n) => clusterSet.add(n)));
+        const btn = document.getElementById("gen-btn");
+        btn.disabled = true;
+        btn.innerHTML =
+          '<i class="ti ti-loader" aria-hidden="true"></i> Generating…';
+        setTimeout(() => {
+          const results = [];
+          // Predictions 1 & 2: Hybrid
+          for (let i = 0; i < 2; i++) {
+            let c = genHybrid(ds, sc, peak, clusters);
+            if (!c) c = genMix(ds);
+            if (c) {
+              c.sort((a, b) => a - b);
+              results.push({
+                combo: c,
+                label: `Prediction ${i + 1}`,
+                strategy: "Hybrid · 4 clusters + 2 random",
+              });
+            }
+          }
+          // Prediction 3: Mix
+          const c3 = genMix(ds);
+          if (c3) {
+            c3.sort((a, b) => a - b);
+            results.push({
+              combo: c3,
+              label: "Prediction 3",
+              strategy: "Mix · 3 hot + 3 recent",
+            });
+          }
+          const el = document.getElementById("predictions");
+          if (!results.length) {
+            el.innerHTML =
+              '<div class="no-combo">No valid combinations found. Try widening the draw window.</div>';
+          } else {
+            el.innerHTML = results
+              .map((r) => {
+                const balls = r.combo
+                  .map((n) => {
+                    const cls = classifyBall(n, hotSet, recentSet, clusterSet);
+                    return `<div class="ball ball-${cls}" title="${cls}">${n}</div>`;
+                  })
+                  .join("");
+                const cNums = r.combo.filter((n) => clusterSet.has(n));
+                const hNums = r.combo.filter(
+                  (n) =>
+                    hotSet.has(n) && !clusterSet.has(n) && !recentSet.has(n),
+                );
+                const rNums = r.combo.filter(
+                  (n) => recentSet.has(n) && !clusterSet.has(n),
+                );
+                const fNums = r.combo.filter(
+                  (n) =>
+                    !clusterSet.has(n) && !hotSet.has(n) && !recentSet.has(n),
+                );
+                const reasons = [];
+                if (cNums.length)
+                  reasons.push({
+                    t: `${cNums.join(", ")} from active grid clusters.`,
+                    c: "#e11d48",
+                  });
+                if (hNums.length)
+                  reasons.push({
+                    t: `${hNums.join(", ")} most drawn across all ${ds.length} draws.`,
+                    c: "#e8a020",
+                  });
+                if (rNums.length)
+                  reasons.push({
+                    t: `${rNums.join(", ")} trending in the last 20 draws.`,
+                    c: "#2563eb",
+                  });
+                if (fNums.length)
+                  reasons.push({
+                    t: `${fNums.join(", ")} chosen by recency-weighted probability.`,
+                    c: "#8a94a5",
+                  });
+                const sum = r.combo.reduce((a, b) => a + b, 0);
+                const odd = r.combo.filter((x) => x % 2 !== 0).length;
+                const low = r.combo.filter((x) => x <= 25).length;
+                reasons.push({
+                  t: `Balance: ${odd} odd / ${6 - odd} even · ${low} low / ${6 - low} high · sum ${sum}`,
+                  c: "#8a94a5",
+                });
+                return `<div class="pred-card">
           <div class="pred-lbl">${r.label} <span style="font-weight:400;color:var(--text3)">· ${r.strategy}</span></div>
           <div class="ball-row">${balls}</div>
-          ${reasons.map(re => `<div class="reason-row"><div class="r-dot" style="background:${re.c}"></div><div class="r-text">${re.t}</div></div>`).join('')}
+          ${reasons.map((re) => `<div class="reason-row"><div class="r-dot" style="background:${re.c}"></div><div class="r-text">${re.t}</div></div>`).join("")}
         </div>`;
-      }).join('');
-    }
-    btn.disabled = false;
-    btn.innerHTML = '<i class="ti ti-refresh" aria-hidden="true"></i> Regenerate';
-  }, 60);
-}
-
-/* ═══════════════════════════════════════════════════════════
-   GRID RENDER
-   ═══════════════════════════════════════════════════════════ */
-function renderGrid() {
-  const ds = windowDraws(gridRange);
-  const sc = computeRawWeights(ds);
-  const peak = Math.max(1, ...Object.values(sc));
-  const clusters = findClusters(sc, peak);
-  const g = document.getElementById('bigGrid');
-  g.innerHTML = '';
-  GRID_ROWS.forEach(row => row.forEach(num => {
-    const s = sc[num] || 0;
-    const cell = document.createElement('div');
-    cell.className = 'big-cell' + (s === 0 ? ' undrawn' : '');
-    if (s > 0) {
-      const a = 0.03 + (s / peak) * 0.77;
-      cell.style.background = `rgba(225,29,72,${a.toFixed(3)})`;
-    }
-    cell.innerHTML = `<span class="cn">${num}</span><span class="cw">${s > 0 ? Math.round(s) : '—'}</span>`;
-    g.appendChild(cell);
-  }));
-  // Cluster overlays
-  if (clusters.length) {
-    // Measure actual cell width after render
-    const firstCell = g.querySelector('.big-cell');
-    const CELL = firstCell ? firstCell.offsetWidth || 60 : 60;
-    const GAP = 5, PAD = 12;
-    const svgW = PAD * 2 + 8 * CELL + 7 * GAP;
-    const svgH = PAD * 2 + 5 * CELL + 4 * GAP;
-    const ns = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('class', 'cluster-svg');
-    svg.setAttribute('viewBox', `0 0 ${svgW} ${svgH}`);
-    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-    clusters.forEach((comp, ci) => {
-      const color = CLUSTER_COLORS[ci];
-      const cellSet = new Set(comp.map(n => `${POS[n].row},${POS[n].col}`));
-      const segs = [];
-      const OFF = 2;
-      comp.forEach(num => {
-        const { row: r, col: c } = POS[num];
-        const x = PAD + c * (CELL + GAP) - OFF;
-        const y = PAD + r * (CELL + GAP) - OFF;
-        const w = CELL + OFF * 2, h = CELL + OFF * 2;
-        if (!cellSet.has(`${r-1},${c}`)) segs.push(`M${x} ${y}L${x+w} ${y}`);
-        if (!cellSet.has(`${r+1},${c}`)) segs.push(`M${x} ${y+h}L${x+w} ${y+h}`);
-        if (!cellSet.has(`${r},${c-1}`)) segs.push(`M${x} ${y}L${x} ${y+h}`);
-        if (!cellSet.has(`${r},${c+1}`)) segs.push(`M${x+w} ${y}L${x+w} ${y+h}`);
-      });
-      if (segs.length) {
-        const path = document.createElementNS(ns, 'path');
-        path.setAttribute('d', segs.join(' '));
-        path.setAttribute('fill', 'none');
-        path.setAttribute('stroke', color);
-        path.setAttribute('stroke-width', '2.5');
-        path.setAttribute('stroke-dasharray', '6 4');
-        path.setAttribute('stroke-linecap', 'round');
-        svg.appendChild(path);
+              })
+              .join("");
+          }
+          btn.disabled = false;
+          btn.innerHTML =
+            '<i class="ti ti-refresh" aria-hidden="true"></i> Regenerate';
+        }, 60);
       }
-      // Label
-      const topLeft = comp.reduce((acc, n) => {
-        const p = POS[n];
-        return (p.row < acc.row || (p.row === acc.row && p.col < acc.col)) ? p : acc;
-      }, { row: Infinity, col: Infinity });
-      const lx = PAD + topLeft.col * (CELL + GAP) + 4;
-      const ly = PAD + topLeft.row * (CELL + GAP) - 5;
-      const t = document.createElementNS(ns, 'text');
-      t.setAttribute('x', lx); t.setAttribute('y', ly);
-      t.setAttribute('font-size', '9'); t.setAttribute('font-weight', '600');
-      t.setAttribute('fill', color); t.setAttribute('stroke', 'white');
-      t.setAttribute('stroke-width', '0.5');
-      t.textContent = `C${ci + 1}·${comp.join(',')}`;
-      svg.appendChild(t);
-    });
-    g.appendChild(svg);
-  }
-  document.getElementById('grid-info').textContent =
-    `${ds.length} draws · peak weight ${Math.round(peak)} · ${clusters.length} cluster${clusters.length === 1 ? '' : 's'}`;
-}
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
+   GRID RENDER (now uses currentRange)
+   ═══════════════════════════════════════════════════════════ */
+      function renderGrid() {
+        const ds = windowDraws(currentRange);
+        const sc = computeRawWeights(ds);
+        const peak = Math.max(1, ...Object.values(sc));
+        const clusters = findClusters(sc, peak);
+        const g = document.getElementById("bigGrid");
+        g.innerHTML = "";
+        GRID_ROWS.forEach((row) =>
+          row.forEach((num) => {
+            const s = sc[num] || 0;
+            const cell = document.createElement("div");
+            cell.className = "big-cell" + (s === 0 ? " undrawn" : "");
+            if (s > 0) {
+              const a = 0.03 + (s / peak) * 0.77;
+              cell.style.background = `rgba(225,29,72,${a.toFixed(3)})`;
+            }
+            cell.innerHTML = `<span class="cn">${num}</span><span class="cw">${s > 0 ? Math.round(s) : "—"}</span>`;
+            g.appendChild(cell);
+          }),
+        );
+        // Cluster overlays
+        if (clusters.length) {
+          const firstCell = g.querySelector(".big-cell");
+          const CELL = firstCell ? firstCell.offsetWidth || 60 : 60;
+          const GAP = 5,
+            PAD = 12;
+          const svgW = PAD * 2 + 8 * CELL + 7 * GAP;
+          const svgH = PAD * 2 + 5 * CELL + 4 * GAP;
+          const ns = "http://www.w3.org/2000/svg";
+          const svg = document.createElementNS(ns, "svg");
+          svg.setAttribute("class", "cluster-svg");
+          svg.setAttribute("viewBox", `0 0 ${svgW} ${svgH}`);
+          svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+          clusters.forEach((comp, ci) => {
+            const color = CLUSTER_COLORS[ci];
+            const cellSet = new Set(
+              comp.map((n) => `${POS[n].row},${POS[n].col}`),
+            );
+            const segs = [];
+            const OFF = 2;
+            comp.forEach((num) => {
+              const { row: r, col: c } = POS[num];
+              const x = PAD + c * (CELL + GAP) - OFF;
+              const y = PAD + r * (CELL + GAP) - OFF;
+              const w = CELL + OFF * 2,
+                h = CELL + OFF * 2;
+              if (!cellSet.has(`${r - 1},${c}`))
+                segs.push(`M${x} ${y}L${x + w} ${y}`);
+              if (!cellSet.has(`${r + 1},${c}`))
+                segs.push(`M${x} ${y + h}L${x + w} ${y + h}`);
+              if (!cellSet.has(`${r},${c - 1}`))
+                segs.push(`M${x} ${y}L${x} ${y + h}`);
+              if (!cellSet.has(`${r},${c + 1}`))
+                segs.push(`M${x + w} ${y}L${x + w} ${y + h}`);
+            });
+            if (segs.length) {
+              const path = document.createElementNS(ns, "path");
+              path.setAttribute("d", segs.join(" "));
+              path.setAttribute("fill", "none");
+              path.setAttribute("stroke", color);
+              path.setAttribute("stroke-width", "2.5");
+              path.setAttribute("stroke-dasharray", "6 4");
+              path.setAttribute("stroke-linecap", "round");
+              svg.appendChild(path);
+            }
+            // Label
+            const topLeft = comp.reduce(
+              (acc, n) => {
+                const p = POS[n];
+                return p.row < acc.row || (p.row === acc.row && p.col < acc.col)
+                  ? p
+                  : acc;
+              },
+              { row: Infinity, col: Infinity },
+            );
+            const lx = PAD + topLeft.col * (CELL + GAP) + 4;
+            const ly = PAD + topLeft.row * (CELL + GAP) - 5;
+            const t = document.createElementNS(ns, "text");
+            t.setAttribute("x", lx);
+            t.setAttribute("y", ly);
+            t.setAttribute("font-size", "9");
+            t.setAttribute("font-weight", "600");
+            t.setAttribute("fill", color);
+            t.setAttribute("stroke", "white");
+            t.setAttribute("stroke-width", "0.5");
+            t.textContent = `C${ci + 1}·${comp.join(",")}`;
+            svg.appendChild(t);
+          });
+          g.appendChild(svg);
+        }
+        document.getElementById("grid-info").textContent =
+          `${ds.length} draws · peak weight ${Math.round(peak)} · ${clusters.length} cluster${clusters.length === 1 ? "" : "s"}`;
+      }
+
+      /* ═══════════════════════════════════════════════════════════
    STATS & ROW BARS
    ═══════════════════════════════════════════════════════════ */
-function renderStats() {
-  const ds = windowDraws(currentRange);
-  const sc = computeRawWeights(ds);
-  const peak = Math.max(1, ...Object.values(sc));
-  const clusters = findClusters(sc, peak);
-  document.getElementById('stats').innerHTML = `
+      function renderStats() {
+        const ds = windowDraws(currentRange);
+        const sc = computeRawWeights(ds);
+        const peak = Math.max(1, ...Object.values(sc));
+        const clusters = findClusters(sc, peak);
+        document.getElementById("stats").innerHTML = `
     <div class="stat"><div class="stat-val">${draws.length}</div><div class="stat-lbl">Total draws</div></div>
     <div class="stat"><div class="stat-val">${ds.length}</div><div class="stat-lbl">Window</div></div>
     <div class="stat"><div class="stat-val">${clusters.length}</div><div class="stat-lbl">Clusters</div></div>
   `;
-}
+      }
 
-function renderRowBars() {
-  const ds = windowDraws(currentRange);
-  const rows = rowActivity(ds);
-  const card = document.getElementById('row-card');
-  if (!rows.length || !draws.length) { card.style.display = 'none'; return; }
-  card.style.display = 'block';
-  const max = rows[0].score || 1;
-  document.getElementById('row-bars').innerHTML = rows.map(r =>
-    `<div class="bar-row">
+      function renderRowBars() {
+        const ds = windowDraws(currentRange);
+        const rows = rowActivity(ds);
+        const card = document.getElementById("row-card");
+        if (!rows.length || !draws.length) {
+          card.style.display = "none";
+          return;
+        }
+        card.style.display = "block";
+        const max = rows[0].score || 1;
+        document.getElementById("row-bars").innerHTML = rows
+          .map(
+            (r) =>
+              `<div class="bar-row">
       <span class="bar-lbl">${r.label}</span>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.round(r.score/max*100)}%"></div></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${Math.round((r.score / max) * 100)}%"></div></div>
       <span class="bar-score">${r.score}</span>
-    </div>`
-  ).join('');
-}
+    </div>`,
+          )
+          .join("");
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    ADD DRAW
    ═══════════════════════════════════════════════════════════ */
-function renderNumGrid() {
-  document.getElementById('num-grid').innerHTML = inputs.map((v, i) =>
-    `<input class="num-inp${v ? ' filled' : ''}" type="number" min="1" max="40"
-      value="${v}" placeholder="${i + 1}" oninput="updInp(${i},this.value)">`
-  ).join('');
-}
-window.updInp = (idx, val) => {
-  const c = val.replace(/[^0-9]/g, '').slice(0, 2);
-  inputs[idx] = c;
-  const el = document.querySelectorAll('.num-inp')[idx];
-  if (el) { el.value = c; el.className = 'num-inp' + (c ? ' filled' : ''); }
-};
+      function renderNumGrid() {
+        document.getElementById("num-grid").innerHTML = inputs
+          .map(
+            (v, i) =>
+              `<input class="num-inp${v ? " filled" : ""}" type="number" min="1" max="40"
+      value="${v}" placeholder="${i + 1}" oninput="updInp(${i},this.value)">`,
+          )
+          .join("");
+      }
+      window.updInp = (idx, val) => {
+        const c = val.replace(/[^0-9]/g, "").slice(0, 2);
+        inputs[idx] = c;
+        const el = document.querySelectorAll(".num-inp")[idx];
+        if (el) {
+          el.value = c;
+          el.className = "num-inp" + (c ? " filled" : "");
+        }
+      };
 
-async function addDraw() {
-  const vals = [];
-  document.querySelectorAll('.num-inp').forEach(el => {
-    const v = parseInt(el.value, 10); if (!isNaN(v)) vals.push(v);
-  });
-  if (vals.length !== 6) { toast('Enter exactly 6 numbers.'); return; }
-  if (vals.some(n => n < 1 || n > 40)) { toast('Numbers must be between 1 and 40.'); return; }
-  if (new Set(vals).size !== 6) { toast('All 6 numbers must be unique.'); return; }
-  const sorted = [...vals].sort((a, b) => a - b);
-  draws.push(sorted);
-  if (drawsOk) {
-    const saved = await appendToFile(sorted);
-    toast(saved ? `Draw saved to ${drawsName}.` : 'Added to memory — file write failed. Re-activate in Settings.');
-  } else {
-    toast('Draw added to memory. Activate a file in Settings to persist it.');
-  }
-  inputs = ['', '', '', '', '', ''];
-  fullRender();
-  document.getElementById('predictions').innerHTML = '';
-}
+      async function addDraw() {
+        const vals = [];
+        document.querySelectorAll(".num-inp").forEach((el) => {
+          const v = parseInt(el.value, 10);
+          if (!isNaN(v)) vals.push(v);
+        });
+        if (vals.length !== 6) {
+          toast("Enter exactly 6 numbers.");
+          return;
+        }
+        if (vals.some((n) => n < 1 || n > 40)) {
+          toast("Numbers must be between 1 and 40.");
+          return;
+        }
+        if (new Set(vals).size !== 6) {
+          toast("All 6 numbers must be unique.");
+          return;
+        }
+        const sorted = [...vals].sort((a, b) => a - b);
+        draws.push(sorted);
+        if (drawsOk) {
+          const saved = await appendToFile(sorted);
+          toast(
+            saved
+              ? `Draw saved to ${drawsName}.`
+              : "Added to memory — file write failed. Re-activate in Settings.",
+          );
+        } else {
+          toast(
+            "Draw added to memory. Activate a file in Settings to persist it.",
+          );
+        }
+        inputs = ["", "", "", "", "", ""];
+        fullRender();
+        document.getElementById("predictions").innerHTML = "";
+      }
 
-function clearInputs() { inputs = ['', '', '', '', '', '']; renderNumGrid(); }
+      function clearInputs() {
+        inputs = ["", "", "", "", "", ""];
+        renderNumGrid();
+      }
 
-function renderRecentDraws() {
-  const el = document.getElementById('recent-draws');
-  if (!draws.length) { el.innerHTML = '<div class="empty">No draws loaded yet.</div>'; return; }
-  el.innerHTML = [...draws].reverse().slice(0, 10).map((d, i) =>
-    `<div class="draw-row">
+      function renderRecentDraws() {
+        const el = document.getElementById("recent-draws");
+        if (!draws.length) {
+          el.innerHTML = '<div class="empty">No draws loaded yet.</div>';
+          return;
+        }
+        el.innerHTML = [...draws]
+          .reverse()
+          .slice(0, 10)
+          .map(
+            (d, i) =>
+              `<div class="draw-row">
       <span class="draw-idx">#${draws.length - i}</span>
-      <span class="draw-nums">${d.join('  ')}</span>
-    </div>`
-  ).join('');
-}
+      <span class="draw-nums">${d.join("  ")}</span>
+    </div>`,
+          )
+          .join("");
+      }
 
-function renderArr() {
-  const el = document.getElementById('arr-display');
-  if (!arrangement.length) {
-    el.innerHTML = '<div class="empty">No arrangement loaded (optional).</div>'; return;
-  }
-  el.innerHTML = arrangement.map((row, i) =>
-    `<div class="arr-row">
+      function renderArr() {
+        const el = document.getElementById("arr-display");
+        if (!arrangement.length) {
+          el.innerHTML =
+            '<div class="empty">No arrangement loaded (optional).</div>';
+          return;
+        }
+        el.innerHTML = arrangement
+          .map(
+            (row, i) =>
+              `<div class="arr-row">
       <span class="arr-lbl">Row ${i + 1}</span>
-      <div class="arr-badges">${row.map(n => `<span class="badge">${n}</span>`).join('')}</div>
-    </div>`
-  ).join('');
-}
+      <div class="arr-badges">${row.map((n) => `<span class="badge">${n}</span>`).join("")}</div>
+    </div>`,
+          )
+          .join("");
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    FULL RENDER
    ═══════════════════════════════════════════════════════════ */
-function fullRender() {
-  renderStats();
-  renderRowBars();
-  renderGrid();
-  renderRecentDraws();
-  renderArr();
-  renderNumGrid();
-  const n = Math.min(currentRange, draws.length);
-  const gn = Math.min(gridRange, draws.length);
-  document.getElementById('sliderVal').textContent = `${n} / ${draws.length}`;
-  document.getElementById('gridSliderVal').textContent = `${gn} / ${draws.length}`;
-  const s = document.getElementById('drawSlider');
-  s.max = draws.length; s.value = n;
-  const gs = document.getElementById('gridSlider');
-  gs.max = draws.length; gs.value = gn;
-}
+      function fullRender() {
+        renderStats();
+        renderRowBars();
+        renderGrid();
+        renderRecentDraws();
+        renderArr();
+        renderNumGrid();
+        const n = Math.min(currentRange, draws.length);
+        document.getElementById("sliderVal").textContent =
+          `${n} / ${draws.length}`;
+        const s = document.getElementById("drawSlider");
+        s.max = draws.length;
+        s.value = n;
+      }
 
-/* ═══════════════════════════════════════════════════════════
-   SLIDERS & MARKS
+      /* ═══════════════════════════════════════════════════════════
+   SLIDER & MARKS
    ═══════════════════════════════════════════════════════════ */
-document.getElementById('drawSlider').addEventListener('input', function () {
-  currentRange = parseInt(this.value);
-  const n = Math.min(currentRange, draws.length);
-  document.getElementById('sliderVal').textContent = `${n} / ${draws.length}`;
-  renderStats(); renderRowBars();
-  document.getElementById('predictions').innerHTML = '';
-});
+      document
+        .getElementById("drawSlider")
+        .addEventListener("input", function () {
+          currentRange = parseInt(this.value);
+          const n = Math.min(currentRange, draws.length);
+          document.getElementById("sliderVal").textContent =
+            `${n} / ${draws.length}`;
+          // Update everything: stats, row bars, and grid
+          renderStats();
+          renderRowBars();
+          renderGrid(); // now the grid updates with the slider
+          document.getElementById("predictions").innerHTML = "";
+        });
 
-document.getElementById('gridSlider').addEventListener('input', function () {
-  gridRange = parseInt(this.value);
-  const n = Math.min(gridRange, draws.length);
-  document.getElementById('gridSliderVal').textContent = `${n} / ${draws.length}`;
-  renderGrid();
-});
+      document.querySelectorAll(".mark").forEach((m) =>
+        m.addEventListener("click", function () {
+          const v = Math.min(parseInt(this.dataset.v), draws.length);
+          currentRange = v;
+          document.getElementById("drawSlider").value = v;
+          document.getElementById("sliderVal").textContent =
+            `${v} / ${draws.length}`;
+          renderStats();
+          renderRowBars();
+          renderGrid();
+          document.getElementById("predictions").innerHTML = "";
+        }),
+      );
 
-document.querySelectorAll('.mark').forEach(m => m.addEventListener('click', function () {
-  const v = Math.min(parseInt(this.dataset.v), draws.length);
-  const isGrid = this.dataset.slider === 'grid';
-  if (isGrid) {
-    gridRange = v;
-    document.getElementById('gridSlider').value = v;
-    document.getElementById('gridSliderVal').textContent = `${v} / ${draws.length}`;
-    renderGrid();
-  } else {
-    currentRange = v;
-    document.getElementById('drawSlider').value = v;
-    document.getElementById('sliderVal').textContent = `${v} / ${draws.length}`;
-    renderStats(); renderRowBars();
-    document.getElementById('predictions').innerHTML = '';
-  }
-}));
-
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    TAB SWITCHING
    ═══════════════════════════════════════════════════════════ */
-window.switchTab = function (name, btn) {
-  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('pane-' + name).classList.add('active');
-  btn.classList.add('active');
-  if (name === 'grid') renderGrid();
-};
+      window.switchTab = function (name, btn) {
+        document
+          .querySelectorAll(".pane")
+          .forEach((p) => p.classList.remove("active"));
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
+        document.getElementById("pane-" + name).classList.add("active");
+        btn.classList.add("active");
+        if (name === "grid") renderGrid();
+      };
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    TOAST
    ═══════════════════════════════════════════════════════════ */
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._timer);
-  t._timer = setTimeout(() => t.classList.remove('show'), 2800);
-}
+      function toast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove("show"), 2800);
+      }
 
-/* ═══════════════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════════════
    INIT
    ═══════════════════════════════════════════════════════════ */
-restoreHandles().then(() => fullRender());
-</script>
-</body>
+      restoreHandles().then(() => fullRender());
+    </script>
+  </body>
 </html>
