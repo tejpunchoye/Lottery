@@ -183,7 +183,7 @@
         margin-bottom: 10px;
       }
 
-      /* STAT CARDS – single row */
+      /* STAT CARDS – ALWAYS 3 COLUMNS */
       .stat-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -807,14 +807,8 @@
         transform: translateX(-50%) translateY(0);
       }
 
-      /* RESPONSIVE */
+      /* RESPONSIVE – removed the rule that changed stats grid */
       @media (max-width: 540px) {
-        .stat-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-        .stat-grid .stat:last-child {
-          grid-column: span 2;
-        }
         .big-cell .cn {
           font-size: 12px;
         }
@@ -1026,7 +1020,7 @@
       /* ═══════════════════════════════════════════════════════════
    DATA – initially empty, loaded from file
    ═══════════════════════════════════════════════════════════ */
-      // No built-in data (BUILTIN removed)
+      // No built-in data
 
       /* ═══════════════════════════════════════════════════════════
    GRID LAYOUT
@@ -1059,14 +1053,14 @@
       /* ═══════════════════════════════════════════════════════════
    STATE
    ═══════════════════════════════════════════════════════════ */
-      let draws = []; // Starts empty – only populated from file
+      let draws = [];
       let arrangement = [];
       let drawsHandle = null,
         arrHandle = null;
       let drawsName = "",
         arrName = "";
       let drawsOk = false;
-      let arrOk = false; // NEW: arrangement active state
+      let arrOk = false;
       let inputs = ["", "", "", "", "", ""];
       let currentRange = 0;
 
@@ -1150,7 +1144,6 @@
           }
         });
 
-      // ── Activate / refresh draws ──
       document
         .getElementById("refreshDrawsBtn")
         .addEventListener("click", async () => {
@@ -1336,7 +1329,6 @@
           if (h) {
             drawsHandle = h;
             drawsName = n || "unknown";
-            // Try to re-activate silently
             await activateDraws(false);
           }
         } catch (e) {}
@@ -1349,7 +1341,6 @@
             await activateArrangement(false);
           }
         } catch (e) {}
-        // Force UI update
         updateDrawsUI();
         updateArrUI();
         fullRender();
@@ -1455,36 +1446,6 @@
           .map((o) => o.c);
       }
 
-      function buildPredWeights(ds) {
-        const total = ds.length;
-        const raw = {};
-        ds.forEach((draw, i) => {
-          const w = (i + 1) / total;
-          draw.forEach((n) => {
-            raw[n] = (raw[n] || 0) + w;
-          });
-        });
-        if (arrangement.length) {
-          const rs = arrangement.map((row) =>
-            row.reduce((s, n) => s + (raw[n] || 0), 0),
-          );
-          const mx = Math.max(...rs, 1);
-          arrangement.forEach((row, ri) => {
-            const boost = 1 + 0.3 * (rs[ri] / mx);
-            row.forEach((n) => {
-              if (raw[n]) raw[n] *= boost;
-            });
-          });
-        }
-        const tot = Object.values(raw).reduce((a, b) => a + b, 0);
-        if (!tot) return {};
-        const weights = {};
-        Object.entries(raw).forEach(([k, v]) => {
-          weights[+k] = v / tot;
-        });
-        return weights;
-      }
-
       function rowActivity(ds) {
         if (!arrangement.length) return [];
         const freq = {};
@@ -1564,7 +1525,6 @@
             if (combo.length === 6 && isValid(combo)) return combo;
           }
         }
-        // Fallback: top weighted numbers
         const thr = peak * 0.5;
         const all = [];
         for (let n = 1; n <= 40; n++) if (sc[n] >= thr) all.push(n);
@@ -1645,7 +1605,6 @@
           '<i class="ti ti-loader" aria-hidden="true"></i> Generating…';
         setTimeout(() => {
           const results = [];
-          // Predictions 1 & 2: Hybrid
           for (let i = 0; i < 2; i++) {
             let c = genHybrid(ds, sc, peak, clusters);
             if (!c) c = genMix(ds);
@@ -1658,7 +1617,6 @@
               });
             }
           }
-          // Prediction 3: Mix
           const c3 = genMix(ds);
           if (c3) {
             c3.sort((a, b) => a - b);
