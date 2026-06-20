@@ -364,16 +364,16 @@ body{
 
   <!-- TABS -->
   <div class="tabs">
-    <button class="tab active" onclick="switchTab('predict',this)">Predict</button>
-    <button class="tab" onclick="switchTab('grid',this)">Grid</button>
+    <button class="tab active" onclick="switchTab('grid',this)">Grid &amp; Predict</button>
     <button class="tab" onclick="switchTab('add',this)">Add draw</button>
     <button class="tab" onclick="switchTab('settings',this)">Settings</button>
   </div>
 
-  <!-- ── PREDICT ── -->
-  <div id="pane-predict" class="pane active">
+  <!-- ── GRID & PREDICT (merged) ── -->
+  <div id="pane-grid" class="pane active">
     <div class="stat-grid" id="stats"></div>
 
+    <!-- Shared slider controlling both grid heat-map and predictions -->
     <div class="slider-card">
       <div class="slider-row">
         <input type="range" id="drawSlider" min="5" max="150" value="150" step="1">
@@ -387,6 +387,15 @@ body{
       </div>
     </div>
 
+    <!-- Heat-map grid -->
+    <div class="grid-outer">
+      <div class="big-grid" id="bigGrid"></div>
+    </div>
+    <p class="grid-info" id="grid-info"></p>
+
+    <div style="height:20px"></div>
+
+    <!-- Row activity (shown only when arrangement loaded) -->
     <div class="row-card" id="row-card" style="display:none">
       <div class="slabel">Row activity</div>
       <div id="row-bars"></div>
