@@ -183,7 +183,7 @@
         margin-bottom: 10px;
       }
 
-      /* STAT CARDS */
+      /* STAT CARDS – single row */
       .stat-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -723,6 +723,11 @@
         color: var(--green-text);
         border-color: rgba(5, 150, 105, 0.3);
       }
+      .status-badge.arr-ok {
+        background: var(--green-bg);
+        color: var(--green-text);
+        border-color: rgba(5, 150, 105, 0.3);
+      }
       .refresh-btn {
         background: var(--surface2);
         border: 1px solid var(--border2);
@@ -990,6 +995,7 @@
               <i class="ti ti-folder-open" aria-hidden="true"></i> Select file
             </button>
             <span id="arrFileName" class="file-path">No file selected</span>
+            <span id="arrStatus" class="status-badge">Not active</span>
           </div>
           <div class="file-row">
             <button class="refresh-btn" id="refreshArrBtn">
@@ -1060,6 +1066,7 @@
       let drawsName = "",
         arrName = "";
       let drawsOk = false;
+      let arrOk = false; // NEW: arrangement active state
       let inputs = ["", "", "", "", "", ""];
       let currentRange = 0;
 
@@ -1143,43 +1150,49 @@
           }
         });
 
+      // ── Activate / refresh draws ──
       document
         .getElementById("refreshDrawsBtn")
         .addEventListener("click", async () => {
-          if (!drawsHandle) {
-            toast("No draws file selected. Choose one first.");
-            return;
-          }
-          try {
-            const p = await drawsHandle.requestPermission({
-              mode: "readwrite",
-            });
-            if (p !== "granted") {
-              toast("Permission denied.");
-              drawsOk = false;
-              updateDrawsUI();
-              return;
-            }
-            drawsOk = true;
-            const file = await drawsHandle.getFile();
-            const content = await file.text();
-            const parsed = parseDrawsText(content);
-            // Replace draws with parsed data – no merging with built-in
-            draws = parsed;
-            updateDrawsUI();
-            fullRender();
-            toast(`Loaded ${draws.length} draws from ${drawsName}.`);
-          } catch (e) {
-            console.error(e);
-            toast("Failed to load. Re-select the file.");
-            drawsOk = false;
-            drawsHandle = null;
-            drawsName = "";
-            await dbDel("drawsH");
-            await dbDel("drawsN");
-            updateDrawsUI();
-          }
+          await activateDraws(true);
         });
+
+      async function activateDraws(showToast = true) {
+        if (!drawsHandle) {
+          if (showToast) toast("No draws file selected. Choose one first.");
+          return false;
+        }
+        try {
+          const p = await drawsHandle.requestPermission({
+            mode: "readwrite",
+          });
+          if (p !== "granted") {
+            if (showToast) toast("Permission denied.");
+            drawsOk = false;
+            updateDrawsUI();
+            return false;
+          }
+          drawsOk = true;
+          const file = await drawsHandle.getFile();
+          const content = await file.text();
+          const parsed = parseDrawsText(content);
+          draws = parsed;
+          updateDrawsUI();
+          fullRender();
+          if (showToast) toast(`Loaded ${draws.length} draws from ${drawsName}.`);
+          return true;
+        } catch (e) {
+          console.error(e);
+          if (showToast) toast("Failed to load. Re-select the file.");
+          drawsOk = false;
+          drawsHandle = null;
+          drawsName = "";
+          await dbDel("drawsH");
+          await dbDel("drawsN");
+          updateDrawsUI();
+          return false;
+        }
+      }
 
       document
         .getElementById("clearDrawsBtn")
@@ -1242,6 +1255,7 @@
             });
             arrHandle = h;
             arrName = h.name;
+            arrOk = false;
             await dbSet("arrH", h);
             await dbSet("arrN", arrName);
             updateArrUI();
@@ -1254,26 +1268,41 @@
       document
         .getElementById("refreshArrBtn")
         .addEventListener("click", async () => {
-          if (!arrHandle) {
-            toast("No arrangement file selected.");
-            return;
-          }
-          try {
-            const p = await arrHandle.requestPermission({ mode: "read" });
-            if (p !== "granted") {
-              toast("Permission denied.");
-              return;
-            }
-            const file = await arrHandle.getFile();
-            const content = await file.text();
-            arrangement = parseArrText(content);
-            updateArrUI();
-            fullRender();
-            toast(`Loaded ${arrangement.length} rows from ${arrName}.`);
-          } catch (e) {
-            toast("Failed to load arrangement.");
-          }
+          await activateArrangement(true);
         });
+
+      async function activateArrangement(showToast = true) {
+        if (!arrHandle) {
+          if (showToast) toast("No arrangement file selected.");
+          return false;
+        }
+        try {
+          const p = await arrHandle.requestPermission({ mode: "read" });
+          if (p !== "granted") {
+            if (showToast) toast("Permission denied.");
+            arrOk = false;
+            updateArrUI();
+            return false;
+          }
+          arrOk = true;
+          const file = await arrHandle.getFile();
+          const content = await file.text();
+          arrangement = parseArrText(content);
+          updateArrUI();
+          fullRender();
+          if (showToast) toast(`Loaded ${arrangement.length} rows from ${arrName}.`);
+          return true;
+        } catch (e) {
+          if (showToast) toast("Failed to load arrangement.");
+          arrOk = false;
+          arrHandle = null;
+          arrName = "";
+          await dbDel("arrH");
+          await dbDel("arrN");
+          updateArrUI();
+          return false;
+        }
+      }
 
       document
         .getElementById("clearArrBtn")
@@ -1282,6 +1311,7 @@
           await dbDel("arrN");
           arrHandle = null;
           arrName = "";
+          arrOk = false;
           arrangement = [];
           updateArrUI();
           fullRender();
@@ -1289,12 +1319,15 @@
         });
 
       function updateArrUI() {
-        document.getElementById("arrFileName").textContent =
-          arrName || "No file selected";
+        const n = document.getElementById("arrFileName");
+        const s = document.getElementById("arrStatus");
+        n.textContent = arrName || "No file selected";
+        s.textContent = arrOk ? "✅ Active" : "⚠️ Not active";
+        s.className = "status-badge" + (arrOk ? " arr-ok" : "");
       }
 
       /* ═══════════════════════════════════════════════════════════
-   RESTORE FROM INDEXEDDB (on load)
+   RESTORE & RE-VALIDATE ON PAGE LOAD
    ═══════════════════════════════════════════════════════════ */
       async function restoreHandles() {
         try {
@@ -1303,8 +1336,8 @@
           if (h) {
             drawsHandle = h;
             drawsName = n || "unknown";
-            drawsOk = false;
-            updateDrawsUI();
+            // Try to re-activate silently
+            await activateDraws(false);
           }
         } catch (e) {}
         try {
@@ -1313,9 +1346,13 @@
           if (h) {
             arrHandle = h;
             arrName = n || "unknown";
-            updateArrUI();
+            await activateArrangement(false);
           }
         } catch (e) {}
+        // Force UI update
+        updateDrawsUI();
+        updateArrUI();
+        fullRender();
       }
 
       /* ═══════════════════════════════════════════════════════════
@@ -1706,7 +1743,6 @@
         const g = document.getElementById("bigGrid");
         g.innerHTML = "";
 
-        // If no draws, show a message in the grid
         if (ds.length === 0) {
           const emptyCell = document.createElement("div");
           emptyCell.style.cssText =
@@ -1737,7 +1773,6 @@
           }),
         );
 
-        // Cluster overlays
         if (clusters.length) {
           const firstCell = g.querySelector(".big-cell");
           const CELL = firstCell ? firstCell.offsetWidth || 60 : 60;
@@ -1782,7 +1817,6 @@
               path.setAttribute("stroke-linecap", "round");
               svg.appendChild(path);
             }
-            // Label
             const topLeft = comp.reduce(
               (acc, n) => {
                 const p = POS[n];
@@ -1987,7 +2021,7 @@
       document.querySelectorAll(".mark").forEach((m) =>
         m.addEventListener("click", function () {
           let v = parseInt(this.dataset.v);
-          if (v === 0) v = draws.length; // "All" -> max
+          if (v === 0) v = draws.length;
           else v = Math.min(v, draws.length);
           currentRange = v;
           document.getElementById("drawSlider").value = v;
@@ -2029,7 +2063,7 @@
       /* ═══════════════════════════════════════════════════════════
    INIT
    ═══════════════════════════════════════════════════════════ */
-      restoreHandles().then(() => fullRender());
+      restoreHandles();
     </script>
   </body>
 </html>
