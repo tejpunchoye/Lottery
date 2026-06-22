@@ -850,6 +850,9 @@
         color: var(--text);
         transition: background 0.15s;
         white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
       .file-label:hover {
         background: var(--border);
@@ -860,6 +863,16 @@
         color: var(--text2);
         word-break: break-all;
         flex: 1;
+        font-weight: 600;
+      }
+      .file-path .selected {
+        color: var(--green-text);
+        background: var(--green-bg);
+        padding: 2px 8px;
+        border-radius: 20px;
+        border: 1px solid rgba(5, 150, 105, 0.3);
+        font-weight: 600;
+        font-size: 10px;
       }
       .status-badge {
         font-size: 10px;
@@ -881,6 +894,11 @@
         color: var(--green-text);
         border-color: rgba(5, 150, 105, 0.3);
       }
+      .status-badge.has-path {
+        background: var(--blue-bg);
+        color: var(--blue-text);
+        border-color: rgba(37, 99, 235, 0.3);
+      }
       .refresh-btn {
         background: var(--surface2);
         border: 1px solid var(--border2);
@@ -890,6 +908,9 @@
         cursor: pointer;
         color: var(--text2);
         transition: background 0.15s;
+        display: flex;
+        align-items: center;
+        gap: 4px;
       }
       .refresh-btn:hover {
         background: var(--border);
@@ -1027,6 +1048,9 @@
         .hint {
           font-size: 10px;
         }
+        .file-path {
+          font-size: 10px;
+        }
       }
       @media (max-width: 380px) {
         .num-grid {
@@ -1159,10 +1183,9 @@
           <strong>Rolling window prediction backtest</strong>
           <br />
           For each historical draw, the app pretends it doesn’t know the result
-          and generates a prediction using
-          <strong>only the previous N draws</strong>
-          (where N is the selected window size). The table compares the
-          predicted combination with the actual draw that followed.
+          and generates a prediction using <strong>only the previous N draws</strong>
+          (where N is the selected window size). The table compares the predicted
+          combination with the actual draw that followed.
         </div>
 
         <!-- Window selector -->
@@ -1223,18 +1246,11 @@
             </button>
           </div>
           <p class="hint">
-            <strong
-              >📌 Once you select a file, its reference is saved
-              automatically.</strong
-            ><br />
-            On each page load, the app will try to re‑activate it without any
-            extra clicks. However,
-            <span class="highlight"
-              >browsers do not persist file permissions across restarts</span
-            >
-            – if you close and reopen your browser, you may need to tap
-            <strong>Activate</strong> once per session to re‑grant permission.
-            The file name will remain visible.
+            <strong>📌 Once you select a file, its path is saved permanently.</strong><br />
+            The file name will stay visible even after you close the browser.
+            If the status shows <strong>Not active</strong>, tap <strong>Activate</strong>
+            to re‑grant permission for this session (required only after a full browser restart).
+            The path is <span class="highlight">never forgotten</span> unless you click <strong>Forget</strong>.
           </p>
         </div>
 
@@ -1256,11 +1272,10 @@
             </button>
           </div>
           <p class="hint">
-            <strong>📌 Arrangement file is also remembered.</strong><br />
-            Once selected, it will be restored on reload. If the browser session
-            persists, permission is automatically re‑granted. Otherwise, a
-            single tap on
-            <strong>Activate</strong> is needed after a full browser restart.
+            <strong>📌 Arrangement file path is also saved permanently.</strong><br />
+            Once selected, it will be restored on every page load.
+            Tap <strong>Activate</strong> to grant read permission for this session.
+            The path is <span class="highlight">never forgotten</span> unless you click <strong>Forget</strong>.
           </p>
         </div>
 
@@ -1395,6 +1410,7 @@
             await dbSet("drawsH", h);
             await dbSet("drawsN", drawsName);
             updateDrawsUI();
+            fullRender();
             toast(`Selected: ${drawsName}. Tap Activate to load.`);
           } catch (e) {
             if (e.name !== "AbortError")
@@ -1408,6 +1424,7 @@
           await activateDraws(true);
         });
 
+      // ── FIXED: Does NOT delete handle on error ──
       async function activateDraws(showToast = true) {
         if (!drawsHandle) {
           if (showToast) toast("No draws file selected. Choose one first.");
@@ -1430,17 +1447,14 @@
           draws = parsed;
           updateDrawsUI();
           fullRender();
-          if (showToast)
-            toast(`Loaded ${draws.length} draws from ${drawsName}.`);
+          if (showToast) toast(`Loaded ${draws.length} draws from ${drawsName}.`);
           return true;
         } catch (e) {
           console.error(e);
-          if (showToast) toast("Failed to load. Re-select the file.");
+          if (showToast)
+            toast("Failed to load the file. It may have been moved or deleted.");
           drawsOk = false;
-          drawsHandle = null;
-          drawsName = "";
-          await dbDel("drawsH");
-          await dbDel("drawsN");
+          // Keep the handle and name – do NOT delete them
           updateDrawsUI();
           return false;
         }
@@ -1481,9 +1495,15 @@
       function updateDrawsUI() {
         const n = document.getElementById("drawsFileName");
         const s = document.getElementById("drawsStatus");
-        n.textContent = drawsName || "No file selected";
+        if (drawsName) {
+          n.textContent = drawsName;
+          // Show a "selected" badge
+          n.innerHTML = drawsName + ' <span class="selected">📎 selected</span>';
+        } else {
+          n.textContent = "No file selected";
+        }
         s.textContent = drawsOk ? "✅ Active & writable" : "⚠️ Not active";
-        s.className = "status-badge" + (drawsOk ? " ok" : "");
+        s.className = "status-badge" + (drawsOk ? " ok" : drawsName ? " has-path" : "");
       }
 
       /* ═══════════════════════════════════════════════════════════
@@ -1511,6 +1531,7 @@
             await dbSet("arrH", h);
             await dbSet("arrN", arrName);
             updateArrUI();
+            fullRender();
             toast(`Selected: ${arrName}. Tap Activate.`);
           } catch (e) {
             if (e.name !== "AbortError") toast(e.message);
@@ -1523,6 +1544,7 @@
           await activateArrangement(true);
         });
 
+      // ── FIXED: Does NOT delete handle on error ──
       async function activateArrangement(showToast = true) {
         if (!arrHandle) {
           if (showToast) toast("No arrangement file selected.");
@@ -1542,16 +1564,13 @@
           arrangement = parseArrText(content);
           updateArrUI();
           fullRender();
-          if (showToast)
-            toast(`Loaded ${arrangement.length} rows from ${arrName}.`);
+          if (showToast) toast(`Loaded ${arrangement.length} rows from ${arrName}.`);
           return true;
         } catch (e) {
-          if (showToast) toast("Failed to load arrangement.");
+          if (showToast)
+            toast("Failed to load arrangement. The file may have been moved.");
           arrOk = false;
-          arrHandle = null;
-          arrName = "";
-          await dbDel("arrH");
-          await dbDel("arrN");
+          // Keep the handle and name – do NOT delete them
           updateArrUI();
           return false;
         }
@@ -1574,9 +1593,14 @@
       function updateArrUI() {
         const n = document.getElementById("arrFileName");
         const s = document.getElementById("arrStatus");
-        n.textContent = arrName || "No file selected";
+        if (arrName) {
+          n.textContent = arrName;
+          n.innerHTML = arrName + ' <span class="selected">📎 selected</span>';
+        } else {
+          n.textContent = "No file selected";
+        }
         s.textContent = arrOk ? "✅ Active" : "⚠️ Not active";
-        s.className = "status-badge" + (arrOk ? " arr-ok" : "");
+        s.className = "status-badge" + (arrOk ? " arr-ok" : arrName ? " has-path" : "");
       }
 
       /* ═══════════════════════════════════════════════════════════
@@ -1996,7 +2020,8 @@
               const a = 0.03 + (s / peak) * 0.77;
               cell.style.background = `rgba(225,29,72,${a.toFixed(3)})`;
             }
-            cell.innerHTML = `<span class="cn">${num}</span><span class="cw">${s > 0 ? Math.round(s) : "—"}</span>`;
+            cell.innerHTML =
+              `<span class="cn">${num}</span><span class="cw">${s > 0 ? Math.round(s) : "—"}</span>`;
             g.appendChild(cell);
           }),
         );
@@ -2048,7 +2073,8 @@
             const topLeft = comp.reduce(
               (acc, n) => {
                 const p = POS[n];
-                return p.row < acc.row || (p.row === acc.row && p.col < acc.col)
+                return p.row < acc.row ||
+                  (p.row === acc.row && p.col < acc.col)
                   ? p
                   : acc;
               },
@@ -2120,7 +2146,8 @@
         const windowSize = analysisWindow;
 
         if (draws.length < windowSize + 1) {
-          container.innerHTML = `<div class="empty">Need at least ${windowSize + 1} draws for ${windowSize}-draw rolling analysis (${windowSize} training + 1 to predict).</div>`;
+          container.innerHTML =
+            `<div class="empty">Need at least ${windowSize + 1} draws for ${windowSize}-draw rolling analysis (${windowSize} training + 1 to predict).</div>`;
           statsContainer.innerHTML = "";
           return;
         }
@@ -2172,7 +2199,7 @@
             <td>${drawNum}</td>
             <td><span class="badge actual">${actualStr}</span></td>
             <td>
-              <span class="badge ${prediction ? "pred" : "na"}">
+              <span class="badge ${prediction ? 'pred' : 'na'}">
                 ${predStr}
               </span>
               ${matchBadge}
@@ -2182,12 +2209,9 @@
           </tr>`;
         }
 
-        const avgMatch =
-          totalPredictions > 0 ? totalMatches / totalPredictions : 0;
+        const avgMatch = totalPredictions > 0 ? (totalMatches / totalPredictions) : 0;
         const avgMatchPercent =
-          totalPredictions > 0
-            ? (totalMatches / (totalPredictions * 6)) * 100
-            : 0;
+          totalPredictions > 0 ? (totalMatches / (totalPredictions * 6)) * 100 : 0;
 
         statsContainer.innerHTML = `
           <div class="stat"><div class="stat-val">${totalPredictions}</div><div class="stat-lbl">Predictions made</div></div>
@@ -2276,16 +2300,11 @@
             }
           }
 
-          const avgMatch =
-            totalPredictions > 0 ? totalMatches / totalPredictions : 0;
+          const avgMatch = totalPredictions > 0 ? (totalMatches / totalPredictions) : 0;
           const avgMatchPercent =
-            totalPredictions > 0
-              ? (totalMatches / (totalPredictions * 6)) * 100
-              : 0;
+            totalPredictions > 0 ? (totalMatches / (totalPredictions * 6)) * 100 : 0;
           const successRate =
-            totalPredictions > 0
-              ? (successfulPredictions / totalPredictions) * 100
-              : 0;
+            totalPredictions > 0 ? (successfulPredictions / totalPredictions) * 100 : 0;
 
           html += `
             <div class="stat">
