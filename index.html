@@ -2,1209 +2,247 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
     <title>Draw Grid Explorer Pro</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
     <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
       :root {
-        --bg: #f1f4f9;
-        --surface: #ffffff;
-        --surface2: #fafbfc;
-        --border: #e2e7ed;
-        --border2: #c8d0da;
-        --text: #0a0c10;
-        --text2: #5a6270;
-        --text3: #8a94a5;
-        --amber: #e8a020;
-        --amber-bg: #fff8ec;
-        --amber-text: #7a4400;
-        --blue: #2563eb;
-        --blue-bg: #eff6ff;
-        --blue-text: #1e40af;
-        --green: #059669;
-        --green-bg: #ecfdf5;
-        --green-text: #065f46;
-        --rose: #e11d48;
-        --rose-bg: #fff1f4;
-        --rose-text: #9f1239;
-        --purple: #7c3aed;
-        --purple-bg: #f5f3ff;
-        --purple-text: #4c1d95;
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-        --shadow-sm:
-          0 2px 8px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.06);
-        --shadow-md:
-          0 12px 24px -6px rgba(0, 0, 0, 0.08),
-          0 4px 8px -4px rgba(0, 0, 0, 0.04);
-        --font-sans:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --bg: #f1f4f9; --surface: #ffffff; --surface2: #fafbfc;
+        --border: #e2e7ed; --border2: #c8d0da; --text: #0a0c10;
+        --text2: #5a6270; --text3: #8a94a5;
+        --amber: #e8a020; --amber-bg: #fff8ec; --amber-text: #7a4400;
+        --blue: #2563eb; --blue-bg: #eff6ff; --blue-text: #1e40af;
+        --green: #059669; --green-bg: #ecfdf5; --green-text: #065f46;
+        --rose: #e11d48; --rose-bg: #fff1f4; --rose-text: #9f1239;
+        --purple: #7c3aed; --purple-bg: #f5f3ff; --purple-text: #4c1d95;
+        --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px;
+        --shadow-sm: 0 2px 8px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.06);
+        --shadow-md: 0 12px 24px -6px rgba(0,0,0,.08), 0 4px 8px -4px rgba(0,0,0,.04);
+        --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         --font-mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
       }
-
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #0f0f0f;
-          --surface: #1a1a1a;
-          --surface2: #222222;
-          --border: rgba(255, 255, 255, 0.08);
-          --border2: rgba(255, 255, 255, 0.14);
-          --text: #f0ede8;
-          --text2: #9a9690;
-          --text3: #5a5754;
-          --amber: #e8a020;
-          --amber-bg: rgba(232, 160, 32, 0.12);
-          --amber-text: #fac775;
-          --blue: #4a90d9;
-          --blue-bg: rgba(74, 144, 217, 0.12);
-          --blue-text: #93c5fd;
-          --green: #4a9e5c;
-          --green-bg: rgba(74, 158, 92, 0.12);
-          --green-text: #6ee7b7;
-          --rose: #fb7185;
-          --rose-bg: rgba(251, 113, 133, 0.12);
-          --rose-text: #fda4af;
-          --purple: #a78bfa;
-          --purple-bg: rgba(167, 139, 250, 0.12);
-          --purple-text: #c4b5fd;
+          --bg: #0f0f0f; --surface: #1a1a1a; --surface2: #222222;
+          --border: rgba(255,255,255,.08); --border2: rgba(255,255,255,.14);
+          --text: #f0ede8; --text2: #9a9690; --text3: #5a5754;
+          --amber: #e8a020; --amber-bg: rgba(232,160,32,.12); --amber-text: #fac775;
+          --blue: #4a90d9; --blue-bg: rgba(74,144,217,.12); --blue-text: #93c5fd;
+          --green: #4a9e5c; --green-bg: rgba(74,158,92,.12); --green-text: #6ee7b7;
+          --rose: #fb7185; --rose-bg: rgba(251,113,133,.12); --rose-text: #fda4af;
+          --purple: #a78bfa; --purple-bg: rgba(167,139,250,.12); --purple-text: #c4b5fd;
         }
       }
 
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: var(--font-sans);
-        font-size: 14px;
-        line-height: 1.5;
-        min-height: 100vh;
-      }
-      .app {
-        max-width: 900px;
-        margin: 0 auto;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-      }
+      body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+      .app { max-width: 900px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
 
       /* HEADER */
-      .header {
-        padding: 18px 20px 14px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        position: sticky;
-        top: 0;
-        background: var(--surface);
-        z-index: 10;
-        box-shadow: var(--shadow-sm);
-      }
-      .header-left h1 {
-        font-size: 18px;
-        font-weight: 700;
-        color: var(--text);
-        letter-spacing: -0.02em;
-      }
-      .header-left p {
-        font-size: 11px;
-        color: var(--text3);
-        margin-top: 2px;
-        font-family: var(--font-mono);
-      }
-      .header-icon {
-        font-size: 24px;
-        line-height: 1;
-      }
+      .header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--surface); z-index: 10; box-shadow: var(--shadow-sm); }
+      .header-left h1 { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -.02em; }
+      .header-left p { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: var(--font-mono); }
+      .header-icon { font-size: 24px; line-height: 1; }
 
       /* TABS */
-      .tabs {
-        display: flex;
-        padding: 10px 20px 0;
-        gap: 4px;
-        border-bottom: 1px solid var(--border);
-        background: var(--surface);
-        position: sticky;
-        top: 57px;
-        z-index: 9;
-        flex-wrap: wrap;
-      }
-      .tab {
-        padding: 7px 12px 11px;
-        background: none;
-        border: none;
-        cursor: pointer;
-        color: var(--text3);
-        font-size: 12px;
-        font-weight: 500;
-        font-family: var(--font-sans);
-        border-bottom: 2px solid transparent;
-        transition:
-          color 0.15s,
-          border-color 0.15s;
-        letter-spacing: 0.02em;
-        flex: 1 1 auto;
-      }
-      .tab.active {
-        color: var(--text);
-        border-bottom-color: var(--amber);
-      }
-      .tab:hover:not(.active) {
-        color: var(--text2);
-      }
+      .tabs { display: flex; padding: 10px 20px 0; gap: 4px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 57px; z-index: 9; flex-wrap: wrap; }
+      .tab { padding: 7px 12px 11px; background: none; border: none; cursor: pointer; color: var(--text3); font-size: 12px; font-weight: 500; font-family: var(--font-sans); border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; letter-spacing: .02em; flex: 1 1 auto; }
+      .tab.active { color: var(--text); border-bottom-color: var(--amber); }
+      .tab:hover:not(.active) { color: var(--text2); }
 
       /* PANES */
-      .pane {
-        display: none;
-        padding: 20px;
-        flex: 1;
-      }
-      .pane.active {
-        display: block;
-      }
-      .slabel {
-        font-size: 10px;
-        font-weight: 600;
-        color: var(--text3);
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-      }
+      .pane { display: none; padding: 20px; flex: 1; }
+      .pane.active { display: block; }
+      .slabel { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
 
-      /* STAT CARDS - ALWAYS 3 COLUMNS */
-      .stat-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-      .stat {
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        padding: 12px 14px;
-      }
-      .stat-val {
-        font-size: 22px;
-        font-weight: 700;
-        color: var(--text);
-        font-family: var(--font-mono);
-        letter-spacing: -0.5px;
-      }
-      .stat-lbl {
-        font-size: 11px;
-        color: var(--text3);
-        margin-top: 3px;
-      }
-      .stat-grid-6 {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-      .stat-grid-6 .stat {
-        padding: 10px 8px;
-      }
-      .stat-grid-6 .stat-val {
-        font-size: 18px;
-      }
-      .stat-grid-6 .stat-lbl {
-        font-size: 10px;
-      }
+      /* STAT CARDS — always 3 columns */
+      .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+      .stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; }
+      .stat-val { font-size: 22px; font-weight: 700; color: var(--text); font-family: var(--font-mono); letter-spacing: -.5px; }
+      .stat-lbl { font-size: 11px; color: var(--text3); margin-top: 3px; }
+      .stat-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 16px; }
+      .stat-grid-6 .stat { padding: 10px 8px; }
+      .stat-grid-6 .stat-val { font-size: 18px; }
+      .stat-grid-6 .stat-lbl { font-size: 10px; }
 
-      /* SELECTOR ROW - single row */
-      .selector-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-      }
-      .selector-row label {
-        font-size: 13px;
-        font-weight: 600;
-        color: var(--text2);
-        font-family: var(--font-sans);
-        white-space: nowrap;
-      }
-      .selector-row select,
-      .selector-row input[type="number"] {
-        padding: 6px 10px;
-        border-radius: var(--radius-sm);
-        border: 1px solid var(--border);
-        background: var(--surface);
-        color: var(--text);
-        font-family: var(--font-mono);
-        font-size: 13px;
-        cursor: pointer;
-        outline: none;
-        width: auto;
-      }
-      .selector-row select:focus,
-      .selector-row input[type="number"]:focus {
-        border-color: var(--rose);
-      }
-      .selector-row input[type="number"] {
-        width: 50px;
-        text-align: center;
-        -moz-appearance: textfield;
-      }
-      .selector-row input[type="number"]::-webkit-inner-spin-button,
-      .selector-row input[type="number"]::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-      .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: var(--surface2);
-        padding: 4px 10px;
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-      }
-      .filter-group label {
-        font-size: 11px;
-        color: var(--text3);
-        font-weight: 500;
-        font-family: var(--font-sans);
-        white-space: nowrap;
-      }
-      .filter-group input {
-        width: 36px;
-        padding: 2px 4px;
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        background: var(--surface);
-        color: var(--text);
-        font-family: var(--font-mono);
-        font-size: 12px;
-        text-align: center;
-      }
-      .filter-group input:focus {
-        border-color: var(--rose);
-        outline: none;
-      }
+      /* FILTER ROW */
+      .filter-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+      .filter-group { display: flex; align-items: center; gap: 6px; background: var(--surface2); padding: 6px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); }
+      .filter-group label { font-size: 11px; color: var(--text3); font-weight: 500; font-family: var(--font-sans); white-space: nowrap; }
+      .filter-group input { width: 36px; padding: 2px 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-family: var(--font-mono); font-size: 12px; text-align: center; }
+      .filter-group input:focus { border-color: var(--rose); outline: none; }
 
-      .strategy-description {
-        font-size: 12px;
-        color: var(--text2);
-        background: var(--surface2);
-        padding: 10px 14px;
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-        width: 100%;
-        line-height: 1.6;
-        margin-top: 4px;
-      }
-      .strategy-description strong {
-        color: var(--text);
-      }
+      /* APPLY BUTTON */
+      .apply-btn { display: block; margin: 0 auto 20px; padding: 11px 40px; background: linear-gradient(135deg, var(--rose), #be123c); color: white; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; font-family: var(--font-sans); cursor: pointer; letter-spacing: .04em; box-shadow: 0 4px 12px rgba(225,29,72,.25); transition: opacity .15s, transform .1s; }
+      .apply-btn:hover { opacity: .93; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(225,29,72,.3); }
+      .apply-btn:active { transform: scale(.98); box-shadow: none; }
 
       /* SLIDER */
-      .slider-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 16px 18px;
-        margin-bottom: 16px;
-        box-shadow: var(--shadow-sm);
-      }
-      .slider-row {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
-      .slider-row input[type="range"] {
-        flex: 1;
-        height: 6px;
-        -webkit-appearance: none;
-        background: var(--border);
-        border-radius: 4px;
-        outline: none;
-        cursor: pointer;
-      }
-      .slider-row input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 18px;
-        height: 18px;
-        background: var(--rose);
-        border-radius: 50%;
-        cursor: pointer;
-        border: 3px solid var(--surface);
-        box-shadow: 0 0 0 1px rgba(225, 29, 72, 0.25);
-      }
-      .slider-row input[type="range"]::-moz-range-thumb {
-        width: 18px;
-        height: 18px;
-        background: var(--rose);
-        border-radius: 50%;
-        border: 3px solid var(--surface);
-        cursor: pointer;
-      }
-      .slider-val {
-        font-family: var(--font-mono);
-        font-size: 13px;
-        font-weight: 700;
-        min-width: 68px;
-        text-align: right;
-        color: var(--text);
-        white-space: nowrap;
-      }
-      .mark-row {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 8px;
-      }
-      .mark {
-        font-size: 10px;
-        color: var(--text3);
-        cursor: pointer;
-        padding: 2px 6px;
-        border-radius: 20px;
-        font-family: var(--font-mono);
-        transition:
-          color 0.15s,
-          background 0.15s;
-        border: 1px solid transparent;
-      }
-      .mark:hover {
-        color: var(--rose-text);
-        background: var(--rose-bg);
-        border-color: rgba(225, 29, 72, 0.2);
-      }
+      .slider-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+      .slider-row { display: flex; align-items: center; gap: 14px; }
+      .slider-row input[type="range"] { flex: 1; height: 6px; -webkit-appearance: none; background: var(--border); border-radius: 4px; outline: none; cursor: pointer; }
+      .slider-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--rose); border-radius: 50%; cursor: pointer; border: 3px solid var(--surface); box-shadow: 0 0 0 1px rgba(225,29,72,.25); }
+      .slider-row input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; background: var(--rose); border-radius: 50%; border: 3px solid var(--surface); cursor: pointer; }
+      .slider-val { font-family: var(--font-mono); font-size: 13px; font-weight: 700; min-width: 68px; text-align: right; color: var(--text); white-space: nowrap; }
+      .mark-row { display: flex; justify-content: space-between; margin-top: 8px; }
+      .mark { font-size: 10px; color: var(--text3); cursor: pointer; padding: 2px 6px; border-radius: 20px; font-family: var(--font-mono); transition: color .15s, background .15s; border: 1px solid transparent; }
+      .mark:hover { color: var(--rose-text); background: var(--rose-bg); border-color: rgba(225,29,72,.2); }
 
       /* GRID */
-      .grid-outer {
-        overflow-x: auto;
-        padding: 4px 0 8px;
-      }
-      .big-grid {
-        display: grid;
-        grid-template-columns: repeat(8, 1fr);
-        gap: 5px;
-        padding: 12px;
-        background: var(--surface2);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-        min-width: 340px;
-        position: relative;
-      }
-      .big-cell {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        aspect-ratio: 1/1;
-        border-radius: 6px;
-        position: relative;
-        transition: transform 0.15s;
-        border: 1px solid transparent;
-        background: rgba(255, 255, 255, 0.3);
-      }
-      .big-cell .cn {
-        font-size: 15px;
-        font-weight: 700;
-        color: var(--text);
-        font-family: var(--font-mono);
-        line-height: 1.2;
-        transition: color 0.3s;
-      }
-      .big-cell .cw {
-        font-size: 8px;
-        color: var(--text3);
-        margin-top: 1px;
-        font-family: var(--font-mono);
-      }
-      .big-cell.undrawn .cn {
-        color: var(--text3);
-        font-weight: 400;
-      }
-      .big-cell.undrawn .cw {
-        visibility: hidden;
-      }
-      .big-cell:not(.undrawn):hover {
-        transform: scale(1.06);
-        z-index: 2;
-        border-color: var(--rose);
-      }
-      .cluster-svg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        pointer-events: none;
-        width: 100%;
-        height: 100%;
-      }
-      .grid-info {
-        font-size: 11px;
-        color: var(--text3);
-        margin-top: 8px;
-        font-family: var(--font-mono);
-      }
+      .grid-outer { overflow-x: auto; padding: 4px 0 8px; }
+      .big-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; padding: 12px; background: var(--surface2); border-radius: var(--radius-md); border: 1px solid var(--border); min-width: 340px; position: relative; }
+      .big-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 1/1; border-radius: 6px; position: relative; transition: transform .15s; border: 1px solid transparent; background: rgba(255,255,255,.3); }
+      .big-cell .cn { font-size: 15px; font-weight: 700; color: var(--text); font-family: var(--font-mono); line-height: 1.2; transition: color .3s; }
+      .big-cell .cw { font-size: 8px; color: var(--text3); margin-top: 1px; font-family: var(--font-mono); }
+      .big-cell.undrawn .cn { color: var(--text3); font-weight: 400; }
+      .big-cell.undrawn .cw { visibility: hidden; }
+      .big-cell:not(.undrawn):hover { transform: scale(1.06); z-index: 2; border-color: var(--rose); }
+      .cluster-svg { position: absolute; top: 0; left: 0; pointer-events: none; width: 100%; height: 100%; }
+      .grid-info { font-size: 11px; color: var(--text3); margin-top: 8px; font-family: var(--font-mono); }
 
       /* ROW ACTIVITY */
-      .row-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 14px 16px;
-        margin-bottom: 16px;
-        box-shadow: var(--shadow-sm);
-      }
-      .bar-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 8px;
-      }
-      .bar-row:last-child {
-        margin-bottom: 0;
-      }
-      .bar-lbl {
-        font-size: 11px;
-        color: var(--text3);
-        width: 38px;
-        flex-shrink: 0;
-        font-family: var(--font-mono);
-      }
-      .bar-track {
-        flex: 1;
-        height: 4px;
-        background: var(--surface2);
-        border-radius: 2px;
-        overflow: hidden;
-        border: 1px solid var(--border);
-      }
-      .bar-fill {
-        height: 4px;
-        background: var(--amber);
-        border-radius: 2px;
-        transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      .bar-score {
-        font-size: 11px;
-        color: var(--text2);
-        width: 28px;
-        text-align: right;
-        font-family: var(--font-mono);
-        flex-shrink: 0;
-      }
+      .row-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
+      .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+      .bar-row:last-child { margin-bottom: 0; }
+      .bar-lbl { font-size: 11px; color: var(--text3); width: 38px; flex-shrink: 0; font-family: var(--font-mono); }
+      .bar-track { flex: 1; height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; border: 1px solid var(--border); }
+      .bar-fill { height: 4px; background: var(--amber); border-radius: 2px; transition: width .5s cubic-bezier(.4,0,.2,1); }
+      .bar-score { font-size: 11px; color: var(--text2); width: 28px; text-align: right; font-family: var(--font-mono); flex-shrink: 0; }
 
       /* GENERATE */
-      .gen-btn {
-        width: 100%;
-        padding: 12px;
-        background: linear-gradient(135deg, var(--rose), #be123c);
-        color: white;
-        border: none;
-        border-radius: var(--radius-md);
-        font-size: 13px;
-        font-weight: 600;
-        font-family: var(--font-sans);
-        cursor: pointer;
-        margin-bottom: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        transition:
-          opacity 0.15s,
-          transform 0.1s;
-        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.25);
-        letter-spacing: 0.01em;
-      }
-      .gen-btn:hover {
-        opacity: 0.93;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(225, 29, 72, 0.3);
-      }
-      .gen-btn:active {
-        transform: scale(0.98);
-        box-shadow: none;
-      }
-      .gen-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-      }
+      .gen-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--rose), #be123c); color: white; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; font-family: var(--font-sans); cursor: pointer; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .1s; box-shadow: 0 4px 12px rgba(225,29,72,.25); letter-spacing: .01em; }
+      .gen-btn:hover { opacity: .93; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(225,29,72,.3); }
+      .gen-btn:active { transform: scale(.98); box-shadow: none; }
+      .gen-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-      .legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
-        margin-bottom: 14px;
-      }
-      .leg {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 11px;
-        color: var(--text3);
-      }
-      .leg-dot {
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-      }
+      .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+      .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); }
+      .leg-dot { width: 7px; height: 7px; border-radius: 50%; }
 
       /* PREDICTION CARDS */
-      .pred-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 16px;
-        margin-bottom: 10px;
-        box-shadow: var(--shadow-sm);
-        animation: fadeUp 0.3s ease both;
-      }
-      .pred-card:nth-child(2) {
-        animation-delay: 0.07s;
-      }
-      .pred-card:nth-child(3) {
-        animation-delay: 0.14s;
-      }
-      @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(8px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      .pred-lbl {
-        font-size: 10px;
-        color: var(--text3);
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        margin-bottom: 10px;
-        font-family: var(--font-mono);
-      }
-      .ball-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-bottom: 10px;
-      }
-      .ball {
-        width: 44px;
-        height: 44px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        font-weight: 700;
-        font-family: var(--font-mono);
-        border: 2px solid;
-        transition: transform 0.15s;
-      }
-      .ball:hover {
-        transform: scale(1.1);
-      }
-      .ball-cluster {
-        background: var(--rose-bg);
-        border-color: var(--rose);
-        color: var(--rose-text);
-      }
-      .ball-hot {
-        background: var(--amber-bg);
-        border-color: var(--amber);
-        color: var(--amber-text);
-      }
-      .ball-recent {
-        background: var(--blue-bg);
-        border-color: var(--blue);
-        color: var(--blue-text);
-      }
-      .ball-fill {
-        background: var(--surface2);
-        border-color: var(--border2);
-        color: var(--text2);
-      }
-      .reason-row {
-        display: flex;
-        gap: 7px;
-        align-items: flex-start;
-        margin-top: 4px;
-      }
-      .r-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        margin-top: 6px;
-        flex-shrink: 0;
-      }
-      .r-text {
-        font-size: 11px;
-        color: var(--text2);
-        line-height: 1.6;
-        flex: 1;
-      }
-      .no-combo {
-        font-size: 13px;
-        color: var(--text3);
-        padding: 20px;
-        text-align: center;
-        border: 1px dashed var(--border2);
-        border-radius: var(--radius-lg);
-      }
+      .pred-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); animation: fadeUp .3s ease both; }
+      .pred-card:nth-child(2) { animation-delay: .07s; }
+      .pred-card:nth-child(3) { animation-delay: .14s; }
+      @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+      .pred-lbl { font-size: 10px; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; font-family: var(--font-mono); }
+      .ball-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+      .ball { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; font-family: var(--font-mono); border: 2px solid; transition: transform .15s; }
+      .ball:hover { transform: scale(1.1); }
+      .ball-cluster { background: var(--rose-bg); border-color: var(--rose); color: var(--rose-text); }
+      .ball-hot { background: var(--amber-bg); border-color: var(--amber); color: var(--amber-text); }
+      .ball-recent { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-text); }
+      .ball-fill { background: var(--surface2); border-color: var(--border2); color: var(--text2); }
+      .reason-row { display: flex; gap: 7px; align-items: flex-start; margin-top: 4px; }
+      .r-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+      .r-text { font-size: 11px; color: var(--text2); line-height: 1.6; flex: 1; }
+      .no-combo { font-size: 13px; color: var(--text3); padding: 20px; text-align: center; border: 1px dashed var(--border2); border-radius: var(--radius-lg); }
 
       /* ANALYSIS TABLE */
-      .analysis-description {
-        font-size: 13px;
-        color: var(--text2);
-        margin-bottom: 16px;
-        padding: 12px 16px;
-        background: var(--surface2);
-        border-radius: var(--radius-md);
-        border: 1px solid var(--border);
-        line-height: 1.6;
-      }
-      .analysis-description strong {
-        color: var(--text);
-      }
-      .table-wrap {
-        overflow-x: auto;
-        margin-top: 8px;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-md);
-        background: var(--surface);
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-        font-family: var(--font-mono);
-        min-width: 400px;
-      }
-      table th {
-        background: var(--surface2);
-        color: var(--text2);
-        font-weight: 600;
-        font-size: 11px;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        padding: 10px 12px;
-        text-align: left;
-        border-bottom: 2px solid var(--border);
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        font-family: var(--font-sans);
-      }
-      table td {
-        padding: 8px 12px;
-        border-bottom: 1px solid var(--border);
-        color: var(--text);
-        vertical-align: middle;
-      }
-      table tr:last-child td {
-        border-bottom: none;
-      }
-      table tr:hover td {
-        background: var(--surface2);
-      }
-      .table-wrap .badge {
-        display: inline-block;
-        padding: 2px 8px;
-        border-radius: 20px;
-        background: var(--surface2);
-        border: 1px solid var(--border2);
-        font-size: 12px;
-        font-family: var(--font-mono);
-        color: var(--text2);
-        letter-spacing: 0.02em;
-      }
-      .table-wrap .badge.actual {
-        background: var(--rose-bg);
-        border-color: var(--rose);
-        color: var(--rose-text);
-      }
-      .table-wrap .badge.pred {
-        background: var(--blue-bg);
-        border-color: var(--blue);
-        color: var(--blue-text);
-      }
-      .table-wrap .badge.na {
-        background: var(--surface2);
-        border-color: var(--border2);
-        color: var(--text3);
-        font-weight: 400;
-      }
-      .matches-badge {
-        font-weight: 600;
-        font-size: 12px;
-      }
-      .matches-badge.high {
-        color: var(--green-text);
-      }
-      .matches-badge.medium {
-        color: var(--amber-text);
-      }
-      .matches-badge.low {
-        color: var(--text3);
-      }
-      .trained-on {
-        font-size: 11px;
-        color: var(--text3);
-        font-family: var(--font-mono);
-      }
-      .comparison-grid {
-        margin-top: 20px;
-        padding-top: 16px;
-        border-top: 2px solid var(--border);
-      }
-      .comparison-grid .slabel {
-        margin-bottom: 12px;
-      }
-      .pred-cell {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-      }
-      .pred-cell .badge {
-        font-size: 11px;
-        padding: 2px 6px;
-      }
-      .pred-cell .pred-label {
-        font-size: 9px;
-        color: var(--text3);
-        font-weight: 500;
-        font-family: var(--font-sans);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
+      .table-wrap { overflow-x: auto; margin-top: 8px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+      table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: var(--font-mono); min-width: 360px; }
+      table th { background: var(--surface2); color: var(--text2); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 2; font-family: var(--font-sans); }
+      table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+      table tr:last-child td { border-bottom: none; }
+      table tr:hover td { background: var(--surface2); }
+      .table-wrap .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; background: var(--surface2); border: 1px solid var(--border2); font-size: 12px; font-family: var(--font-mono); color: var(--text2); letter-spacing: .02em; }
+      .table-wrap .badge.actual { background: var(--rose-bg); border-color: var(--rose); color: var(--rose-text); }
+      .table-wrap .badge.pred { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-text); }
+      .table-wrap .badge.na { background: var(--surface2); border-color: var(--border2); color: var(--text3); font-weight: 400; }
+      .matches-badge { font-weight: 600; font-size: 12px; }
+      .matches-badge.high { color: var(--green-text); }
+      .matches-badge.medium { color: var(--amber-text); }
+      .matches-badge.low { color: var(--text3); }
+      .trained-on { font-size: 11px; color: var(--text3); font-family: var(--font-mono); }
+      .comparison-grid { margin-top: 20px; padding-top: 16px; border-top: 2px solid var(--border); }
+      .comparison-grid .slabel { margin-bottom: 12px; }
+
+      /* Stacked draw/prediction cell */
+      .draw-pred-stack { display: flex; flex-direction: column; gap: 4px; }
+      .draw-pred-stack .badge { display: block; width: fit-content; }
+      .draw-pred-stack .dp-label { font-size: 9px; color: var(--text3); font-weight: 500; font-family: var(--font-sans); text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; }
 
       /* ADD DRAW */
-      .num-grid {
-        display: grid;
-        grid-template-columns: repeat(6, 1fr);
-        gap: 8px;
-        margin-bottom: 12px;
-      }
-      .num-inp {
-        width: 100%;
-        aspect-ratio: 1;
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-sm);
-        color: var(--text);
-        font-size: 18px;
-        font-weight: 700;
-        font-family: var(--font-mono);
-        text-align: center;
-        padding: 0;
-        -moz-appearance: textfield;
-        transition:
-          border-color 0.15s,
-          background 0.15s;
-      }
-      .num-inp::-webkit-outer-spin-button,
-      .num-inp::-webkit-inner-spin-button {
-        -webkit-appearance: none;
-      }
-      .num-inp:focus {
-        outline: none;
-        border-color: var(--rose);
-        background: var(--surface);
-      }
-      .num-inp.filled {
-        background: var(--rose-bg);
-        border-color: rgba(225, 29, 72, 0.4);
-        color: var(--rose-text);
-      }
-      .btn-row2 {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-      .add-btn {
-        flex: 2;
-        padding: 11px;
-        background: linear-gradient(135deg, var(--rose), #be123c);
-        color: white;
-        border: none;
-        border-radius: var(--radius-md);
-        font-size: 13px;
-        font-weight: 600;
-        cursor: pointer;
-        box-shadow: 0 4px 12px rgba(225, 29, 72, 0.2);
-      }
-      .add-btn:hover {
-        opacity: 0.9;
-      }
-      .add-btn:active {
-        transform: scale(0.98);
-      }
-      .clr-btn {
-        flex: 1;
-        padding: 11px;
-        background: none;
-        border: 1px solid var(--border2);
-        color: var(--text2);
-        border-radius: var(--radius-md);
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-      }
-      .clr-btn:hover {
-        background: var(--surface2);
-      }
-      .divider {
-        height: 1px;
-        background: var(--border);
-        margin: 16px 0;
-      }
-      .draw-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--border);
-      }
-      .draw-row:last-child {
-        border-bottom: none;
-      }
-      .draw-idx {
-        font-size: 11px;
-        color: var(--text3);
-        width: 28px;
-        flex-shrink: 0;
-        font-family: var(--font-mono);
-      }
-      .draw-nums {
-        font-size: 13px;
-        color: var(--text2);
-        font-family: var(--font-mono);
-        letter-spacing: 0.04em;
-      }
-      .empty {
-        text-align: center;
-        padding: 24px 0;
-        color: var(--text3);
-        font-size: 13px;
-      }
+      .num-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
+      .num-inp { width: 100%; aspect-ratio: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 18px; font-weight: 700; font-family: var(--font-mono); text-align: center; padding: 0; -moz-appearance: textfield; transition: border-color .15s, background .15s; }
+      .num-inp::-webkit-outer-spin-button, .num-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
+      .num-inp:focus { outline: none; border-color: var(--rose); background: var(--surface); }
+      .num-inp.filled { background: var(--rose-bg); border-color: rgba(225,29,72,.4); color: var(--rose-text); }
+      .btn-row2 { display: flex; gap: 8px; margin-bottom: 16px; }
+      .add-btn { flex: 2; padding: 11px; background: linear-gradient(135deg, var(--rose), #be123c); color: white; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(225,29,72,.2); }
+      .add-btn:hover { opacity: .9; }
+      .add-btn:active { transform: scale(.98); }
+      .clr-btn { flex: 1; padding: 11px; background: none; border: 1px solid var(--border2); color: var(--text2); border-radius: var(--radius-md); font-size: 13px; font-weight: 500; cursor: pointer; }
+      .clr-btn:hover { background: var(--surface2); }
+      .divider { height: 1px; background: var(--border); margin: 16px 0; }
+      .draw-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+      .draw-row:last-child { border-bottom: none; }
+      .draw-idx { font-size: 11px; color: var(--text3); width: 28px; flex-shrink: 0; font-family: var(--font-mono); }
+      .draw-nums { font-size: 13px; color: var(--text2); font-family: var(--font-mono); letter-spacing: .04em; }
+      .empty { text-align: center; padding: 24px 0; color: var(--text3); font-size: 13px; }
 
-      /* SETTINGS - two row layout */
-      .setting-group {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: var(--radius-lg);
-        padding: 16px;
-        margin-bottom: 12px;
-        box-shadow: var(--shadow-sm);
-      }
-      .file-row {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        flex-wrap: wrap;
-        margin: 4px 0;
-      }
-      .file-row.actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .file-row.info {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-        margin-top: 6px;
-        padding-top: 6px;
-        border-top: 1px solid var(--border);
-      }
-      .file-label {
-        background: var(--surface2);
-        padding: 8px 14px;
-        border-radius: var(--radius-sm);
-        font-size: 12px;
-        border: 1px solid var(--border);
-        cursor: pointer;
-        color: var(--text);
-        transition: background 0.15s;
-        white-space: nowrap;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .file-label:hover {
-        background: var(--border);
-      }
-      .file-path {
-        font-size: 11px;
-        font-family: var(--font-mono);
-        color: var(--text2);
-        word-break: break-all;
-        flex: 1;
-        font-weight: 600;
-      }
-      .file-path .selected {
-        color: var(--green-text);
-        background: var(--green-bg);
-        padding: 2px 8px;
-        border-radius: 20px;
-        border: 1px solid rgba(5, 150, 105, 0.3);
-        font-weight: 600;
-        font-size: 10px;
-      }
-      .status-badge {
-        font-size: 10px;
-        background: var(--surface2);
-        padding: 3px 10px;
-        border-radius: 20px;
-        color: var(--text2);
-        border: 1px solid var(--border);
-        white-space: nowrap;
-        font-weight: 600;
-      }
-      .status-badge.ok {
-        background: var(--green-bg);
-        color: var(--green-text);
-        border-color: rgba(5, 150, 105, 0.3);
-      }
-      .status-badge.arr-ok {
-        background: var(--green-bg);
-        color: var(--green-text);
-        border-color: rgba(5, 150, 105, 0.3);
-      }
-      .status-badge.has-path {
-        background: var(--blue-bg);
-        color: var(--blue-text);
-        border-color: rgba(37, 99, 235, 0.3);
-      }
-      .refresh-btn {
-        background: var(--surface2);
-        border: 1px solid var(--border2);
-        padding: 6px 12px;
-        border-radius: var(--radius-sm);
-        font-size: 11px;
-        cursor: pointer;
-        color: var(--text2);
-        transition: background 0.15s;
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        white-space: nowrap;
-      }
-      .refresh-btn:hover {
-        background: var(--border);
-      }
-      .hint {
-        font-size: 11px;
-        color: var(--text3);
-        margin-top: 8px;
-        line-height: 1.7;
-      }
-      .hint strong {
-        color: var(--text2);
-        font-weight: 600;
-      }
-      .hint .highlight {
-        color: var(--rose-text);
-        font-weight: 600;
-      }
-      .arr-row {
-        display: flex;
-        align-items: flex-start;
-        gap: 8px;
-        margin-bottom: 8px;
-      }
-      .arr-lbl {
-        font-size: 11px;
-        color: var(--text3);
-        width: 38px;
-        flex-shrink: 0;
-        padding-top: 4px;
-        font-family: var(--font-mono);
-      }
-      .arr-badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 4px;
-      }
-      .badge {
-        padding: 3px 8px;
-        background: var(--surface2);
-        border: 1px solid var(--border2);
-        border-radius: 6px;
-        font-size: 11px;
-        color: var(--text2);
-        font-family: var(--font-mono);
-      }
+      /* SETTINGS */
+      .setting-group { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+      .setting-group-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+      .setting-group-title { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; }
+      .status-badge { font-size: 10px; padding: 3px 10px; border-radius: 20px; color: var(--text2); border: 1px solid var(--border); white-space: nowrap; font-weight: 600; background: var(--surface2); }
+      .status-badge.ok { background: var(--green-bg); color: var(--green-text); border-color: rgba(5,150,105,.3); }
+      .status-badge.has-path { background: var(--blue-bg); color: var(--blue-text); border-color: rgba(37,99,235,.3); }
+
+      /* File action buttons row */
+      .file-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+      /* Dynamic file select button */
+      .file-select-btn { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; border: none; cursor: pointer; color: white; transition: opacity .15s, background .2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
+      .file-select-btn.no-file { background: var(--rose); }
+      .file-select-btn.has-file { background: var(--green); }
+      .file-select-btn:hover { opacity: .88; }
+
+      .refresh-btn { background: var(--surface2); border: 1px solid var(--border2); padding: 6px 12px; border-radius: var(--radius-sm); font-size: 11px; cursor: pointer; color: var(--text2); transition: background .15s; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+      .refresh-btn:hover { background: var(--border); }
+
+      .hint { font-size: 11px; color: var(--text3); margin-top: 10px; line-height: 1.7; }
+      .hint strong { color: var(--text2); font-weight: 600; }
+      .hint .highlight { color: var(--rose-text); font-weight: 600; }
+
+      .arr-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+      .arr-lbl { font-size: 11px; color: var(--text3); width: 38px; flex-shrink: 0; padding-top: 4px; font-family: var(--font-mono); }
+      .arr-badges { display: flex; flex-wrap: wrap; gap: 4px; }
+      .badge { padding: 3px 8px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; font-size: 11px; color: var(--text2); font-family: var(--font-mono); }
 
       /* TOAST */
-      .toast {
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%) translateY(10px);
-        background: var(--surface);
-        border: 1px solid var(--border2);
-        color: var(--text);
-        padding: 9px 18px;
-        border-radius: 100px;
-        font-size: 12px;
-        font-weight: 600;
-        opacity: 0;
-        transition:
-          opacity 0.2s,
-          transform 0.2s;
-        pointer-events: none;
-        white-space: nowrap;
-        z-index: 100;
-        box-shadow: var(--shadow-md);
-      }
-      .toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-      }
+      .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--surface); border: 1px solid var(--border2); color: var(--text); padding: 9px 18px; border-radius: 100px; font-size: 12px; font-weight: 600; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap; z-index: 100; box-shadow: var(--shadow-md); }
+      .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
       /* RESPONSIVE */
       @media (max-width: 720px) {
-        .stat-grid-6 {
-          grid-template-columns: repeat(3, 1fr);
-        }
-        .filter-group {
-          flex-wrap: wrap;
-        }
+        .stat-grid-6 { grid-template-columns: repeat(3,1fr); }
+        .filter-row { gap: 8px; }
       }
       @media (max-width: 640px) {
-        .stat-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-        .stat-grid .stat:last-child {
-          grid-column: span 2;
-        }
-        .stat-grid-6 {
-          grid-template-columns: repeat(2, 1fr);
-        }
-        .big-cell .cn {
-          font-size: 12px;
-        }
-        .big-cell .cw {
-          font-size: 7px;
-        }
-        .ball {
-          width: 38px;
-          height: 38px;
-          font-size: 13px;
-        }
-        .header-left h1 {
-          font-size: 16px;
-        }
-        .tab {
-          font-size: 11px;
-          flex: 1 1 auto;
-        }
-        .gen-btn {
-          font-size: 12px;
-          padding: 11px;
-        }
-        table {
-          font-size: 12px;
-          min-width: 400px;
-        }
-        table td,
-        table th {
-          padding: 6px 8px;
-        }
-        .trained-on {
-          font-size: 10px;
-        }
-        .analysis-description {
-          font-size: 12px;
-          padding: 10px 12px;
-        }
-        .selector-row {
-          flex-direction: column;
-          align-items: stretch;
-        }
-        .selector-row select,
-        .selector-row input[type="number"] {
-          width: 100%;
-        }
-        .filter-group {
-          justify-content: center;
-        }
-        .hint {
-          font-size: 10px;
-        }
-        .file-path {
-          font-size: 10px;
-        }
-        .strategy-description {
-          font-size: 11px;
-        }
-        .file-row.actions {
-          flex-wrap: wrap;
-        }
-        .file-row.info {
-          flex-wrap: wrap;
-        }
+        .stat-grid-6 { grid-template-columns: repeat(2,1fr); }
+        .big-cell .cn { font-size: 12px; }
+        .big-cell .cw { font-size: 7px; }
+        .ball { width: 38px; height: 38px; font-size: 13px; }
+        .header-left h1 { font-size: 16px; }
+        .tab { font-size: 11px; flex: 1 1 auto; }
+        .gen-btn { font-size: 12px; padding: 11px; }
+        table { font-size: 12px; min-width: 300px; }
+        table td, table th { padding: 6px 8px; }
+        .filter-row { flex-direction: column; align-items: stretch; }
+        .filter-group { justify-content: space-between; }
+        .apply-btn { width: 100%; }
+        .hint { font-size: 10px; }
       }
       @media (max-width: 380px) {
-        .num-grid {
-          grid-template-columns: repeat(3, 1fr);
-        }
-        .big-grid {
-          gap: 3px;
-          padding: 8px;
-          min-width: 280px;
-        }
-        .big-cell .cn {
-          font-size: 11px;
-        }
-        .ball {
-          width: 34px;
-          height: 34px;
-          font-size: 12px;
-        }
-        .btn-row2 {
-          flex-direction: column;
-        }
-        table {
-          font-size: 11px;
-          min-width: 300px;
-        }
-        table td,
-        table th {
-          padding: 4px 6px;
-        }
-        .stat-grid-6 {
-          grid-template-columns: 1fr 1fr;
-        }
-        .hint {
-          font-size: 9px;
-        }
-        .strategy-description {
-          font-size: 10px;
-        }
-        .stat-grid {
-          grid-template-columns: 1fr 1fr;
-        }
-        .stat-grid .stat:last-child {
-          grid-column: span 2;
-        }
+        .num-grid { grid-template-columns: repeat(3,1fr); }
+        .big-grid { gap: 3px; padding: 8px; min-width: 280px; }
+        .big-cell .cn { font-size: 11px; }
+        .ball { width: 34px; height: 34px; font-size: 12px; }
+        .btn-row2 { flex-direction: column; }
+        table { font-size: 11px; min-width: 280px; }
+        table td, table th { padding: 4px 6px; }
+        .stat-grid-6 { grid-template-columns: 1fr 1fr; }
+        .hint { font-size: 9px; }
       }
     </style>
   </head>
@@ -1221,32 +259,20 @@
 
       <!-- TABS -->
       <div class="tabs">
-        <button class="tab active" onclick="switchTab('grid', this)">
-          Grid &amp; Predict
-        </button>
-        <button class="tab" onclick="switchTab('analysis', this)">
-          Analysis
-        </button>
+        <button class="tab active" onclick="switchTab('grid', this)">Grid &amp; Predict</button>
+        <button class="tab" onclick="switchTab('analysis', this)">Analysis</button>
         <button class="tab" onclick="switchTab('add', this)">Add draw</button>
-        <button class="tab" onclick="switchTab('settings', this)">
-          Settings
-        </button>
+        <button class="tab" onclick="switchTab('settings', this)">Settings</button>
       </div>
 
       <!-- ── GRID & PREDICT ── -->
       <div id="pane-grid" class="pane active">
+        <!-- 3-column stat grid (always) -->
         <div class="stat-grid" id="stats"></div>
 
         <div class="slider-card">
           <div class="slider-row">
-            <input
-              type="range"
-              id="drawSlider"
-              min="0"
-              max="0"
-              value="0"
-              step="1"
-            />
+            <input type="range" id="drawSlider" min="0" max="0" value="0" step="1" />
             <span class="slider-val" id="sliderVal">0 / 0</span>
           </div>
           <div class="mark-row">
@@ -1262,9 +288,9 @@
         </div>
         <p class="grid-info" id="grid-info"></p>
 
-        <div style="height: 20px"></div>
+        <div style="height:20px"></div>
 
-        <div class="row-card" id="row-card" style="display: none">
+        <div class="row-card" id="row-card" style="display:none">
           <div class="slabel">Row activity</div>
           <div id="row-bars"></div>
         </div>
@@ -1275,22 +301,10 @@
         </button>
 
         <div class="legend">
-          <span class="leg"
-            ><span class="leg-dot" style="background: var(--rose)"></span
-            >Cluster</span
-          >
-          <span class="leg"
-            ><span class="leg-dot" style="background: var(--amber)"></span
-            >Hot</span
-          >
-          <span class="leg"
-            ><span class="leg-dot" style="background: var(--blue)"></span
-            >Recent</span
-          >
-          <span class="leg"
-            ><span class="leg-dot" style="background: #8a94a5"></span
-            >Weighted</span
-          >
+          <span class="leg"><span class="leg-dot" style="background:var(--rose)"></span>Cluster</span>
+          <span class="leg"><span class="leg-dot" style="background:var(--amber)"></span>Hot</span>
+          <span class="leg"><span class="leg-dot" style="background:var(--blue)"></span>Recent</span>
+          <span class="leg"><span class="leg-dot" style="background:#8a94a5"></span>Weighted</span>
         </div>
 
         <div id="predictions"></div>
@@ -1298,34 +312,9 @@
 
       <!-- ── ANALYSIS ── -->
       <div id="pane-analysis" class="pane">
-        <div class="analysis-description">
-          <strong>Rolling window prediction backtest</strong>
-          <br />
-          For each historical draw, the app generates a prediction using
-          <strong>only the previous N draws</strong> (where N is the selected
-          window size). Choose your strategy and filters below.
-        </div>
 
-        <!-- Strategy, Window, and Filters in one row -->
-        <div class="selector-row">
-          <label for="strategySelect">🧠 Strategy:</label>
-          <select id="strategySelect">
-            <option value="strategy1">Strategy 1 (Hybrid)</option>
-            <option value="strategy2" selected>Strategy 2 (Custom)</option>
-          </select>
-
-          <label for="windowSelect" style="margin-left: 8px;">📏 Window:</label>
-          <select id="windowSelect">
-            <option value="8">1 month (8)</option>
-            <option value="17">2 months (17)</option>
-            <option value="26" selected>3 months (26)</option>
-            <option value="35">4 months (35)</option>
-            <option value="43">5 months (43)</option>
-            <option value="52">6 months (52)</option>
-          </select>
-
-          <span style="color:var(--text3);font-size:12px;margin:0 4px;">|</span>
-
+        <!-- Filter row: 3 inputs on same line -->
+        <div class="filter-row">
           <div class="filter-group">
             <label>From clusters:</label>
             <input type="number" id="filterClusters" value="2" min="0" max="6" />
@@ -1338,22 +327,15 @@
             <label>Random:</label>
             <input type="number" id="filterRandom" value="2" min="0" max="6" />
           </div>
-          <button
-            class="refresh-btn"
-            id="applyFiltersBtn"
-            style="background:var(--rose);color:white;border-color:var(--rose);padding:6px 14px;"
-          >
-            Apply
-          </button>
         </div>
 
-        <!-- Strategy description -->
-        <div id="strategyDescription" class="strategy-description">
-          <strong>Strategy 2 (Custom):</strong> You control exactly how many numbers come from clusters, how many from neighbours (8‑direction adjacent to clusters), and how many from the remaining pool. All selections are recency‑weighted.
-        </div>
+        <!-- Centered, bold Apply button -->
+        <button class="apply-btn" id="applyFiltersBtn">
+          ⚡ Apply Filters
+        </button>
 
-        <!-- Performance Comparison at the top -->
-        <div class="comparison-grid" style="border-top: none; padding-top: 0; margin-top: 0;">
+        <!-- Performance Comparison -->
+        <div class="comparison-grid" style="border-top:none;padding-top:0;margin-top:0;">
           <div class="slabel">Performance comparison across all windows</div>
           <div class="stat-grid-6" id="comparison-stats"></div>
         </div>
@@ -1379,12 +361,17 @@
 
       <!-- ── SETTINGS ── -->
       <div id="pane-settings" class="pane">
+
+        <!-- DRAWS FILE -->
         <div class="setting-group">
-          <div class="slabel">Past draws file (auto-append)</div>
-          <!-- Row 1: Select, Activate, Forget -->
-          <div class="file-row actions">
-            <button class="file-label" id="selectDrawsBtn">
-              <i class="ti ti-folder-open" aria-hidden="true"></i> Select file
+          <div class="setting-group-header">
+            <span class="setting-group-title">Past draws file (auto-append)</span>
+            <span id="drawsStatus" class="status-badge">Not active</span>
+          </div>
+          <div class="file-actions">
+            <button class="file-select-btn no-file" id="selectDrawsBtn">
+              <i class="ti ti-folder-open" aria-hidden="true"></i>
+              <span id="drawsBtnLabel">Select file</span>
             </button>
             <button class="refresh-btn" id="refreshDrawsBtn">
               <i class="ti ti-refresh" aria-hidden="true"></i> Activate
@@ -1393,26 +380,23 @@
               <i class="ti ti-trash" aria-hidden="true"></i> Forget
             </button>
           </div>
-          <!-- Row 2: Filename, Selected badge, Active/Not Active -->
-          <div class="file-row info">
-            <span id="drawsFileName" class="file-path">No file selected</span>
-            <span id="drawsStatus" class="status-badge">Not active</span>
-          </div>
           <p class="hint">
             <strong>📌 Once you select a file, its path is saved permanently.</strong><br />
-            The file name will stay visible even after you close the browser.
-            If the status shows <strong>Not active</strong>, tap <strong>Activate</strong>
-            to re‑grant permission for this session (required only after a full browser restart).
+            If the status shows <strong>Not active</strong>, tap <strong>Activate</strong> to re‑grant permission for this session.
             The path is <span class="highlight">never forgotten</span> unless you click <strong>Forget</strong>.
           </p>
         </div>
 
+        <!-- ARRANGEMENT FILE -->
         <div class="setting-group">
-          <div class="slabel">Arrangement file (read only, optional)</div>
-          <!-- Row 1: Select, Activate, Forget -->
-          <div class="file-row actions">
-            <button class="file-label" id="selectArrBtn">
-              <i class="ti ti-folder-open" aria-hidden="true"></i> Select file
+          <div class="setting-group-header">
+            <span class="setting-group-title">Arrangement file (read only, optional)</span>
+            <span id="arrStatus" class="status-badge">Not active</span>
+          </div>
+          <div class="file-actions">
+            <button class="file-select-btn no-file" id="selectArrBtn">
+              <i class="ti ti-folder-open" aria-hidden="true"></i>
+              <span id="arrBtnLabel">Select file</span>
             </button>
             <button class="refresh-btn" id="refreshArrBtn">
               <i class="ti ti-refresh" aria-hidden="true"></i> Activate
@@ -1421,231 +405,127 @@
               <i class="ti ti-trash" aria-hidden="true"></i> Forget
             </button>
           </div>
-          <!-- Row 2: Filename, Selected badge, Active/Not Active -->
-          <div class="file-row info">
-            <span id="arrFileName" class="file-path">No file selected</span>
-            <span id="arrStatus" class="status-badge">Not active</span>
-          </div>
           <p class="hint">
             <strong>📌 Arrangement file path is also saved permanently.</strong><br />
-            Once selected, it will be restored on every page load.
             Tap <strong>Activate</strong> to grant read permission for this session.
             The path is <span class="highlight">never forgotten</span> unless you click <strong>Forget</strong>.
           </p>
         </div>
 
         <div class="divider"></div>
-        <div class="slabel" style="margin-bottom: 12px">
-          Loaded arrangement rows
-        </div>
+        <div class="slabel" style="margin-bottom:12px">Loaded arrangement rows</div>
         <div id="arr-display"></div>
       </div>
     </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
       /* ═══════════════════════════════════════════════════════════
-   DATA – initially empty, loaded from file
-   ═══════════════════════════════════════════════════════════ */
-      // No built-in data
-
-      /* ═══════════════════════════════════════════════════════════
-   GRID LAYOUT & ADJACENCY
-   ═══════════════════════════════════════════════════════════ */
+         GRID LAYOUT & ADJACENCY
+      ═══════════════════════════════════════════════════════════ */
       const GRID_ROWS = [
-        [5, 10, 15, 20, 25, 30, 35, 40],
-        [4, 9, 14, 19, 24, 29, 34, 39],
-        [3, 8, 13, 18, 23, 28, 33, 38],
-        [2, 7, 12, 17, 22, 27, 32, 37],
-        [1, 6, 11, 16, 21, 26, 31, 36],
+        [5,10,15,20,25,30,35,40],
+        [4, 9,14,19,24,29,34,39],
+        [3, 8,13,18,23,28,33,38],
+        [2, 7,12,17,22,27,32,37],
+        [1, 6,11,16,21,26,31,36],
       ];
       const POS = {};
-      GRID_ROWS.forEach((row, r) =>
-        row.forEach((n, c) => {
-          POS[n] = { row: r, col: c };
-        }),
-      );
+      GRID_ROWS.forEach((row, r) => row.forEach((n, c) => { POS[n] = { row: r, col: c }; }));
 
-      // Pre-compute adjacency list for all numbers (8-directional)
       const ADJ = {};
       for (let n = 1; n <= 40; n++) ADJ[n] = [];
-      const DIRS8 = [
-        [-1, -1],
-        [-1, 0],
-        [-1, 1],
-        [0, -1],
-        [0, 1],
-        [1, -1],
-        [1, 0],
-        [1, 1],
-      ];
+      const DIRS8 = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]];
       GRID_ROWS.forEach((row, r) => {
         row.forEach((n, c) => {
           DIRS8.forEach(([dr, dc]) => {
-            const nr = r + dr,
-              nc = c + dc;
-            if (nr >= 0 && nr < 5 && nc >= 0 && nc < 8) {
-              ADJ[n].push(GRID_ROWS[nr][nc]);
-            }
+            const nr = r+dr, nc = c+dc;
+            if (nr >= 0 && nr < 5 && nc >= 0 && nc < 8) ADJ[n].push(GRID_ROWS[nr][nc]);
           });
         });
       });
 
-      const CLUSTER_COLORS = ["#e11d48", "#2563eb", "#059669", "#7c3aed"];
+      const CLUSTER_COLORS = ["#e11d48","#2563eb","#059669","#7c3aed"];
 
       /* ═══════════════════════════════════════════════════════════
-   STATE
-   ═══════════════════════════════════════════════════════════ */
-      let draws = [];
-      let arrangement = [];
-      let drawsHandle = null,
-        arrHandle = null;
-      let drawsName = "",
-        arrName = "";
-      let drawsOk = false;
-      let arrOk = false;
-      let inputs = ["", "", "", "", "", ""];
+         STATE
+      ═══════════════════════════════════════════════════════════ */
+      let draws = [], arrangement = [];
+      let drawsHandle = null, arrHandle = null;
+      let drawsName = "", arrName = "";
+      let drawsOk = false, arrOk = false;
+      let inputs = ["","","","","",""];
       let currentRange = 0;
       let analysisWindow = 26;
       let analysisStrategy = "strategy2";
-      let filterClusters = 2;
-      let filterNeighbours = 2;
-      let filterRandom = 2;
+      let filterClusters = 2, filterNeighbours = 2, filterRandom = 2;
 
       /* ═══════════════════════════════════════════════════════════
-   INDEXEDDB
-   ═══════════════════════════════════════════════════════════ */
-      const DB_NAME = "DrawGridExplorerPro",
-        DB_VER = 1,
-        DB_STORE = "handles";
+         INDEXEDDB
+      ═══════════════════════════════════════════════════════════ */
+      const DB_NAME = "DrawGridExplorerPro", DB_VER = 1, DB_STORE = "handles";
       function openDB() {
         return new Promise((res, rej) => {
           const r = indexedDB.open(DB_NAME, DB_VER);
           r.onerror = () => rej(r.error);
           r.onsuccess = () => res(r.result);
-          r.onupgradeneeded = (e) => {
-            if (!e.target.result.objectStoreNames.contains(DB_STORE))
-              e.target.result.createObjectStore(DB_STORE);
-          };
+          r.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains(DB_STORE)) e.target.result.createObjectStore(DB_STORE); };
         });
       }
       async function dbSet(k, v) {
         const db = await openDB();
-        return new Promise((res, rej) => {
-          const tx = db.transaction(DB_STORE, "readwrite");
-          const r = tx.objectStore(DB_STORE).put(v, k);
-          r.onerror = () => rej(r.error);
-          r.onsuccess = () => res();
-          tx.oncomplete = () => db.close();
-        });
+        return new Promise((res, rej) => { const tx = db.transaction(DB_STORE,"readwrite"); const r = tx.objectStore(DB_STORE).put(v,k); r.onerror=()=>rej(r.error); r.onsuccess=()=>res(); tx.oncomplete=()=>db.close(); });
       }
       async function dbGet(k) {
         const db = await openDB();
-        return new Promise((res, rej) => {
-          const tx = db.transaction(DB_STORE, "readonly");
-          const r = tx.objectStore(DB_STORE).get(k);
-          r.onerror = () => rej(r.error);
-          r.onsuccess = () => res(r.result || null);
-          tx.oncomplete = () => db.close();
-        });
+        return new Promise((res, rej) => { const tx = db.transaction(DB_STORE,"readonly"); const r = tx.objectStore(DB_STORE).get(k); r.onerror=()=>rej(r.error); r.onsuccess=()=>res(r.result||null); tx.oncomplete=()=>db.close(); });
       }
       async function dbDel(k) {
         const db = await openDB();
-        return new Promise((res, rej) => {
-          const tx = db.transaction(DB_STORE, "readwrite");
-          const r = tx.objectStore(DB_STORE).delete(k);
-          r.onerror = () => rej(r.error);
-          r.onsuccess = () => res();
-          tx.oncomplete = () => db.close();
-        });
+        return new Promise((res, rej) => { const tx = db.transaction(DB_STORE,"readwrite"); const r = tx.objectStore(DB_STORE).delete(k); r.onerror=()=>rej(r.error); r.onsuccess=()=>res(); tx.oncomplete=()=>db.close(); });
       }
 
       /* ═══════════════════════════════════════════════════════════
-   FILE HANDLING — DRAWS
-   ═══════════════════════════════════════════════════════════ */
-      document
-        .getElementById("selectDrawsBtn")
-        .addEventListener("click", async () => {
-          if (!window.showOpenFilePicker) {
-            toast("File picker not supported in this browser.");
-            return;
-          }
-          try {
-            const [h] = await window.showOpenFilePicker({
-              types: [
-                {
-                  description: "Text file",
-                  accept: { "text/plain": [".txt", ".csv"] },
-                },
-              ],
-            });
-            drawsHandle = h;
-            drawsName = h.name;
-            drawsOk = false;
-            await dbSet("drawsH", h);
-            await dbSet("drawsN", drawsName);
-            updateDrawsUI();
-            fullRender();
-            toast(`Selected: ${drawsName}. Tap Activate to load.`);
-          } catch (e) {
-            if (e.name !== "AbortError")
-              toast("Selection failed: " + e.message);
-          }
-        });
-
-      document
-        .getElementById("refreshDrawsBtn")
-        .addEventListener("click", async () => {
-          await activateDraws(true);
-        });
-
-      async function activateDraws(showToast = true) {
-        if (!drawsHandle) {
-          if (showToast) toast("No draws file selected. Choose one first.");
-          return false;
-        }
+         FILE HANDLING — DRAWS
+      ═══════════════════════════════════════════════════════════ */
+      document.getElementById("selectDrawsBtn").addEventListener("click", async () => {
+        if (!window.showOpenFilePicker) { toast("File picker not supported in this browser."); return; }
         try {
-          const p = await drawsHandle.requestPermission({
-            mode: "readwrite",
-          });
-          if (p !== "granted") {
-            if (showToast) toast("Permission denied.");
-            drawsOk = false;
-            updateDrawsUI();
-            return false;
-          }
+          const [h] = await window.showOpenFilePicker({ types: [{ description:"Text file", accept:{"text/plain":[".txt",".csv"]} }] });
+          drawsHandle = h; drawsName = h.name; drawsOk = false;
+          await dbSet("drawsH", h); await dbSet("drawsN", drawsName);
+          updateDrawsUI(); fullRender();
+          toast(`Selected: ${drawsName}. Tap Activate to load.`);
+        } catch(e) { if (e.name !== "AbortError") toast("Selection failed: " + e.message); }
+      });
+
+      document.getElementById("refreshDrawsBtn").addEventListener("click", async () => { await activateDraws(true); });
+
+      async function activateDraws(showToast=true) {
+        if (!drawsHandle) { if (showToast) toast("No draws file selected. Choose one first."); return false; }
+        try {
+          const p = await drawsHandle.requestPermission({ mode:"readwrite" });
+          if (p !== "granted") { if (showToast) toast("Permission denied."); drawsOk=false; updateDrawsUI(); return false; }
           drawsOk = true;
           const file = await drawsHandle.getFile();
-          const content = await file.text();
-          const parsed = parseDrawsText(content);
-          draws = parsed;
-          updateDrawsUI();
-          fullRender();
+          draws = parseDrawsText(await file.text());
+          updateDrawsUI(); fullRender();
           if (showToast) toast(`Loaded ${draws.length} draws from ${drawsName}.`);
           return true;
-        } catch (e) {
+        } catch(e) {
           console.error(e);
-          if (showToast)
-            toast("Failed to load the file. It may have been moved or deleted.");
-          drawsOk = false;
-          updateDrawsUI();
-          return false;
+          if (showToast) toast("Failed to load the file. It may have been moved or deleted.");
+          drawsOk = false; updateDrawsUI(); return false;
         }
       }
 
-      document
-        .getElementById("clearDrawsBtn")
-        .addEventListener("click", async () => {
-          await dbDel("drawsH");
-          await dbDel("drawsN");
-          drawsHandle = null;
-          drawsName = "";
-          drawsOk = false;
-          draws = [];
-          updateDrawsUI();
-          fullRender();
-          toast("File forgotten. No draws loaded.");
-        });
+      document.getElementById("clearDrawsBtn").addEventListener("click", async () => {
+        await dbDel("drawsH"); await dbDel("drawsN");
+        drawsHandle = null; drawsName = ""; drawsOk = false; draws = [];
+        updateDrawsUI(); fullRender();
+        toast("File forgotten. No draws loaded.");
+      });
 
       async function appendToFile(d) {
         if (!drawsHandle || !drawsOk) return false;
@@ -1657,184 +537,105 @@
           await wr.write(c + d.join(" ") + "\n");
           await wr.close();
           return true;
-        } catch (e) {
-          console.error(e);
-          drawsOk = false;
-          updateDrawsUI();
-          return false;
-        }
+        } catch(e) { console.error(e); drawsOk=false; updateDrawsUI(); return false; }
       }
 
       function updateDrawsUI() {
-        const n = document.getElementById("drawsFileName");
-        const s = document.getElementById("drawsStatus");
+        const btn = document.getElementById("selectDrawsBtn");
+        const lbl = document.getElementById("drawsBtnLabel");
+        const s   = document.getElementById("drawsStatus");
         if (drawsName) {
-          n.textContent = drawsName;
-          n.innerHTML = drawsName + ' <span class="selected">📎 selected</span>';
+          lbl.textContent = drawsName;
+          btn.className = "file-select-btn has-file";
         } else {
-          n.textContent = "No file selected";
+          lbl.textContent = "Select file";
+          btn.className = "file-select-btn no-file";
         }
         s.textContent = drawsOk ? "✅ Active & writable" : "⚠️ Not active";
         s.className = "status-badge" + (drawsOk ? " ok" : drawsName ? " has-path" : "");
       }
 
       /* ═══════════════════════════════════════════════════════════
-   FILE HANDLING — ARRANGEMENT
-   ═══════════════════════════════════════════════════════════ */
-      document
-        .getElementById("selectArrBtn")
-        .addEventListener("click", async () => {
-          if (!window.showOpenFilePicker) {
-            toast("File picker not supported.");
-            return;
-          }
-          try {
-            const [h] = await window.showOpenFilePicker({
-              types: [
-                {
-                  description: "Text file",
-                  accept: { "text/plain": [".txt"] },
-                },
-              ],
-            });
-            arrHandle = h;
-            arrName = h.name;
-            arrOk = false;
-            await dbSet("arrH", h);
-            await dbSet("arrN", arrName);
-            updateArrUI();
-            fullRender();
-            toast(`Selected: ${arrName}. Tap Activate.`);
-          } catch (e) {
-            if (e.name !== "AbortError") toast(e.message);
-          }
-        });
-
-      document
-        .getElementById("refreshArrBtn")
-        .addEventListener("click", async () => {
-          await activateArrangement(true);
-        });
-
-      async function activateArrangement(showToast = true) {
-        if (!arrHandle) {
-          if (showToast) toast("No arrangement file selected.");
-          return false;
-        }
+         FILE HANDLING — ARRANGEMENT
+      ═══════════════════════════════════════════════════════════ */
+      document.getElementById("selectArrBtn").addEventListener("click", async () => {
+        if (!window.showOpenFilePicker) { toast("File picker not supported."); return; }
         try {
-          const p = await arrHandle.requestPermission({ mode: "read" });
-          if (p !== "granted") {
-            if (showToast) toast("Permission denied.");
-            arrOk = false;
-            updateArrUI();
-            return false;
-          }
+          const [h] = await window.showOpenFilePicker({ types: [{ description:"Text file", accept:{"text/plain":[".txt"]} }] });
+          arrHandle = h; arrName = h.name; arrOk = false;
+          await dbSet("arrH", h); await dbSet("arrN", arrName);
+          updateArrUI(); fullRender();
+          toast(`Selected: ${arrName}. Tap Activate.`);
+        } catch(e) { if (e.name !== "AbortError") toast(e.message); }
+      });
+
+      document.getElementById("refreshArrBtn").addEventListener("click", async () => { await activateArrangement(true); });
+
+      async function activateArrangement(showToast=true) {
+        if (!arrHandle) { if (showToast) toast("No arrangement file selected."); return false; }
+        try {
+          const p = await arrHandle.requestPermission({ mode:"read" });
+          if (p !== "granted") { if (showToast) toast("Permission denied."); arrOk=false; updateArrUI(); return false; }
           arrOk = true;
           const file = await arrHandle.getFile();
-          const content = await file.text();
-          arrangement = parseArrText(content);
-          updateArrUI();
-          fullRender();
+          arrangement = parseArrText(await file.text());
+          updateArrUI(); fullRender();
           if (showToast) toast(`Loaded ${arrangement.length} rows from ${arrName}.`);
           return true;
-        } catch (e) {
-          if (showToast)
-            toast("Failed to load arrangement. The file may have been moved.");
-          arrOk = false;
-          updateArrUI();
-          return false;
+        } catch(e) {
+          if (showToast) toast("Failed to load arrangement. The file may have been moved.");
+          arrOk=false; updateArrUI(); return false;
         }
       }
 
-      document
-        .getElementById("clearArrBtn")
-        .addEventListener("click", async () => {
-          await dbDel("arrH");
-          await dbDel("arrN");
-          arrHandle = null;
-          arrName = "";
-          arrOk = false;
-          arrangement = [];
-          updateArrUI();
-          fullRender();
-          toast("Arrangement forgotten.");
-        });
+      document.getElementById("clearArrBtn").addEventListener("click", async () => {
+        await dbDel("arrH"); await dbDel("arrN");
+        arrHandle = null; arrName = ""; arrOk = false; arrangement = [];
+        updateArrUI(); fullRender();
+        toast("Arrangement forgotten.");
+      });
 
       function updateArrUI() {
-        const n = document.getElementById("arrFileName");
-        const s = document.getElementById("arrStatus");
+        const btn = document.getElementById("selectArrBtn");
+        const lbl = document.getElementById("arrBtnLabel");
+        const s   = document.getElementById("arrStatus");
         if (arrName) {
-          n.textContent = arrName;
-          n.innerHTML = arrName + ' <span class="selected">📎 selected</span>';
+          lbl.textContent = arrName;
+          btn.className = "file-select-btn has-file";
         } else {
-          n.textContent = "No file selected";
+          lbl.textContent = "Select file";
+          btn.className = "file-select-btn no-file";
         }
         s.textContent = arrOk ? "✅ Active" : "⚠️ Not active";
-        s.className = "status-badge" + (arrOk ? " arr-ok" : arrName ? " has-path" : "");
+        s.className = "status-badge" + (arrOk ? " ok" : arrName ? " has-path" : "");
       }
 
       /* ═══════════════════════════════════════════════════════════
-   RESTORE & RE-VALIDATE ON PAGE LOAD
-   ═══════════════════════════════════════════════════════════ */
+         RESTORE ON PAGE LOAD
+      ═══════════════════════════════════════════════════════════ */
       async function restoreHandles() {
-        try {
-          const h = await dbGet("drawsH");
-          const n = await dbGet("drawsN");
-          if (h) {
-            drawsHandle = h;
-            drawsName = n || "unknown";
-            await activateDraws(false);
-          }
-        } catch (e) {}
-        try {
-          const h = await dbGet("arrH");
-          const n = await dbGet("arrN");
-          if (h) {
-            arrHandle = h;
-            arrName = n || "unknown";
-            await activateArrangement(false);
-          }
-        } catch (e) {}
-        updateDrawsUI();
-        updateArrUI();
-        fullRender();
+        try { const h=await dbGet("drawsH"); const n=await dbGet("drawsN"); if(h){drawsHandle=h;drawsName=n||"unknown";await activateDraws(false);} } catch(e){}
+        try { const h=await dbGet("arrH"); const n=await dbGet("arrN"); if(h){arrHandle=h;arrName=n||"unknown";await activateArrangement(false);} } catch(e){}
+        updateDrawsUI(); updateArrUI(); fullRender();
       }
 
       /* ═══════════════════════════════════════════════════════════
-   PARSING
-   ═══════════════════════════════════════════════════════════ */
+         PARSING
+      ═══════════════════════════════════════════════════════════ */
       function parseDrawsText(raw) {
-        return raw
-          .trim()
-          .split(/\r?\n/)
-          .map((l) =>
-            l
-              .trim()
-              .replace(/,/g, " ")
-              .split(/\s+/)
-              .map(Number)
-              .filter((n) => !isNaN(n) && n >= 1 && n <= 40),
-          )
-          .filter((a) => a.length === 6)
-          .map((a) => [...a].sort((a, b) => a - b));
+        return raw.trim().split(/\r?\n/)
+          .map(l => l.trim().replace(/,/g," ").split(/\s+/).map(Number).filter(n=>!isNaN(n)&&n>=1&&n<=40))
+          .filter(a=>a.length===6).map(a=>[...a].sort((a,b)=>a-b));
       }
       function parseArrText(raw) {
-        return raw
-          .trim()
-          .split(/\r?\n/)
-          .map((l) =>
-            l
-              .trim()
-              .split(/\s+/)
-              .map(Number)
-              .filter((n) => !isNaN(n) && n >= 1 && n <= 40),
-          )
-          .filter((a) => a.length > 0);
+        return raw.trim().split(/\r?\n/)
+          .map(l => l.trim().split(/\s+/).map(Number).filter(n=>!isNaN(n)&&n>=1&&n<=40))
+          .filter(a=>a.length>0);
       }
 
       /* ═══════════════════════════════════════════════════════════
-   CORE ANALYSIS
-   ═══════════════════════════════════════════════════════════ */
+         CORE ANALYSIS
+      ═══════════════════════════════════════════════════════════ */
       function windowDraws(range) {
         const n = Math.min(range, draws.length);
         return draws.slice(Math.max(0, draws.length - n));
@@ -1842,623 +643,377 @@
 
       function computeRawWeights(ds) {
         const sc = {};
-        for (let n = 1; n <= 40; n++) sc[n] = 0;
-        ds.forEach((nums, i) => {
-          const w = i + 1;
-          nums.forEach((n) => {
-            sc[n] += w;
-          });
-        });
+        for (let n=1;n<=40;n++) sc[n]=0;
+        ds.forEach((nums,i)=>{ const w=i+1; nums.forEach(n=>{sc[n]+=w;}); });
         return sc;
       }
 
       function findClusters(sc, peak) {
-        if (peak <= 0) return [];
-        const thr = peak * 0.5;
-        const cands = new Set();
-        for (let n = 1; n <= 40; n++)
-          if (sc[n] >= thr && sc[n] > 0) cands.add(n);
+        if (peak<=0) return [];
+        const thr=peak*0.5, cands=new Set();
+        for (let n=1;n<=40;n++) if(sc[n]>=thr&&sc[n]>0) cands.add(n);
         if (!cands.size) return [];
-        const byC = {};
-        cands.forEach((n) => {
-          const { row, col } = POS[n];
-          byC[`${row},${col}`] = n;
-        });
-        const visited = new Set();
-        const comps = [];
-        cands.forEach((start) => {
-          if (visited.has(start)) return;
-          const q = [start],
-            comp = [];
-          visited.add(start);
-          while (q.length) {
-            const cur = q.shift();
-            comp.push(cur);
-            const { row, col } = POS[cur];
-            DIRS8.forEach(([dr, dc]) => {
-              const key = `${row + dr},${col + dc}`;
-              const nb = byC[key];
-              if (nb !== undefined && !visited.has(nb)) {
-                visited.add(nb);
-                q.push(nb);
-              }
+        const byC={};
+        cands.forEach(n=>{const{row,col}=POS[n];byC[`${row},${col}`]=n;});
+        const visited=new Set(), comps=[];
+        cands.forEach(start=>{
+          if(visited.has(start)) return;
+          const q=[start], comp=[]; visited.add(start);
+          while(q.length){
+            const cur=q.shift(); comp.push(cur);
+            const{row,col}=POS[cur];
+            DIRS8.forEach(([dr,dc])=>{
+              const key=`${row+dr},${col+dc}`, nb=byC[key];
+              if(nb!==undefined&&!visited.has(nb)){visited.add(nb);q.push(nb);}
             });
           }
           comps.push(comp);
         });
         return comps
-          .map((c) => ({
-            c: [...c].sort((a, b) => sc[b] - sc[a]).slice(0, 5),
-            t: 0,
-          }))
-          .map((o) => {
-            o.t = o.c.reduce((s, n) => s + sc[n], 0);
-            return o;
-          })
-          .sort((a, b) => b.t - a.t)
-          .slice(0, 4)
-          .map((o) => o.c);
+          .map(c=>({c:[...c].sort((a,b)=>sc[b]-sc[a]).slice(0,5),t:0}))
+          .map(o=>{o.t=o.c.reduce((s,n)=>s+sc[n],0);return o;})
+          .sort((a,b)=>b.t-a.t).slice(0,4).map(o=>o.c);
       }
 
       function rowActivity(ds) {
         if (!arrangement.length) return [];
-        const freq = {};
-        ds.forEach((d) =>
-          d.forEach((n) => {
-            freq[n] = (freq[n] || 0) + 1;
-          }),
-        );
-        return arrangement
-          .map((row, i) => ({
-            label: `Row ${i + 1}`,
-            score: row.reduce((s, n) => s + (freq[n] || 0), 0),
-          }))
-          .sort((a, b) => b.score - a.score);
+        const freq={};
+        ds.forEach(d=>d.forEach(n=>{freq[n]=(freq[n]||0)+1;}));
+        return arrangement.map((row,i)=>({label:`Row ${i+1}`,score:row.reduce((s,n)=>s+(freq[n]||0),0)}))
+          .sort((a,b)=>b.score-a.score);
       }
 
       /* ═══════════════════════════════════════════════════════════
-   PREDICTION ENGINE
-   ═══════════════════════════════════════════════════════════ */
+         PREDICTION ENGINE
+      ═══════════════════════════════════════════════════════════ */
       function isValid(combo) {
-        const s = [...combo].sort((a, b) => a - b);
-        const odd = s.filter((x) => x % 2 !== 0).length;
-        if (odd < 2 || odd > 4) return false;
-        const low = s.filter((x) => x <= 25).length;
-        if (low < 2 || low > 4) return false;
-        const sum = s.reduce((a, b) => a + b, 0);
-        if (sum < 100 || sum > 200) return false;
+        const s=[...combo].sort((a,b)=>a-b);
+        const odd=s.filter(x=>x%2!==0).length;
+        if(odd<2||odd>4) return false;
+        const low=s.filter(x=>x<=25).length;
+        if(low<2||low>4) return false;
+        const sum=s.reduce((a,b)=>a+b,0);
+        if(sum<100||sum>200) return false;
         return true;
       }
 
       function weightedPick(pool, probs, n) {
-        const avail = [...pool],
-          ap = [...probs],
-          res = [];
-        for (let i = 0; i < n; i++) {
-          if (!avail.length) break;
-          const s = ap.reduce((a, b) => a + b, 0);
-          let r = Math.random() * s,
-            cum = 0,
-            ci = 0;
-          for (let j = 0; j < avail.length; j++) {
-            cum += ap[j];
-            if (r <= cum) {
-              ci = j;
-              break;
-            }
-          }
-          res.push(avail[ci]);
-          avail.splice(ci, 1);
-          ap.splice(ci, 1);
+        const avail=[...pool], ap=[...probs], res=[];
+        for(let i=0;i<n;i++){
+          if(!avail.length) break;
+          const s=ap.reduce((a,b)=>a+b,0);
+          let r=Math.random()*s, cum=0, ci=0;
+          for(let j=0;j<avail.length;j++){cum+=ap[j];if(r<=cum){ci=j;break;}}
+          res.push(avail[ci]); avail.splice(ci,1); ap.splice(ci,1);
         }
         return res;
       }
 
       function uniformPick(pool, n) {
-        const s = [...pool];
-        for (let i = s.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [s[i], s[j]] = [s[j], s[i]];
-        }
-        return s.slice(0, n);
+        const s=[...pool];
+        for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];}
+        return s.slice(0,n);
       }
 
-      // ── Custom Strategy with filters ──
       function genCustomStrategy(ds, sc, peak, clusters, cCount, nCount, rCount) {
-        const cSet = new Set();
-        clusters.forEach((c) => c.forEach((n) => cSet.add(n)));
-        const cPool = [...cSet];
-
-        // Neighbour pool: numbers adjacent to clusters, but NOT in clusters
-        const nSet = new Set();
-        cPool.forEach((cn) => {
-          ADJ[cn].forEach((adj) => {
-            if (!cSet.has(adj)) nSet.add(adj);
-          });
-        });
-        const nPool = Array.from(nSet);
-
-        // Random pool: numbers not in clusters and not neighbours
-        const rPool = [];
-        for (let n = 1; n <= 40; n++) {
-          if (!cSet.has(n) && !nSet.has(n)) rPool.push(n);
+        const cSet=new Set();
+        clusters.forEach(c=>c.forEach(n=>cSet.add(n)));
+        const cPool=[...cSet];
+        const nSet=new Set();
+        cPool.forEach(cn=>{ADJ[cn].forEach(adj=>{if(!cSet.has(adj))nSet.add(adj);});});
+        const nPool=Array.from(nSet);
+        const rPool=[];
+        for(let n=1;n<=40;n++){if(!cSet.has(n)&&!nSet.has(n))rPool.push(n);}
+        if(cPool.length<cCount||nPool.length<nCount||rPool.length<rCount){
+          const hc=genHybrid(ds,sc,peak,clusters);
+          if(hc) return hc;
+          const all=Object.keys(sc).map(Number), aw=all.map(n=>sc[n]);
+          for(let a=0;a<2000;a++){const combo=weightedPick(all,aw,6);if(combo.length===6&&isValid(combo))return combo;}
+          return [...all].sort((a,b)=>sc[b]-sc[a]).slice(0,6);
         }
-
-        // Check if we have enough in each pool
-        if (cPool.length < cCount || nPool.length < nCount || rPool.length < rCount) {
-          // Fallback: try hybrid
-          const hc = genHybrid(ds, sc, peak, clusters);
-          if (hc) return hc;
-          // Fallback: pure weighted top 6
-          const all = Object.keys(sc).map(Number);
-          const aw = all.map((n) => sc[n]);
-          for (let a = 0; a < 2000; a++) {
-            const combo = weightedPick(all, aw, 6);
-            if (combo.length === 6 && isValid(combo)) return combo;
-          }
-          return [...all].sort((a, b) => sc[b] - sc[a]).slice(0, 6);
+        const cw=cPool.map(n=>sc[n]), nw=nPool.map(n=>sc[n]), rw=rPool.map(n=>sc[n]);
+        for(let a=0;a<3000;a++){
+          const combo=[...weightedPick(cPool,cw,cCount),...weightedPick(nPool,nw,nCount),...weightedPick(rPool,rw,rCount)];
+          if(combo.length===6&&isValid(combo)) return combo;
         }
-
-        const cw = cPool.map((n) => sc[n]);
-        const nw = nPool.map((n) => sc[n]);
-        const rw = rPool.map((n) => sc[n]);
-
-        for (let a = 0; a < 3000; a++) {
-          const combo = [
-            ...weightedPick(cPool, cw, cCount),
-            ...weightedPick(nPool, nw, nCount),
-            ...weightedPick(rPool, rw, rCount),
-          ];
-          if (combo.length === 6 && isValid(combo)) return combo;
-        }
-
-        // Fallback: use top weighted from each pool
-        const sortedC = [...cPool].sort((a, b) => sc[b] - sc[a]);
-        const sortedN = [...nPool].sort((a, b) => sc[b] - sc[a]);
-        const sortedR = [...rPool].sort((a, b) => sc[b] - sc[a]);
-        const combo = [
-          ...sortedC.slice(0, cCount),
-          ...sortedN.slice(0, nCount),
-          ...sortedR.slice(0, rCount),
-        ];
-        return combo.length === 6 ? combo : null;
+        const sortedC=[...cPool].sort((a,b)=>sc[b]-sc[a]);
+        const sortedN=[...nPool].sort((a,b)=>sc[b]-sc[a]);
+        const sortedR=[...rPool].sort((a,b)=>sc[b]-sc[a]);
+        const combo=[...sortedC.slice(0,cCount),...sortedN.slice(0,nCount),...sortedR.slice(0,rCount)];
+        return combo.length===6?combo:null;
       }
 
-      // ── Strategy 1: Hybrid (4 clusters + 2 random) ──
       function genHybrid(ds, sc, peak, clusters) {
-        const cSet = new Set();
-        clusters.forEach((c) => c.forEach((n) => cSet.add(n)));
-        const cPool = [...cSet];
-        const oPool = [];
-        for (let n = 1; n <= 40; n++) if (!cSet.has(n)) oPool.push(n);
-        if (cPool.length >= 4 && oPool.length >= 2) {
-          const cw = cPool.map((n) => sc[n]);
-          for (let a = 0; a < 3000; a++) {
-            const combo = [
-              ...weightedPick(cPool, cw, 4),
-              ...uniformPick(oPool, 2),
-            ];
-            if (combo.length === 6 && isValid(combo)) return combo;
+        const cSet=new Set();
+        clusters.forEach(c=>c.forEach(n=>cSet.add(n)));
+        const cPool=[...cSet], oPool=[];
+        for(let n=1;n<=40;n++) if(!cSet.has(n)) oPool.push(n);
+        if(cPool.length>=4&&oPool.length>=2){
+          const cw=cPool.map(n=>sc[n]);
+          for(let a=0;a<3000;a++){
+            const combo=[...weightedPick(cPool,cw,4),...uniformPick(oPool,2)];
+            if(combo.length===6&&isValid(combo)) return combo;
           }
         }
-        const thr = peak * 0.5;
-        const all = [];
-        for (let n = 1; n <= 40; n++) if (sc[n] >= thr) all.push(n);
-        if (all.length < 6) return null;
-        const aw = all.map((n) => sc[n]);
-        for (let a = 0; a < 2000; a++) {
-          const combo = weightedPick(all, aw, 6);
-          if (combo.length === 6 && isValid(combo)) return combo;
-        }
-        return [...all].sort((a, b) => sc[b] - sc[a]).slice(0, 6);
+        const thr=peak*0.5, all=[];
+        for(let n=1;n<=40;n++) if(sc[n]>=thr) all.push(n);
+        if(all.length<6) return null;
+        const aw=all.map(n=>sc[n]);
+        for(let a=0;a<2000;a++){const combo=weightedPick(all,aw,6);if(combo.length===6&&isValid(combo))return combo;}
+        return [...all].sort((a,b)=>sc[b]-sc[a]).slice(0,6);
       }
 
       function genMix(ds) {
-        const freq = {};
-        for (let n = 1; n <= 40; n++) freq[n] = 0;
-        ds.forEach((d) => d.forEach((n) => freq[n]++));
-        const rf = {};
-        for (let n = 1; n <= 40; n++) rf[n] = 0;
-        ds.slice(-20).forEach((d) => d.forEach((n) => rf[n]++));
-        const top = (obj) =>
-          Object.entries(obj)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10)
-            .map(([n]) => +n);
-        const oh = top(freq),
-          rh = top(rf);
-        if (oh.length < 3 || rh.length < 3)
-          return oh.slice(0, 6).sort((a, b) => a - b);
-        for (let a = 0; a < 3000; a++) {
-          const combo = [...uniformPick(oh, 3), ...uniformPick(rh, 3)];
-          if (new Set(combo).size === 6 && isValid(combo)) return combo;
+        const freq={};
+        for(let n=1;n<=40;n++) freq[n]=0;
+        ds.forEach(d=>d.forEach(n=>freq[n]++));
+        const rf={};
+        for(let n=1;n<=40;n++) rf[n]=0;
+        ds.slice(-20).forEach(d=>d.forEach(n=>rf[n]++));
+        const top=obj=>Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([n])=>+n);
+        const oh=top(freq), rh=top(rf);
+        if(oh.length<3||rh.length<3) return oh.slice(0,6).sort((a,b)=>a-b);
+        for(let a=0;a<3000;a++){
+          const combo=[...uniformPick(oh,3),...uniformPick(rh,3)];
+          if(new Set(combo).size===6&&isValid(combo)) return combo;
         }
-        return oh.slice(0, 6).sort((a, b) => a - b);
+        return oh.slice(0,6).sort((a,b)=>a-b);
       }
 
-      // ── Reusable prediction ──
-      function predictFromDraws(ds, strategy = "strategy2") {
-        if (ds.length < 3) return null;
-        const sc = computeRawWeights(ds);
-        const peak = Math.max(1, ...Object.values(sc));
-        const clusters = findClusters(sc, peak);
-
-        let combo = null;
-        if (strategy === "strategy1") {
-          combo = genHybrid(ds, sc, peak, clusters);
-          if (!combo) combo = genMix(ds);
+      function predictFromDraws(ds, strategy="strategy2") {
+        if(ds.length<3) return null;
+        const sc=computeRawWeights(ds);
+        const peak=Math.max(1,...Object.values(sc));
+        const clusters=findClusters(sc,peak);
+        let combo=null;
+        if(strategy==="strategy1"){
+          combo=genHybrid(ds,sc,peak,clusters);
+          if(!combo) combo=genMix(ds);
         } else {
-          combo = genCustomStrategy(
-            ds,
-            sc,
-            peak,
-            clusters,
-            filterClusters,
-            filterNeighbours,
-            filterRandom,
-          );
-          if (!combo) combo = genMix(ds);
+          combo=genCustomStrategy(ds,sc,peak,clusters,filterClusters,filterNeighbours,filterRandom);
+          if(!combo) combo=genMix(ds);
         }
         return combo;
       }
 
       function classifyBall(n, hotSet, recentSet, clusterSet) {
-        if (clusterSet.has(n)) return "cluster";
-        if (recentSet.has(n)) return "recent";
-        if (hotSet.has(n)) return "hot";
+        if(clusterSet.has(n)) return "cluster";
+        if(recentSet.has(n)) return "recent";
+        if(hotSet.has(n)) return "hot";
         return "fill";
       }
 
       /* ═══════════════════════════════════════════════════════════
-   GENERATE ACTION (UI)
-   ═══════════════════════════════════════════════════════════ */
+         GENERATE ACTION
+      ═══════════════════════════════════════════════════════════ */
       function generate() {
-        const ds = windowDraws(currentRange);
-        if (ds.length < 3) {
-          toast("Need at least 3 draws in the current window.");
-          return;
-        }
-        const sc = computeRawWeights(ds);
-        const peak = Math.max(1, ...Object.values(sc));
-        const clusters = findClusters(sc, peak);
-        const freq = {};
-        for (let n = 1; n <= 40; n++) freq[n] = 0;
-        ds.forEach((d) => d.forEach((n) => freq[n]++));
-        const rf = {};
-        for (let n = 1; n <= 40; n++) rf[n] = 0;
-        ds.slice(-20).forEach((d) => d.forEach((n) => rf[n]++));
-        const hotSet = new Set(
-          Object.entries(freq)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10)
-            .map(([k]) => +k),
-        );
-        const recentSet = new Set(
-          Object.entries(rf)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10)
-            .map(([k]) => +k),
-        );
-        const clusterSet = new Set();
-        clusters.forEach((c) => c.forEach((n) => clusterSet.add(n)));
-        const btn = document.getElementById("gen-btn");
-        btn.disabled = true;
-        btn.innerHTML =
-          '<i class="ti ti-loader" aria-hidden="true"></i> Generating…';
-        setTimeout(() => {
-          const results = [];
-          for (let i = 0; i < 2; i++) {
-            let c = genHybrid(ds, sc, peak, clusters);
-            if (!c) c = genMix(ds);
-            if (c) {
-              c.sort((a, b) => a - b);
-              results.push({
-                combo: c,
-                label: `Prediction ${i + 1}`,
-                strategy: "Hybrid · 4 clusters + 2 random",
-              });
-            }
+        const ds=windowDraws(currentRange);
+        if(ds.length<3){toast("Need at least 3 draws in the current window.");return;}
+        const sc=computeRawWeights(ds);
+        const peak=Math.max(1,...Object.values(sc));
+        const clusters=findClusters(sc,peak);
+        const freq={};for(let n=1;n<=40;n++)freq[n]=0;
+        ds.forEach(d=>d.forEach(n=>freq[n]++));
+        const rf={};for(let n=1;n<=40;n++)rf[n]=0;
+        ds.slice(-20).forEach(d=>d.forEach(n=>rf[n]++));
+        const hotSet=new Set(Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
+        const recentSet=new Set(Object.entries(rf).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
+        const clusterSet=new Set();
+        clusters.forEach(c=>c.forEach(n=>clusterSet.add(n)));
+        const btn=document.getElementById("gen-btn");
+        btn.disabled=true;
+        btn.innerHTML='<i class="ti ti-loader" aria-hidden="true"></i> Generating…';
+        setTimeout(()=>{
+          const results=[];
+          for(let i=0;i<2;i++){
+            let c=genHybrid(ds,sc,peak,clusters);
+            if(!c) c=genMix(ds);
+            if(c){c.sort((a,b)=>a-b);results.push({combo:c,label:`Prediction ${i+1}`,strategy:"Hybrid · 4 clusters + 2 random"});}
           }
-          let c3 = genCustomStrategy(
-            ds,
-            sc,
-            peak,
-            clusters,
-            filterClusters,
-            filterNeighbours,
-            filterRandom,
-          );
-          if (!c3) c3 = genMix(ds);
-          if (c3) {
-            c3.sort((a, b) => a - b);
-            results.push({
-              combo: c3,
-              label: "Prediction 3",
-              strategy: "Custom · cluster + neighbours + random",
-            });
-          }
-          const el = document.getElementById("predictions");
-          if (!results.length) {
-            el.innerHTML =
-              '<div class="no-combo">No valid combinations found. Try widening the draw window.</div>';
+          let c3=genCustomStrategy(ds,sc,peak,clusters,filterClusters,filterNeighbours,filterRandom);
+          if(!c3) c3=genMix(ds);
+          if(c3){c3.sort((a,b)=>a-b);results.push({combo:c3,label:"Prediction 3",strategy:"Custom · cluster + neighbours + random"});}
+          const el=document.getElementById("predictions");
+          if(!results.length){
+            el.innerHTML='<div class="no-combo">No valid combinations found. Try widening the draw window.</div>';
           } else {
-            el.innerHTML = results
-              .map((r) => {
-                const balls = r.combo
-                  .map((n) => {
-                    const cls = classifyBall(n, hotSet, recentSet, clusterSet);
-                    return `<div class="ball ball-${cls}" title="${cls}">${n}</div>`;
-                  })
-                  .join("");
-                const cNums = r.combo.filter((n) => clusterSet.has(n));
-                const hNums = r.combo.filter(
-                  (n) =>
-                    hotSet.has(n) && !clusterSet.has(n) && !recentSet.has(n),
-                );
-                const rNums = r.combo.filter(
-                  (n) => recentSet.has(n) && !clusterSet.has(n),
-                );
-                const fNums = r.combo.filter(
-                  (n) =>
-                    !clusterSet.has(n) && !hotSet.has(n) && !recentSet.has(n),
-                );
-                const reasons = [];
-                if (cNums.length)
-                  reasons.push({
-                    t: `${cNums.join(", ")} from active grid clusters.`,
-                    c: "#e11d48",
-                  });
-                if (hNums.length)
-                  reasons.push({
-                    t: `${hNums.join(", ")} most drawn across all ${ds.length} draws.`,
-                    c: "#e8a020",
-                  });
-                if (rNums.length)
-                  reasons.push({
-                    t: `${rNums.join(", ")} trending in the last 20 draws.`,
-                    c: "#2563eb",
-                  });
-                if (fNums.length)
-                  reasons.push({
-                    t: `${fNums.join(", ")} chosen by recency-weighted probability.`,
-                    c: "#8a94a5",
-                  });
-                const sum = r.combo.reduce((a, b) => a + b, 0);
-                const odd = r.combo.filter((x) => x % 2 !== 0).length;
-                const low = r.combo.filter((x) => x <= 25).length;
-                reasons.push({
-                  t: `Balance: ${odd} odd / ${6 - odd} even · ${low} low / ${6 - low} high · sum ${sum}`,
-                  c: "#8a94a5",
-                });
-                return `<div class="pred-card">
-          <div class="pred-lbl">${r.label} <span style="font-weight:400;color:var(--text3)">· ${r.strategy}</span></div>
-          <div class="ball-row">${balls}</div>
-          ${reasons.map((re) => `<div class="reason-row"><div class="r-dot" style="background:${re.c}"></div><div class="r-text">${re.t}</div></div>`).join("")}
-        </div>`;
-              })
-              .join("");
+            el.innerHTML=results.map(r=>{
+              const balls=r.combo.map(n=>{
+                const cls=classifyBall(n,hotSet,recentSet,clusterSet);
+                return `<div class="ball ball-${cls}" title="${cls}">${n}</div>`;
+              }).join("");
+              const cNums=r.combo.filter(n=>clusterSet.has(n));
+              const hNums=r.combo.filter(n=>hotSet.has(n)&&!clusterSet.has(n)&&!recentSet.has(n));
+              const rNums=r.combo.filter(n=>recentSet.has(n)&&!clusterSet.has(n));
+              const fNums=r.combo.filter(n=>!clusterSet.has(n)&&!hotSet.has(n)&&!recentSet.has(n));
+              const reasons=[];
+              if(cNums.length) reasons.push({t:`${cNums.join(", ")} from active grid clusters.`,c:"#e11d48"});
+              if(hNums.length) reasons.push({t:`${hNums.join(", ")} most drawn across all ${ds.length} draws.`,c:"#e8a020"});
+              if(rNums.length) reasons.push({t:`${rNums.join(", ")} trending in the last 20 draws.`,c:"#2563eb"});
+              if(fNums.length) reasons.push({t:`${fNums.join(", ")} chosen by recency-weighted probability.`,c:"#8a94a5"});
+              const sum=r.combo.reduce((a,b)=>a+b,0);
+              const odd=r.combo.filter(x=>x%2!==0).length;
+              const low=r.combo.filter(x=>x<=25).length;
+              reasons.push({t:`Balance: ${odd} odd / ${6-odd} even · ${low} low / ${6-low} high · sum ${sum}`,c:"#8a94a5"});
+              return `<div class="pred-card">
+                <div class="pred-lbl">${r.label} <span style="font-weight:400;color:var(--text3)">· ${r.strategy}</span></div>
+                <div class="ball-row">${balls}</div>
+                ${reasons.map(re=>`<div class="reason-row"><div class="r-dot" style="background:${re.c}"></div><div class="r-text">${re.t}</div></div>`).join("")}
+              </div>`;
+            }).join("");
           }
-          btn.disabled = false;
-          btn.innerHTML =
-            '<i class="ti ti-refresh" aria-hidden="true"></i> Regenerate';
-        }, 60);
+          btn.disabled=false;
+          btn.innerHTML='<i class="ti ti-refresh" aria-hidden="true"></i> Regenerate';
+        },60);
       }
 
       /* ═══════════════════════════════════════════════════════════
-   GRID RENDER
-   ═══════════════════════════════════════════════════════════ */
+         GRID RENDER
+      ═══════════════════════════════════════════════════════════ */
       function renderGrid() {
-        const ds = windowDraws(currentRange);
-        const g = document.getElementById("bigGrid");
-        g.innerHTML = "";
-
-        if (ds.length === 0) {
-          const emptyCell = document.createElement("div");
-          emptyCell.style.cssText =
-            "grid-column: 1 / -1; grid-row: 1 / -1; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text3); padding: 20px; text-align: center;";
-          emptyCell.textContent =
-            "No draws loaded. Select and activate a draws file in Settings.";
+        const ds=windowDraws(currentRange);
+        const g=document.getElementById("bigGrid");
+        g.innerHTML="";
+        if(ds.length===0){
+          const emptyCell=document.createElement("div");
+          emptyCell.style.cssText="grid-column:1/-1;grid-row:1/-1;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--text3);padding:20px;text-align:center;";
+          emptyCell.textContent="No draws loaded. Select and activate a draws file in Settings.";
           g.appendChild(emptyCell);
-          document.getElementById("grid-info").textContent = "No draws loaded.";
+          document.getElementById("grid-info").textContent="No draws loaded.";
           return;
         }
-
-        const sc = computeRawWeights(ds);
-        const peak = Math.max(1, ...Object.values(sc));
-        const clusters = findClusters(sc, peak);
-
-        GRID_ROWS.forEach((row) =>
-          row.forEach((num) => {
-            const s = sc[num] || 0;
-            const cell = document.createElement("div");
-            cell.className = "big-cell" + (s === 0 ? " undrawn" : "");
-            if (s > 0) {
-              const a = 0.03 + (s / peak) * 0.77;
-              cell.style.background = `rgba(225,29,72,${a.toFixed(3)})`;
-            }
-            cell.innerHTML =
-              `<span class="cn">${num}</span><span class="cw">${s > 0 ? Math.round(s) : "—"}</span>`;
-            g.appendChild(cell);
-          }),
-        );
-
-        if (clusters.length) {
-          const firstCell = g.querySelector(".big-cell");
-          const CELL = firstCell ? firstCell.offsetWidth || 60 : 60;
-          const GAP = 5,
-            PAD = 12;
-          const svgW = PAD * 2 + 8 * CELL + 7 * GAP;
-          const svgH = PAD * 2 + 5 * CELL + 4 * GAP;
-          const ns = "http://www.w3.org/2000/svg";
-          const svg = document.createElementNS(ns, "svg");
-          svg.setAttribute("class", "cluster-svg");
-          svg.setAttribute("viewBox", `0 0 ${svgW} ${svgH}`);
-          svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
-          clusters.forEach((comp, ci) => {
-            const color = CLUSTER_COLORS[ci];
-            const cellSet = new Set(
-              comp.map((n) => `${POS[n].row},${POS[n].col}`),
-            );
-            const segs = [];
-            const OFF = 2;
-            comp.forEach((num) => {
-              const { row: r, col: c } = POS[num];
-              const x = PAD + c * (CELL + GAP) - OFF;
-              const y = PAD + r * (CELL + GAP) - OFF;
-              const w = CELL + OFF * 2,
-                h = CELL + OFF * 2;
-              if (!cellSet.has(`${r - 1},${c}`))
-                segs.push(`M${x} ${y}L${x + w} ${y}`);
-              if (!cellSet.has(`${r + 1},${c}`))
-                segs.push(`M${x} ${y + h}L${x + w} ${y + h}`);
-              if (!cellSet.has(`${r},${c - 1}`))
-                segs.push(`M${x} ${y}L${x} ${y + h}`);
-              if (!cellSet.has(`${r},${c + 1}`))
-                segs.push(`M${x + w} ${y}L${x + w} ${y + h}`);
+        const sc=computeRawWeights(ds);
+        const peak=Math.max(1,...Object.values(sc));
+        const clusters=findClusters(sc,peak);
+        GRID_ROWS.forEach(row=>row.forEach(num=>{
+          const s=sc[num]||0;
+          const cell=document.createElement("div");
+          cell.className="big-cell"+(s===0?" undrawn":"");
+          if(s>0){const a=0.03+(s/peak)*0.77;cell.style.background=`rgba(225,29,72,${a.toFixed(3)})`;}
+          cell.innerHTML=`<span class="cn">${num}</span><span class="cw">${s>0?Math.round(s):"—"}</span>`;
+          g.appendChild(cell);
+        }));
+        if(clusters.length){
+          const firstCell=g.querySelector(".big-cell");
+          const CELL=firstCell?firstCell.offsetWidth||60:60;
+          const GAP=5,PAD=12;
+          const svgW=PAD*2+8*CELL+7*GAP, svgH=PAD*2+5*CELL+4*GAP;
+          const ns="http://www.w3.org/2000/svg";
+          const svg=document.createElementNS(ns,"svg");
+          svg.setAttribute("class","cluster-svg");
+          svg.setAttribute("viewBox",`0 0 ${svgW} ${svgH}`);
+          svg.setAttribute("preserveAspectRatio","xMidYMid meet");
+          clusters.forEach((comp,ci)=>{
+            const color=CLUSTER_COLORS[ci];
+            const cellSet=new Set(comp.map(n=>`${POS[n].row},${POS[n].col}`));
+            const segs=[]; const OFF=2;
+            comp.forEach(num=>{
+              const{row:r,col:c}=POS[num];
+              const x=PAD+c*(CELL+GAP)-OFF, y=PAD+r*(CELL+GAP)-OFF;
+              const w=CELL+OFF*2, h=CELL+OFF*2;
+              if(!cellSet.has(`${r-1},${c}`)) segs.push(`M${x} ${y}L${x+w} ${y}`);
+              if(!cellSet.has(`${r+1},${c}`)) segs.push(`M${x} ${y+h}L${x+w} ${y+h}`);
+              if(!cellSet.has(`${r},${c-1}`)) segs.push(`M${x} ${y}L${x} ${y+h}`);
+              if(!cellSet.has(`${r},${c+1}`)) segs.push(`M${x+w} ${y}L${x+w} ${y+h}`);
             });
-            if (segs.length) {
-              const path = document.createElementNS(ns, "path");
-              path.setAttribute("d", segs.join(" "));
-              path.setAttribute("fill", "none");
-              path.setAttribute("stroke", color);
-              path.setAttribute("stroke-width", "2.5");
-              path.setAttribute("stroke-dasharray", "6 4");
-              path.setAttribute("stroke-linecap", "round");
+            if(segs.length){
+              const path=document.createElementNS(ns,"path");
+              path.setAttribute("d",segs.join(" ")); path.setAttribute("fill","none");
+              path.setAttribute("stroke",color); path.setAttribute("stroke-width","2.5");
+              path.setAttribute("stroke-dasharray","6 4"); path.setAttribute("stroke-linecap","round");
               svg.appendChild(path);
             }
-            const topLeft = comp.reduce(
-              (acc, n) => {
-                const p = POS[n];
-                return p.row < acc.row ||
-                  (p.row === acc.row && p.col < acc.col)
-                  ? p
-                  : acc;
-              },
-              { row: Infinity, col: Infinity },
-            );
-            const lx = PAD + topLeft.col * (CELL + GAP) + 4;
-            const ly = PAD + topLeft.row * (CELL + GAP) - 5;
-            const t = document.createElementNS(ns, "text");
-            t.setAttribute("x", lx);
-            t.setAttribute("y", ly);
-            t.setAttribute("font-size", "9");
-            t.setAttribute("font-weight", "600");
-            t.setAttribute("fill", color);
-            t.setAttribute("stroke", "white");
-            t.setAttribute("stroke-width", "0.5");
-            t.textContent = `C${ci + 1}·${comp.join(",")}`;
+            const topLeft=comp.reduce((acc,n)=>{const p=POS[n];return p.row<acc.row||(p.row===acc.row&&p.col<acc.col)?p:acc},{row:Infinity,col:Infinity});
+            const lx=PAD+topLeft.col*(CELL+GAP)+4, ly=PAD+topLeft.row*(CELL+GAP)-5;
+            const t=document.createElementNS(ns,"text");
+            t.setAttribute("x",lx); t.setAttribute("y",ly); t.setAttribute("font-size","9");
+            t.setAttribute("font-weight","600"); t.setAttribute("fill",color);
+            t.setAttribute("stroke","white"); t.setAttribute("stroke-width","0.5");
+            t.textContent=`C${ci+1}·${comp.join(",")}`;
             svg.appendChild(t);
           });
           g.appendChild(svg);
         }
-        document.getElementById("grid-info").textContent =
-          `${ds.length} draws · peak weight ${Math.round(peak)} · ${clusters.length} cluster${clusters.length === 1 ? "" : "s"}`;
+        document.getElementById("grid-info").textContent=
+          `${ds.length} draws · peak weight ${Math.round(peak)} · ${clusters.length} cluster${clusters.length===1?"":"s"}`;
       }
 
       /* ═══════════════════════════════════════════════════════════
-   STATS & ROW BARS
-   ═══════════════════════════════════════════════════════════ */
+         STATS & ROW BARS
+      ═══════════════════════════════════════════════════════════ */
       function renderStats() {
-        const ds = windowDraws(currentRange);
-        const sc = computeRawWeights(ds);
-        const peak = Math.max(1, ...Object.values(sc));
-        const clusters = findClusters(sc, peak);
-        document.getElementById("stats").innerHTML = `
-    <div class="stat"><div class="stat-val">${draws.length}</div><div class="stat-lbl">Total draws</div></div>
-    <div class="stat"><div class="stat-val">${ds.length}</div><div class="stat-lbl">Window</div></div>
-    <div class="stat"><div class="stat-val">${clusters.length}</div><div class="stat-lbl">Clusters</div></div>
-  `;
+        const ds=windowDraws(currentRange);
+        const sc=computeRawWeights(ds);
+        const peak=Math.max(1,...Object.values(sc));
+        const clusters=findClusters(sc,peak);
+        // Always 3 columns — Total Draws, Window, Clusters all on same row
+        document.getElementById("stats").innerHTML=`
+          <div class="stat"><div class="stat-val">${draws.length}</div><div class="stat-lbl">Total draws</div></div>
+          <div class="stat"><div class="stat-val">${ds.length}</div><div class="stat-lbl">Window</div></div>
+          <div class="stat"><div class="stat-val">${clusters.length}</div><div class="stat-lbl">Clusters</div></div>
+        `;
       }
 
       function renderRowBars() {
-        const ds = windowDraws(currentRange);
-        const rows = rowActivity(ds);
-        const card = document.getElementById("row-card");
-        if (!rows.length || !draws.length) {
-          card.style.display = "none";
-          return;
-        }
-        card.style.display = "block";
-        const max = rows[0].score || 1;
-        document.getElementById("row-bars").innerHTML = rows
-          .map(
-            (r) =>
-              `<div class="bar-row">
-      <span class="bar-lbl">${r.label}</span>
-      <div class="bar-track"><div class="bar-fill" style="width:${Math.round((r.score / max) * 100)}%"></div></div>
-      <span class="bar-score">${r.score}</span>
-    </div>`,
-          )
-          .join("");
+        const ds=windowDraws(currentRange);
+        const rows=rowActivity(ds);
+        const card=document.getElementById("row-card");
+        if(!rows.length||!draws.length){card.style.display="none";return;}
+        card.style.display="block";
+        const max=rows[0].score||1;
+        document.getElementById("row-bars").innerHTML=rows.map(r=>`
+          <div class="bar-row">
+            <span class="bar-lbl">${r.label}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.round((r.score/max)*100)}%"></div></div>
+            <span class="bar-score">${r.score}</span>
+          </div>`).join("");
       }
 
       /* ═══════════════════════════════════════════════════════════
-   ANALYSIS TABLE
-   ═══════════════════════════════════════════════════════════ */
+         ANALYSIS TABLE
+      ═══════════════════════════════════════════════════════════ */
       function renderAnalysisTable() {
-        const container = document.getElementById("analysis-table-container");
-        const statsContainer = document.getElementById("analysis-stats");
+        const container=document.getElementById("analysis-table-container");
+        const statsContainer=document.getElementById("analysis-stats");
+        const windowSize=analysisWindow, strategy=analysisStrategy;
 
-        const windowSize = analysisWindow;
-        const strategy = analysisStrategy;
-
-        if (draws.length < windowSize + 1) {
-          container.innerHTML =
-            `<div class="empty">Need at least ${windowSize + 1} draws for ${windowSize}-draw rolling analysis.</div>`;
-          statsContainer.innerHTML = "";
+        if(draws.length<windowSize+1){
+          container.innerHTML=`<div class="empty">Need at least ${windowSize+1} draws for ${windowSize}-draw rolling analysis.</div>`;
+          statsContainer.innerHTML="";
           return;
         }
 
-        const totalPredictions = draws.length - windowSize;
-        let successfulPredictions = 0;
-        let exactMatches = 0;
-        let totalMatches = 0;
-        let rowsHtml = "";
+        const totalPredictions=draws.length-windowSize;
+        let successfulPredictions=0, exactMatches=0, totalMatches=0, rowsHtml="";
 
-        for (let i = windowSize; i < draws.length; i++) {
-          const trainingData = draws.slice(i - windowSize, i);
-          const actual = draws[i];
-          const prediction = predictFromDraws(trainingData, strategy);
+        for(let i=windowSize;i<draws.length;i++){
+          const trainingData=draws.slice(i-windowSize,i);
+          const actual=draws[i];
+          const prediction=predictFromDraws(trainingData,strategy);
+          const drawNum=i+1;
+          const actualStr=actual.join(" ");
+          const predStr=prediction?prediction.join(" "):"N/A";
+          const trainedOn=`#${i-windowSize+1} – #${i}`;
+          let matches=0, matchDisplay="N/A", matchClass="";
+          if(prediction){
+            const predSet=new Set(prediction);
+            actual.forEach(n=>{if(predSet.has(n))matches++;});
+            matchDisplay=`${matches}/6 (${Math.round((matches/6)*100)}%)`;
+            totalMatches+=matches;
+            if(matches===6) exactMatches++;
+            if(matches>0) successfulPredictions++;
+            matchClass=matches>=4?"high":matches>=2?"medium":"low";
+          } else { matchClass="low"; }
 
-          const drawNum = i + 1;
-          const actualStr = actual.join(" ");
-          const predStr = prediction ? prediction.join(" ") : "N/A";
-          const trainedOn = `#${i - windowSize + 1} – #${i}`;
-
-          let matches = 0;
-          let matchPercentage = 0;
-          let matchDisplay = "N/A";
-          let matchClass = "";
-          if (prediction) {
-            const predSet = new Set(prediction);
-            actual.forEach((n) => {
-              if (predSet.has(n)) matches++;
-            });
-            matchPercentage = (matches / 6) * 100;
-            matchDisplay = `${matches}/6 (${Math.round(matchPercentage)}%)`;
-            totalMatches += matches;
-            if (matches === 6) exactMatches++;
-            if (matches > 0) successfulPredictions++;
-            if (matches >= 4) matchClass = "high";
-            else if (matches >= 2) matchClass = "medium";
-            else matchClass = "low";
-          } else {
-            matchDisplay = "N/A";
-            matchClass = "low";
-          }
-
-          rowsHtml += `<tr>
+          // Draw & prediction stacked in the same column
+          rowsHtml+=`<tr>
             <td><strong>${drawNum}</strong></td>
             <td>
-              <div class="pred-cell">
+              <div class="draw-pred-stack">
                 <span class="badge actual">${actualStr}</span>
-                <span class="pred-label">↑ Actual</span>
-              </div>
-            </td>
-            <td>
-              <div class="pred-cell">
-                <span class="badge ${prediction ? 'pred' : 'na'}">${predStr}</span>
-                <span class="pred-label">↑ Prediction</span>
+                <span class="dp-label">↑ Actual</span>
+                <span class="badge ${prediction?"pred":"na"}" style="margin-top:4px">${predStr}</span>
+                <span class="dp-label">↑ Prediction</span>
               </div>
             </td>
             <td><span class="matches-badge ${matchClass}">${matchDisplay}</span></td>
@@ -2466,356 +1021,197 @@
           </tr>`;
         }
 
-        const avgMatch = totalPredictions > 0 ? (totalMatches / totalPredictions) : 0;
-        const avgMatchPercent =
-          totalPredictions > 0 ? (totalMatches / (totalPredictions * 6)) * 100 : 0;
+        const avgMatch=totalPredictions>0?(totalMatches/totalPredictions):0;
+        const avgMatchPercent=totalPredictions>0?(totalMatches/(totalPredictions*6))*100:0;
 
-        statsContainer.innerHTML = `
+        statsContainer.innerHTML=`
           <div class="stat"><div class="stat-val">${totalPredictions}</div><div class="stat-lbl">Predictions made</div></div>
           <div class="stat"><div class="stat-val">${windowSize}</div><div class="stat-lbl">Training Window</div></div>
           <div class="stat"><div class="stat-val">${draws.length}</div><div class="stat-lbl">Total draws</div></div>
         `;
 
-        const strategyName =
-          strategy === "strategy1"
-            ? "Strategy 1 (Hybrid)"
-            : "Strategy 2 (Custom)";
+        const strategyName=strategy==="strategy1"?"Strategy 1 (Hybrid)":"Strategy 2 (Custom)";
+        const summary=`
+          <div style="margin-top:12px;padding:10px 14px;background:var(--surface2);border-radius:var(--radius-md);border:1px solid var(--border);font-size:12px;color:var(--text2);">
+            <strong>Summary (${strategyName}):</strong>
+            ${successfulPredictions} of ${totalPredictions} draws produced a prediction (${Math.round((successfulPredictions/totalPredictions)*100)}%).
+            ${exactMatches>0?`Exact matches: ${exactMatches} (${Math.round((exactMatches/totalPredictions)*100)}%).`:"No exact matches."}
+            Avg correct per prediction: <strong>${avgMatch.toFixed(1)} / 6</strong> (${avgMatchPercent.toFixed(1)}%).
+          </div>`;
 
-        const summary = `
-          <div style="margin-top: 12px; padding: 10px 14px; background: var(--surface2); border-radius: var(--radius-md); border: 1px solid var(--border); font-size: 12px; color: var(--text2);">
-            <strong>Summary (${strategyName}):</strong> 
-            ${successfulPredictions} out of ${totalPredictions} draws produced a prediction (${Math.round((successfulPredictions / totalPredictions) * 100)}%).
-            ${exactMatches > 0 ? `Exact matches: ${exactMatches} (${Math.round((exactMatches / totalPredictions) * 100)}%).` : "No exact matches."}
-            Average correct numbers per prediction: <strong>${avgMatch.toFixed(1)} / 6</strong> (${avgMatchPercent.toFixed(1)}%).
-            Each prediction uses a rolling window of exactly <strong>${windowSize}</strong> previous draws.
-          </div>
-        `;
-
-        const tableHtml = `
+        container.innerHTML=`
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
                   <th>Draw #</th>
-                  <th>Draw</th>
-                  <th>Prediction</th>
+                  <th>Draw &amp; Prediction</th>
                   <th>Matches</th>
                   <th>Trained on</th>
                 </tr>
               </thead>
-              <tbody>
-                ${rowsHtml}
-              </tbody>
+              <tbody>${rowsHtml}</tbody>
             </table>
           </div>
-        `;
-
-        container.innerHTML = tableHtml + summary;
+        `+summary;
 
         renderComparisonStats();
       }
 
       /* ═══════════════════════════════════════════════════════════
-   COMPARISON STATS (all windows)
-   ═══════════════════════════════════════════════════════════ */
+         COMPARISON STATS
+      ═══════════════════════════════════════════════════════════ */
       function renderComparisonStats() {
-        const container = document.getElementById("comparison-stats");
-        const windows = [
-          { label: "1m (8)", size: 8 },
-          { label: "2m (17)", size: 17 },
-          { label: "3m (26)", size: 26 },
-          { label: "4m (35)", size: 35 },
-          { label: "5m (43)", size: 43 },
-          { label: "6m (52)", size: 52 },
-        ];
-        const strategy = analysisStrategy;
-
-        let html = "";
-        for (const w of windows) {
-          const size = w.size;
-          if (draws.length < size + 1) {
-            html += `
-              <div class="stat">
-                <div class="stat-val">—</div>
-                <div class="stat-lbl">${w.label}</div>
-              </div>`;
-            continue;
-          }
-
-          let totalPredictions = draws.length - size;
-          let totalMatches = 0;
-          let exactMatches = 0;
-          let successfulPredictions = 0;
-
-          for (let i = size; i < draws.length; i++) {
-            const trainingData = draws.slice(i - size, i);
-            const actual = draws[i];
-            const prediction = predictFromDraws(trainingData, strategy);
-            if (prediction) {
-              const predSet = new Set(prediction);
-              let matches = 0;
-              actual.forEach((n) => {
-                if (predSet.has(n)) matches++;
-              });
-              totalMatches += matches;
-              if (matches === 6) exactMatches++;
-              if (matches > 0) successfulPredictions++;
+        const container=document.getElementById("comparison-stats");
+        const windows=[{label:"1m (8)",size:8},{label:"2m (17)",size:17},{label:"3m (26)",size:26},{label:"4m (35)",size:35},{label:"5m (43)",size:43},{label:"6m (52)",size:52}];
+        const strategy=analysisStrategy;
+        let html="";
+        for(const w of windows){
+          const size=w.size;
+          if(draws.length<size+1){html+=`<div class="stat"><div class="stat-val">—</div><div class="stat-lbl">${w.label}</div></div>`;continue;}
+          let totalPredictions=draws.length-size, totalMatches=0, exactMatches=0, successfulPredictions=0;
+          for(let i=size;i<draws.length;i++){
+            const prediction=predictFromDraws(draws.slice(i-size,i),strategy);
+            if(prediction){
+              const predSet=new Set(prediction); let matches=0;
+              draws[i].forEach(n=>{if(predSet.has(n))matches++;});
+              totalMatches+=matches; if(matches===6)exactMatches++; if(matches>0)successfulPredictions++;
             }
           }
-
-          const avgMatch = totalPredictions > 0 ? (totalMatches / totalPredictions) : 0;
-          const avgMatchPercent =
-            totalPredictions > 0 ? (totalMatches / (totalPredictions * 6)) * 100 : 0;
-          const successRate =
-            totalPredictions > 0 ? (successfulPredictions / totalPredictions) * 100 : 0;
-
-          html += `
-            <div class="stat">
-              <div class="stat-val">${avgMatch.toFixed(1)}</div>
-              <div class="stat-lbl">${w.label}<br><span style="font-size:9px;color:var(--text3);">${Math.round(avgMatchPercent)}% · ${Math.round(successRate)}%</span></div>
-            </div>`;
+          const avgMatch=totalPredictions>0?(totalMatches/totalPredictions):0;
+          const avgMatchPercent=totalPredictions>0?(totalMatches/(totalPredictions*6))*100:0;
+          const successRate=totalPredictions>0?(successfulPredictions/totalPredictions)*100:0;
+          html+=`<div class="stat"><div class="stat-val">${avgMatch.toFixed(1)}</div><div class="stat-lbl">${w.label}<br><span style="font-size:9px;color:var(--text3);">${Math.round(avgMatchPercent)}% · ${Math.round(successRate)}%</span></div></div>`;
         }
-
-        container.innerHTML = html;
+        container.innerHTML=html;
       }
 
       /* ═══════════════════════════════════════════════════════════
-   ADD DRAW
-   ═══════════════════════════════════════════════════════════ */
+         ADD DRAW
+      ═══════════════════════════════════════════════════════════ */
       function renderNumGrid() {
-        document.getElementById("num-grid").innerHTML = inputs
-          .map(
-            (v, i) =>
-              `<input class="num-inp${v ? " filled" : ""}" type="number" min="1" max="40"
-      value="${v}" placeholder="${i + 1}" oninput="updInp(${i},this.value)">`,
-          )
-          .join("");
+        document.getElementById("num-grid").innerHTML=inputs.map((v,i)=>
+          `<input class="num-inp${v?" filled":""}" type="number" min="1" max="40" value="${v}" placeholder="${i+1}" oninput="updInp(${i},this.value)">`
+        ).join("");
       }
-      window.updInp = (idx, val) => {
-        const c = val.replace(/[^0-9]/g, "").slice(0, 2);
-        inputs[idx] = c;
-        const el = document.querySelectorAll(".num-inp")[idx];
-        if (el) {
-          el.value = c;
-          el.className = "num-inp" + (c ? " filled" : "");
-        }
+      window.updInp=(idx,val)=>{
+        const c=val.replace(/[^0-9]/g,"").slice(0,2);
+        inputs[idx]=c;
+        const el=document.querySelectorAll(".num-inp")[idx];
+        if(el){el.value=c;el.className="num-inp"+(c?" filled":"");}
       };
 
       async function addDraw() {
-        const vals = [];
-        document.querySelectorAll(".num-inp").forEach((el) => {
-          const v = parseInt(el.value, 10);
-          if (!isNaN(v)) vals.push(v);
-        });
-        if (vals.length !== 6) {
-          toast("Enter exactly 6 numbers.");
-          return;
-        }
-        if (vals.some((n) => n < 1 || n > 40)) {
-          toast("Numbers must be between 1 and 40.");
-          return;
-        }
-        if (new Set(vals).size !== 6) {
-          toast("All 6 numbers must be unique.");
-          return;
-        }
-        const sorted = [...vals].sort((a, b) => a - b);
+        const vals=[];
+        document.querySelectorAll(".num-inp").forEach(el=>{const v=parseInt(el.value,10);if(!isNaN(v))vals.push(v);});
+        if(vals.length!==6){toast("Enter exactly 6 numbers.");return;}
+        if(vals.some(n=>n<1||n>40)){toast("Numbers must be between 1 and 40.");return;}
+        if(new Set(vals).size!==6){toast("All 6 numbers must be unique.");return;}
+        const sorted=[...vals].sort((a,b)=>a-b);
         draws.push(sorted);
-        if (drawsOk) {
-          const saved = await appendToFile(sorted);
-          toast(
-            saved
-              ? `Draw saved to ${drawsName}.`
-              : "Added to memory — file write failed. Re-activate in Settings.",
-          );
+        if(drawsOk){
+          const saved=await appendToFile(sorted);
+          toast(saved?`Draw saved to ${drawsName}.`:"Added to memory — file write failed. Re-activate in Settings.");
         } else {
-          toast(
-            "Draw added to memory. Activate a file in Settings to persist it.",
-          );
+          toast("Draw added to memory. Activate a file in Settings to persist it.");
         }
-        inputs = ["", "", "", "", "", ""];
+        inputs=["","","","","",""];
         fullRender();
-        document.getElementById("predictions").innerHTML = "";
+        document.getElementById("predictions").innerHTML="";
       }
 
-      function clearInputs() {
-        inputs = ["", "", "", "", "", ""];
-        renderNumGrid();
-      }
+      function clearInputs(){inputs=["","","","","",""];renderNumGrid();}
 
       function renderRecentDraws() {
-        const el = document.getElementById("recent-draws");
-        if (!draws.length) {
-          el.innerHTML = '<div class="empty">No draws loaded yet.</div>';
-          return;
-        }
-        el.innerHTML = [...draws]
-          .reverse()
-          .slice(0, 10)
-          .map(
-            (d, i) =>
-              `<div class="draw-row">
-      <span class="draw-idx">#${draws.length - i}</span>
-      <span class="draw-nums">${d.join("  ")}</span>
-    </div>`,
-          )
-          .join("");
+        const el=document.getElementById("recent-draws");
+        if(!draws.length){el.innerHTML='<div class="empty">No draws loaded yet.</div>';return;}
+        el.innerHTML=[...draws].reverse().slice(0,10).map((d,i)=>
+          `<div class="draw-row"><span class="draw-idx">#${draws.length-i}</span><span class="draw-nums">${d.join("  ")}</span></div>`
+        ).join("");
       }
 
       function renderArr() {
-        const el = document.getElementById("arr-display");
-        if (!arrangement.length) {
-          el.innerHTML =
-            '<div class="empty">No arrangement loaded (optional).</div>';
-          return;
-        }
-        el.innerHTML = arrangement
-          .map(
-            (row, i) =>
-              `<div class="arr-row">
-      <span class="arr-lbl">Row ${i + 1}</span>
-      <div class="arr-badges">${row.map((n) => `<span class="badge">${n}</span>`).join("")}</div>
-    </div>`,
-          )
-          .join("");
+        const el=document.getElementById("arr-display");
+        if(!arrangement.length){el.innerHTML='<div class="empty">No arrangement loaded (optional).</div>';return;}
+        el.innerHTML=arrangement.map((row,i)=>
+          `<div class="arr-row"><span class="arr-lbl">Row ${i+1}</span><div class="arr-badges">${row.map(n=>`<span class="badge">${n}</span>`).join("")}</div></div>`
+        ).join("");
       }
 
       /* ═══════════════════════════════════════════════════════════
-   FULL RENDER
-   ═══════════════════════════════════════════════════════════ */
+         FULL RENDER
+      ═══════════════════════════════════════════════════════════ */
       function fullRender() {
-        renderStats();
-        renderRowBars();
-        renderGrid();
-        renderAnalysisTable();
-        renderRecentDraws();
-        renderArr();
-        renderNumGrid();
-        const n = Math.min(currentRange, draws.length);
-        document.getElementById("sliderVal").textContent =
-          `${n} / ${draws.length}`;
-        const s = document.getElementById("drawSlider");
-        s.max = draws.length || 0;
-        s.value = n;
+        renderStats(); renderRowBars(); renderGrid();
+        renderAnalysisTable(); renderRecentDraws(); renderArr(); renderNumGrid();
+        const n=Math.min(currentRange,draws.length);
+        document.getElementById("sliderVal").textContent=`${n} / ${draws.length}`;
+        const s=document.getElementById("drawSlider");
+        s.max=draws.length||0; s.value=n;
       }
 
       /* ═══════════════════════════════════════════════════════════
-   SLIDER & MARKS
-   ═══════════════════════════════════════════════════════════ */
-      document
-        .getElementById("drawSlider")
-        .addEventListener("input", function () {
-          currentRange = parseInt(this.value);
-          const n = Math.min(currentRange, draws.length);
-          document.getElementById("sliderVal").textContent =
-            `${n} / ${draws.length}`;
-          renderStats();
-          renderRowBars();
-          renderGrid();
-          document.getElementById("predictions").innerHTML = "";
-        });
+         SLIDER & MARKS
+      ═══════════════════════════════════════════════════════════ */
+      document.getElementById("drawSlider").addEventListener("input",function(){
+        currentRange=parseInt(this.value);
+        const n=Math.min(currentRange,draws.length);
+        document.getElementById("sliderVal").textContent=`${n} / ${draws.length}`;
+        renderStats(); renderRowBars(); renderGrid();
+        document.getElementById("predictions").innerHTML="";
+      });
 
-      document.querySelectorAll(".mark").forEach((m) =>
-        m.addEventListener("click", function () {
-          let v = parseInt(this.dataset.v);
-          if (v === 0) v = draws.length;
-          else v = Math.min(v, draws.length);
-          currentRange = v;
-          document.getElementById("drawSlider").value = v;
-          document.getElementById("sliderVal").textContent =
-            `${v} / ${draws.length}`;
-          renderStats();
-          renderRowBars();
-          renderGrid();
-          document.getElementById("predictions").innerHTML = "";
-        }),
-      );
+      document.querySelectorAll(".mark").forEach(m=>m.addEventListener("click",function(){
+        let v=parseInt(this.dataset.v);
+        if(v===0) v=draws.length; else v=Math.min(v,draws.length);
+        currentRange=v;
+        document.getElementById("drawSlider").value=v;
+        document.getElementById("sliderVal").textContent=`${v} / ${draws.length}`;
+        renderStats(); renderRowBars(); renderGrid();
+        document.getElementById("predictions").innerHTML="";
+      }));
 
       /* ═══════════════════════════════════════════════════════════
-   ANALYSIS CONTROLS
-   ═══════════════════════════════════════════════════════════ */
-      document
-        .getElementById("strategySelect")
-        .addEventListener("change", function () {
-          analysisStrategy = this.value;
-          const desc = document.getElementById("strategyDescription");
-          if (analysisStrategy === "strategy1") {
-            desc.innerHTML =
-              `<strong>Strategy 1 (Hybrid):</strong> 4 numbers are picked from the detected grid clusters (recency‑weighted). The remaining 2 numbers are chosen randomly from outside the clusters using recency‑weighted probability. This balances cluster strength with wider coverage.`;
-          } else {
-            desc.innerHTML =
-              `<strong>Strategy 2 (Custom):</strong> You control exactly how many numbers come from clusters, how many from neighbours (8‑direction adjacent to clusters), and how many from the remaining pool. All selections are recency‑weighted.`;
-          }
-          renderAnalysisTable();
-        });
+         ANALYSIS CONTROLS
+      ═══════════════════════════════════════════════════════════ */
+      document.getElementById("applyFiltersBtn").addEventListener("click",function(){
+        const c=parseInt(document.getElementById("filterClusters").value)||0;
+        const n=parseInt(document.getElementById("filterNeighbours").value)||0;
+        const r=parseInt(document.getElementById("filterRandom").value)||0;
+        const total=c+n+r;
+        if(total!==6){toast(`The three numbers must sum to 6 (currently ${total}). Adjust them.`);return;}
+        filterClusters=c; filterNeighbours=n; filterRandom=r;
+        renderAnalysisTable();
+        toast(`Filters applied: ${c} clusters, ${n} neighbours, ${r} random.`);
+      });
 
-      document
-        .getElementById("windowSelect")
-        .addEventListener("change", function () {
-          analysisWindow = parseInt(this.value);
-          renderAnalysisTable();
-        });
-
-      document
-        .getElementById("applyFiltersBtn")
-        .addEventListener("click", function () {
-          const c = parseInt(document.getElementById("filterClusters").value) || 0;
-          const n = parseInt(document.getElementById("filterNeighbours").value) || 0;
-          const r = parseInt(document.getElementById("filterRandom").value) || 0;
-
-          // Ensure they sum to 6
-          const total = c + n + r;
-          if (total !== 6) {
-            toast(`The three numbers must sum to 6 (currently ${total}). Adjust them.`);
-            return;
-          }
-
-          filterClusters = c;
-          filterNeighbours = n;
-          filterRandom = r;
-          renderAnalysisTable();
-          toast(`Filters applied: ${c} clusters, ${n} neighbours, ${r} random.`);
-        });
-
-      // Also apply filters when Enter key is pressed in any filter input
-      document.querySelectorAll('#filterClusters, #filterNeighbours, #filterRandom').forEach((input) => {
-        input.addEventListener('keydown', function (e) {
-          if (e.key === 'Enter') {
-            document.getElementById('applyFiltersBtn').click();
-          }
-        });
+      document.querySelectorAll('#filterClusters,#filterNeighbours,#filterRandom').forEach(input=>{
+        input.addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('applyFiltersBtn').click();});
       });
 
       /* ═══════════════════════════════════════════════════════════
-   TAB SWITCHING
-   ═══════════════════════════════════════════════════════════ */
-      window.switchTab = function (name, btn) {
-        document
-          .querySelectorAll(".pane")
-          .forEach((p) => p.classList.remove("active"));
-        document
-          .querySelectorAll(".tab")
-          .forEach((t) => t.classList.remove("active"));
-        document.getElementById("pane-" + name).classList.add("active");
+         TAB SWITCHING
+      ═══════════════════════════════════════════════════════════ */
+      window.switchTab=function(name,btn){
+        document.querySelectorAll(".pane").forEach(p=>p.classList.remove("active"));
+        document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+        document.getElementById("pane-"+name).classList.add("active");
         btn.classList.add("active");
-        if (name === "grid") renderGrid();
-        if (name === "analysis") renderAnalysisTable();
+        if(name==="grid") renderGrid();
+        if(name==="analysis") renderAnalysisTable();
       };
 
       /* ═══════════════════════════════════════════════════════════
-   TOAST
-   ═══════════════════════════════════════════════════════════ */
-      function toast(msg) {
-        const t = document.getElementById("toast");
-        t.textContent = msg;
-        t.classList.add("show");
+         TOAST
+      ═══════════════════════════════════════════════════════════ */
+      function toast(msg){
+        const t=document.getElementById("toast");
+        t.textContent=msg; t.classList.add("show");
         clearTimeout(t._timer);
-        t._timer = setTimeout(() => t.classList.remove("show"), 2800);
+        t._timer=setTimeout(()=>t.classList.remove("show"),2800);
       }
 
-      /* ═══════════════════════════════════════════════════════════
-   INIT
-   ═══════════════════════════════════════════════════════════ */
+      /* INIT */
       restoreHandles();
     </script>
   </body>
