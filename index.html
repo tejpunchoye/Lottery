@@ -253,6 +253,20 @@
       .selector-row select:focus {
         border-color: var(--rose);
       }
+      .strategy-description {
+        font-size: 12px;
+        color: var(--text2);
+        background: var(--surface2);
+        padding: 10px 14px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+        width: 100%;
+        line-height: 1.6;
+        margin-top: 4px;
+      }
+      .strategy-description strong {
+        color: var(--text);
+      }
 
       /* SLIDER */
       .slider-card {
@@ -1051,6 +1065,9 @@
         .file-path {
           font-size: 10px;
         }
+        .strategy-description {
+          font-size: 11px;
+        }
       }
       @media (max-width: 380px) {
         .num-grid {
@@ -1085,6 +1102,9 @@
         }
         .hint {
           font-size: 9px;
+        }
+        .strategy-description {
+          font-size: 10px;
         }
       }
     </style>
@@ -1182,23 +1202,36 @@
         <div class="analysis-description">
           <strong>Rolling window prediction backtest</strong>
           <br />
-          For each historical draw, the app pretends it doesn’t know the result
-          and generates a prediction using <strong>only the previous N draws</strong>
-          (where N is the selected window size). The table compares the predicted
-          combination with the actual draw that followed.
+          For each historical draw, the app generates a prediction using
+          <strong>only the previous N draws</strong> (where N is the selected
+          window size). Choose a strategy below to see how it would have performed.
         </div>
 
-        <!-- Window selector -->
+        <!-- Strategy & Window selector -->
         <div class="selector-row">
-          <label for="windowSelect">📏 Window size:</label>
-          <select id="windowSelect">
-            <option value="8">1 month (8 draws)</option>
-            <option value="17">2 months (17 draws)</option>
-            <option value="26" selected>3 months (26 draws)</option>
-            <option value="35">4 months (35 draws)</option>
-            <option value="43">5 months (43 draws)</option>
-            <option value="52">6 months (52 draws)</option>
+          <label for="strategySelect">🧠 Strategy:</label>
+          <select id="strategySelect">
+            <option value="strategy1">Strategy 1 (Hybrid)</option>
+            <option value="strategy2">Strategy 2 (Cluster + Neighbours + Random)</option>
           </select>
+
+          <label for="windowSelect" style="margin-left: 8px;">📏 Window:</label>
+          <select id="windowSelect">
+            <option value="8">1 month (8)</option>
+            <option value="17">2 months (17)</option>
+            <option value="26" selected>3 months (26)</option>
+            <option value="35">4 months (35)</option>
+            <option value="43">5 months (43)</option>
+            <option value="52">6 months (52)</option>
+          </select>
+        </div>
+
+        <!-- Strategy descriptions -->
+        <div id="strategyDescription" class="strategy-description">
+          <strong>Strategy 1 (Hybrid):</strong> 4 numbers are picked from the
+          detected grid clusters (recency‑weighted). The remaining 2 numbers are
+          chosen randomly from outside the clusters using recency‑weighted
+          probability. This balances cluster strength with wider coverage.
         </div>
 
         <div class="stat-grid" id="analysis-stats"></div>
@@ -1295,7 +1328,7 @@
       // No built-in data
 
       /* ═══════════════════════════════════════════════════════════
-   GRID LAYOUT
+   GRID LAYOUT & ADJACENCY
    ═══════════════════════════════════════════════════════════ */
       const GRID_ROWS = [
         [5, 10, 15, 20, 25, 30, 35, 40],
@@ -1310,7 +1343,10 @@
           POS[n] = { row: r, col: c };
         }),
       );
-      const CLUSTER_COLORS = ["#e11d48", "#2563eb", "#059669", "#7c3aed"];
+
+      // Pre-compute adjacency list for all numbers (8-directional)
+      const ADJ = {};
+      for (let n = 1; n <= 40; n++) ADJ[n] = [];
       const DIRS8 = [
         [-1, -1],
         [-1, 0],
@@ -1321,6 +1357,19 @@
         [1, 0],
         [1, 1],
       ];
+      GRID_ROWS.forEach((row, r) => {
+        row.forEach((n, c) => {
+          DIRS8.forEach(([dr, dc]) => {
+            const nr = r + dr,
+              nc = c + dc;
+            if (nr >= 0 && nr < 5 && nc >= 0 && nc < 8) {
+              ADJ[n].push(GRID_ROWS[nr][nc]);
+            }
+          });
+        });
+      });
+
+      const CLUSTER_COLORS = ["#e11d48", "#2563eb", "#059669", "#7c3aed"];
 
       /* ═══════════════════════════════════════════════════════════
    STATE
@@ -1336,6 +1385,7 @@
       let inputs = ["", "", "", "", "", ""];
       let currentRange = 0;
       let analysisWindow = 26;
+      let analysisStrategy = "strategy1"; // 'strategy1' or 'strategy2'
 
       /* ═══════════════════════════════════════════════════════════
    INDEXEDDB
@@ -1497,7 +1547,6 @@
         const s = document.getElementById("drawsStatus");
         if (drawsName) {
           n.textContent = drawsName;
-          // Show a "selected" badge
           n.innerHTML = drawsName + ' <span class="selected">📎 selected</span>';
         } else {
           n.textContent = "No file selected";
@@ -1793,7 +1842,8 @@
         return s.slice(0, n);
       }
 
-      function genHybrid(ds, sc, peak, clusters) {
+      // ── Strategy 1: Hybrid (4 clusters + 2 random) ──
+      function genStrategy1(ds, sc, peak, clusters) {
         const cSet = new Set();
         clusters.forEach((c) => c.forEach((n) => cSet.add(n)));
         const cPool = [...cSet];
@@ -1809,6 +1859,7 @@
             if (combo.length === 6 && isValid(combo)) return combo;
           }
         }
+        // Fallback: top weighted numbers
         const thr = peak * 0.5;
         const all = [];
         for (let n = 1; n <= 40; n++) if (sc[n] >= thr) all.push(n);
@@ -1821,6 +1872,57 @@
         return [...all].sort((a, b) => sc[b] - sc[a]).slice(0, 6);
       }
 
+      // ── Strategy 2: 2 clusters + 2 neighbours + 2 random ──
+      function genStrategy2(ds, sc, peak, clusters) {
+        const cSet = new Set();
+        clusters.forEach((c) => c.forEach((n) => cSet.add(n)));
+        const cPool = [...cSet];
+
+        // Neighbour pool: numbers adjacent to clusters, but NOT in clusters
+        const nSet = new Set();
+        cPool.forEach((cn) => {
+          ADJ[cn].forEach((adj) => {
+            if (!cSet.has(adj)) nSet.add(adj);
+          });
+        });
+        const nPool = Array.from(nSet);
+
+        // Outside pool: numbers not in clusters and not neighbours
+        const oPool = [];
+        for (let n = 1; n <= 40; n++) {
+          if (!cSet.has(n) && !nSet.has(n)) oPool.push(n);
+        }
+
+        // Try to build a valid combo
+        if (cPool.length >= 2 && nPool.length >= 2 && oPool.length >= 2) {
+          const cw = cPool.map((n) => sc[n]);
+          const nw = nPool.map((n) => sc[n]);
+          const ow = oPool.map((n) => sc[n]);
+          for (let a = 0; a < 3000; a++) {
+            const combo = [
+              ...weightedPick(cPool, cw, 2),
+              ...weightedPick(nPool, nw, 2),
+              ...weightedPick(oPool, ow, 2),
+            ];
+            if (combo.length === 6 && isValid(combo)) return combo;
+          }
+        }
+
+        // Fallback 1: try Strategy 1
+        const s1 = genStrategy1(ds, sc, peak, clusters);
+        if (s1) return s1;
+
+        // Fallback 2: pure weighted top 6
+        const all = Object.keys(sc).map(Number);
+        const aw = all.map((n) => sc[n]);
+        for (let a = 0; a < 2000; a++) {
+          const combo = weightedPick(all, aw, 6);
+          if (combo.length === 6 && isValid(combo)) return combo;
+        }
+        return [...all].sort((a, b) => sc[b] - sc[a]).slice(0, 6);
+      }
+
+      // ── Backward-compatible mix (for UI predictions) ──
       function genMix(ds) {
         const freq = {};
         for (let n = 1; n <= 40; n++) freq[n] = 0;
@@ -1844,22 +1946,32 @@
         return oh.slice(0, 6).sort((a, b) => a - b);
       }
 
+      // ── Reusable single prediction ──
+      function predictFromDraws(ds, strategy = "strategy1") {
+        if (ds.length < 3) return null;
+        const sc = computeRawWeights(ds);
+        const peak = Math.max(1, ...Object.values(sc));
+        const clusters = findClusters(sc, peak);
+
+        let combo = null;
+        if (strategy === "strategy1") {
+          combo = genStrategy1(ds, sc, peak, clusters);
+          if (!combo) combo = genMix(ds);
+        } else if (strategy === "strategy2") {
+          combo = genStrategy2(ds, sc, peak, clusters);
+          if (!combo) combo = genMix(ds);
+        } else {
+          combo = genStrategy1(ds, sc, peak, clusters);
+          if (!combo) combo = genMix(ds);
+        }
+        return combo;
+      }
+
       function classifyBall(n, hotSet, recentSet, clusterSet) {
         if (clusterSet.has(n)) return "cluster";
         if (recentSet.has(n)) return "recent";
         if (hotSet.has(n)) return "hot";
         return "fill";
-      }
-
-      // ── Reusable single prediction for any dataset ──
-      function predictFromDraws(ds) {
-        if (ds.length < 3) return null;
-        const sc = computeRawWeights(ds);
-        const peak = Math.max(1, ...Object.values(sc));
-        const clusters = findClusters(sc, peak);
-        let combo = genHybrid(ds, sc, peak, clusters);
-        if (!combo) combo = genMix(ds);
-        return combo;
       }
 
       /* ═══════════════════════════════════════════════════════════
@@ -1901,7 +2013,7 @@
         setTimeout(() => {
           const results = [];
           for (let i = 0; i < 2; i++) {
-            let c = genHybrid(ds, sc, peak, clusters);
+            let c = genStrategy1(ds, sc, peak, clusters);
             if (!c) c = genMix(ds);
             if (c) {
               c.sort((a, b) => a - b);
@@ -1912,13 +2024,15 @@
               });
             }
           }
-          const c3 = genMix(ds);
+          // Third prediction uses Strategy 2 for variety
+          let c3 = genStrategy2(ds, sc, peak, clusters);
+          if (!c3) c3 = genMix(ds);
           if (c3) {
             c3.sort((a, b) => a - b);
             results.push({
               combo: c3,
               label: "Prediction 3",
-              strategy: "Mix · 3 hot + 3 recent",
+              strategy: "Cluster + Neighbours + Random",
             });
           }
           const el = document.getElementById("predictions");
@@ -2137,17 +2251,18 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-   ANALYSIS TABLE (with match percentage)
+   ANALYSIS TABLE
    ═══════════════════════════════════════════════════════════ */
       function renderAnalysisTable() {
         const container = document.getElementById("analysis-table-container");
         const statsContainer = document.getElementById("analysis-stats");
 
         const windowSize = analysisWindow;
+        const strategy = analysisStrategy;
 
         if (draws.length < windowSize + 1) {
           container.innerHTML =
-            `<div class="empty">Need at least ${windowSize + 1} draws for ${windowSize}-draw rolling analysis (${windowSize} training + 1 to predict).</div>`;
+            `<div class="empty">Need at least ${windowSize + 1} draws for ${windowSize}-draw rolling analysis.</div>`;
           statsContainer.innerHTML = "";
           return;
         }
@@ -2161,7 +2276,7 @@
         for (let i = windowSize; i < draws.length; i++) {
           const trainingData = draws.slice(i - windowSize, i);
           const actual = draws[i];
-          const prediction = predictFromDraws(trainingData);
+          const prediction = predictFromDraws(trainingData, strategy);
 
           const drawNum = i + 1;
           const actualStr = actual.join(" ");
@@ -2219,9 +2334,14 @@
           <div class="stat"><div class="stat-val">${draws.length}</div><div class="stat-lbl">Total draws</div></div>
         `;
 
+        const strategyName =
+          strategy === "strategy1"
+            ? "Strategy 1 (Hybrid)"
+            : "Strategy 2 (Cluster + Neighbours + Random)";
+
         const summary = `
           <div style="margin-top: 12px; padding: 10px 14px; background: var(--surface2); border-radius: var(--radius-md); border: 1px solid var(--border); font-size: 12px; color: var(--text2);">
-            <strong>Summary:</strong> 
+            <strong>Summary (${strategyName}):</strong> 
             ${successfulPredictions} out of ${totalPredictions} draws produced a prediction (${Math.round((successfulPredictions / totalPredictions) * 100)}%).
             ${exactMatches > 0 ? `Exact matches: ${exactMatches} (${Math.round((exactMatches / totalPredictions) * 100)}%).` : "No exact matches."}
             Average correct numbers per prediction: <strong>${avgMatch.toFixed(1)} / 6</strong> (${avgMatchPercent.toFixed(1)}%).
@@ -2254,7 +2374,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-   COMPARISON STATS (all windows)
+   COMPARISON STATS (all windows) – uses the selected strategy
    ═══════════════════════════════════════════════════════════ */
       function renderComparisonStats() {
         const container = document.getElementById("comparison-stats");
@@ -2266,6 +2386,7 @@
           { label: "5m (43)", size: 43 },
           { label: "6m (52)", size: 52 },
         ];
+        const strategy = analysisStrategy;
 
         let html = "";
         for (const w of windows) {
@@ -2287,7 +2408,7 @@
           for (let i = size; i < draws.length; i++) {
             const trainingData = draws.slice(i - size, i);
             const actual = draws[i];
-            const prediction = predictFromDraws(trainingData);
+            const prediction = predictFromDraws(trainingData, strategy);
             if (prediction) {
               const predSet = new Set(prediction);
               let matches = 0;
@@ -2469,8 +2590,24 @@
       );
 
       /* ═══════════════════════════════════════════════════════════
-   WINDOW SELECTOR
+   ANALYSIS STRATEGY & WINDOW SELECTORS
    ═══════════════════════════════════════════════════════════ */
+      document
+        .getElementById("strategySelect")
+        .addEventListener("change", function () {
+          analysisStrategy = this.value;
+          // Update description
+          const desc = document.getElementById("strategyDescription");
+          if (analysisStrategy === "strategy1") {
+            desc.innerHTML =
+              `<strong>Strategy 1 (Hybrid):</strong> 4 numbers are picked from the detected grid clusters (recency‑weighted). The remaining 2 numbers are chosen randomly from outside the clusters using recency‑weighted probability. This balances cluster strength with wider coverage.`;
+          } else {
+            desc.innerHTML =
+              `<strong>Strategy 2 (Cluster + Neighbours + Random):</strong> 2 numbers from inside clusters (weighted), 2 numbers from adjacent cells (8‑direction) to clusters but not inside them (weighted), and 2 numbers from the remaining pool (recency‑weighted). This encourages spatially connected picks.`;
+          }
+          renderAnalysisTable();
+        });
+
       document
         .getElementById("windowSelect")
         .addEventListener("change", function () {
