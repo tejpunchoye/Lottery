@@ -184,7 +184,7 @@
         margin-bottom: 10px;
       }
 
-      /* STAT CARDS */
+      /* STAT CARDS - ALWAYS 3 COLUMNS */
       .stat-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
@@ -225,7 +225,7 @@
         font-size: 10px;
       }
 
-      /* SELECTOR */
+      /* SELECTOR ROW - single row */
       .selector-row {
         display: flex;
         align-items: center;
@@ -238,9 +238,11 @@
         font-weight: 600;
         color: var(--text2);
         font-family: var(--font-sans);
+        white-space: nowrap;
       }
-      .selector-row select {
-        padding: 8px 14px;
+      .selector-row select,
+      .selector-row input[type="number"] {
+        padding: 6px 10px;
         border-radius: var(--radius-sm);
         border: 1px solid var(--border);
         background: var(--surface);
@@ -249,10 +251,54 @@
         font-size: 13px;
         cursor: pointer;
         outline: none;
+        width: auto;
       }
-      .selector-row select:focus {
+      .selector-row select:focus,
+      .selector-row input[type="number"]:focus {
         border-color: var(--rose);
       }
+      .selector-row input[type="number"] {
+        width: 50px;
+        text-align: center;
+        -moz-appearance: textfield;
+      }
+      .selector-row input[type="number"]::-webkit-inner-spin-button,
+      .selector-row input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--surface2);
+        padding: 4px 10px;
+        border-radius: var(--radius-md);
+        border: 1px solid var(--border);
+      }
+      .filter-group label {
+        font-size: 11px;
+        color: var(--text3);
+        font-weight: 500;
+        font-family: var(--font-sans);
+        white-space: nowrap;
+      }
+      .filter-group input {
+        width: 36px;
+        padding: 2px 4px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-mono);
+        font-size: 12px;
+        text-align: center;
+      }
+      .filter-group input:focus {
+        border-color: var(--rose);
+        outline: none;
+      }
+
       .strategy-description {
         font-size: 12px;
         color: var(--text2);
@@ -646,7 +692,7 @@
         border-collapse: collapse;
         font-size: 13px;
         font-family: var(--font-mono);
-        min-width: 550px;
+        min-width: 400px;
       }
       table th {
         background: var(--surface2);
@@ -667,6 +713,7 @@
         padding: 8px 12px;
         border-bottom: 1px solid var(--border);
         color: var(--text);
+        vertical-align: middle;
       }
       table tr:last-child td {
         border-bottom: none;
@@ -726,6 +773,23 @@
       }
       .comparison-grid .slabel {
         margin-bottom: 12px;
+      }
+      .pred-cell {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .pred-cell .badge {
+        font-size: 11px;
+        padding: 2px 6px;
+      }
+      .pred-cell .pred-label {
+        font-size: 9px;
+        color: var(--text3);
+        font-weight: 500;
+        font-family: var(--font-sans);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
       }
 
       /* ADD DRAW */
@@ -838,7 +902,7 @@
         font-size: 13px;
       }
 
-      /* SETTINGS */
+      /* SETTINGS - two row layout */
       .setting-group {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -852,7 +916,22 @@
         gap: 8px;
         align-items: center;
         flex-wrap: wrap;
-        margin: 8px 0;
+        margin: 4px 0;
+      }
+      .file-row.actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .file-row.info {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px solid var(--border);
       }
       .file-label {
         background: var(--surface2);
@@ -925,6 +1004,7 @@
         display: flex;
         align-items: center;
         gap: 4px;
+        white-space: nowrap;
       }
       .refresh-btn:hover {
         background: var(--border);
@@ -1004,8 +1084,11 @@
         .stat-grid-6 {
           grid-template-columns: repeat(3, 1fr);
         }
+        .filter-group {
+          flex-wrap: wrap;
+        }
       }
-      @media (max-width: 540px) {
+      @media (max-width: 640px) {
         .stat-grid {
           grid-template-columns: 1fr 1fr;
         }
@@ -1056,8 +1139,12 @@
           flex-direction: column;
           align-items: stretch;
         }
-        .selector-row select {
+        .selector-row select,
+        .selector-row input[type="number"] {
           width: 100%;
+        }
+        .filter-group {
+          justify-content: center;
         }
         .hint {
           font-size: 10px;
@@ -1067,6 +1154,12 @@
         }
         .strategy-description {
           font-size: 11px;
+        }
+        .file-row.actions {
+          flex-wrap: wrap;
+        }
+        .file-row.info {
+          flex-wrap: wrap;
         }
       }
       @media (max-width: 380px) {
@@ -1105,6 +1198,12 @@
         }
         .strategy-description {
           font-size: 10px;
+        }
+        .stat-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .stat-grid .stat:last-child {
+          grid-column: span 2;
         }
       }
     </style>
@@ -1204,15 +1303,15 @@
           <br />
           For each historical draw, the app generates a prediction using
           <strong>only the previous N draws</strong> (where N is the selected
-          window size). Choose a strategy below to see how it would have performed.
+          window size). Choose your strategy and filters below.
         </div>
 
-        <!-- Strategy & Window selector -->
+        <!-- Strategy, Window, and Filters in one row -->
         <div class="selector-row">
           <label for="strategySelect">🧠 Strategy:</label>
           <select id="strategySelect">
             <option value="strategy1">Strategy 1 (Hybrid)</option>
-            <option value="strategy2">Strategy 2 (Cluster + Neighbours + Random)</option>
+            <option value="strategy2" selected>Strategy 2 (Custom)</option>
           </select>
 
           <label for="windowSelect" style="margin-left: 8px;">📏 Window:</label>
@@ -1224,24 +1323,43 @@
             <option value="43">5 months (43)</option>
             <option value="52">6 months (52)</option>
           </select>
+
+          <span style="color:var(--text3);font-size:12px;margin:0 4px;">|</span>
+
+          <div class="filter-group">
+            <label>From clusters:</label>
+            <input type="number" id="filterClusters" value="2" min="0" max="6" />
+          </div>
+          <div class="filter-group">
+            <label>Neighbours:</label>
+            <input type="number" id="filterNeighbours" value="2" min="0" max="6" />
+          </div>
+          <div class="filter-group">
+            <label>Random:</label>
+            <input type="number" id="filterRandom" value="2" min="0" max="6" />
+          </div>
+          <button
+            class="refresh-btn"
+            id="applyFiltersBtn"
+            style="background:var(--rose);color:white;border-color:var(--rose);padding:6px 14px;"
+          >
+            Apply
+          </button>
         </div>
 
-        <!-- Strategy descriptions -->
+        <!-- Strategy description -->
         <div id="strategyDescription" class="strategy-description">
-          <strong>Strategy 1 (Hybrid):</strong> 4 numbers are picked from the
-          detected grid clusters (recency‑weighted). The remaining 2 numbers are
-          chosen randomly from outside the clusters using recency‑weighted
-          probability. This balances cluster strength with wider coverage.
+          <strong>Strategy 2 (Custom):</strong> You control exactly how many numbers come from clusters, how many from neighbours (8‑direction adjacent to clusters), and how many from the remaining pool. All selections are recency‑weighted.
+        </div>
+
+        <!-- Performance Comparison at the top -->
+        <div class="comparison-grid" style="border-top: none; padding-top: 0; margin-top: 0;">
+          <div class="slabel">Performance comparison across all windows</div>
+          <div class="stat-grid-6" id="comparison-stats"></div>
         </div>
 
         <div class="stat-grid" id="analysis-stats"></div>
         <div id="analysis-table-container"></div>
-
-        <!-- Comparison section -->
-        <div class="comparison-grid">
-          <div class="slabel">Performance comparison across all windows</div>
-          <div class="stat-grid-6" id="comparison-stats"></div>
-        </div>
       </div>
 
       <!-- ── ADD DRAW ── -->
@@ -1263,20 +1381,22 @@
       <div id="pane-settings" class="pane">
         <div class="setting-group">
           <div class="slabel">Past draws file (auto-append)</div>
-          <div class="file-row">
+          <!-- Row 1: Select, Activate, Forget -->
+          <div class="file-row actions">
             <button class="file-label" id="selectDrawsBtn">
               <i class="ti ti-folder-open" aria-hidden="true"></i> Select file
             </button>
-            <span id="drawsFileName" class="file-path">No file selected</span>
-            <span id="drawsStatus" class="status-badge">Not active</span>
-          </div>
-          <div class="file-row">
             <button class="refresh-btn" id="refreshDrawsBtn">
               <i class="ti ti-refresh" aria-hidden="true"></i> Activate
             </button>
             <button class="refresh-btn" id="clearDrawsBtn">
               <i class="ti ti-trash" aria-hidden="true"></i> Forget
             </button>
+          </div>
+          <!-- Row 2: Filename, Selected badge, Active/Not Active -->
+          <div class="file-row info">
+            <span id="drawsFileName" class="file-path">No file selected</span>
+            <span id="drawsStatus" class="status-badge">Not active</span>
           </div>
           <p class="hint">
             <strong>📌 Once you select a file, its path is saved permanently.</strong><br />
@@ -1289,20 +1409,22 @@
 
         <div class="setting-group">
           <div class="slabel">Arrangement file (read only, optional)</div>
-          <div class="file-row">
+          <!-- Row 1: Select, Activate, Forget -->
+          <div class="file-row actions">
             <button class="file-label" id="selectArrBtn">
               <i class="ti ti-folder-open" aria-hidden="true"></i> Select file
             </button>
-            <span id="arrFileName" class="file-path">No file selected</span>
-            <span id="arrStatus" class="status-badge">Not active</span>
-          </div>
-          <div class="file-row">
             <button class="refresh-btn" id="refreshArrBtn">
               <i class="ti ti-refresh" aria-hidden="true"></i> Activate
             </button>
             <button class="refresh-btn" id="clearArrBtn">
               <i class="ti ti-trash" aria-hidden="true"></i> Forget
             </button>
+          </div>
+          <!-- Row 2: Filename, Selected badge, Active/Not Active -->
+          <div class="file-row info">
+            <span id="arrFileName" class="file-path">No file selected</span>
+            <span id="arrStatus" class="status-badge">Not active</span>
           </div>
           <p class="hint">
             <strong>📌 Arrangement file path is also saved permanently.</strong><br />
@@ -1385,7 +1507,10 @@
       let inputs = ["", "", "", "", "", ""];
       let currentRange = 0;
       let analysisWindow = 26;
-      let analysisStrategy = "strategy1"; // 'strategy1' or 'strategy2'
+      let analysisStrategy = "strategy2";
+      let filterClusters = 2;
+      let filterNeighbours = 2;
+      let filterRandom = 2;
 
       /* ═══════════════════════════════════════════════════════════
    INDEXEDDB
@@ -1474,7 +1599,6 @@
           await activateDraws(true);
         });
 
-      // ── FIXED: Does NOT delete handle on error ──
       async function activateDraws(showToast = true) {
         if (!drawsHandle) {
           if (showToast) toast("No draws file selected. Choose one first.");
@@ -1504,7 +1628,6 @@
           if (showToast)
             toast("Failed to load the file. It may have been moved or deleted.");
           drawsOk = false;
-          // Keep the handle and name – do NOT delete them
           updateDrawsUI();
           return false;
         }
@@ -1593,7 +1716,6 @@
           await activateArrangement(true);
         });
 
-      // ── FIXED: Does NOT delete handle on error ──
       async function activateArrangement(showToast = true) {
         if (!arrHandle) {
           if (showToast) toast("No arrangement file selected.");
@@ -1619,7 +1741,6 @@
           if (showToast)
             toast("Failed to load arrangement. The file may have been moved.");
           arrOk = false;
-          // Keep the handle and name – do NOT delete them
           updateArrUI();
           return false;
         }
@@ -1842,8 +1963,69 @@
         return s.slice(0, n);
       }
 
+      // ── Custom Strategy with filters ──
+      function genCustomStrategy(ds, sc, peak, clusters, cCount, nCount, rCount) {
+        const cSet = new Set();
+        clusters.forEach((c) => c.forEach((n) => cSet.add(n)));
+        const cPool = [...cSet];
+
+        // Neighbour pool: numbers adjacent to clusters, but NOT in clusters
+        const nSet = new Set();
+        cPool.forEach((cn) => {
+          ADJ[cn].forEach((adj) => {
+            if (!cSet.has(adj)) nSet.add(adj);
+          });
+        });
+        const nPool = Array.from(nSet);
+
+        // Random pool: numbers not in clusters and not neighbours
+        const rPool = [];
+        for (let n = 1; n <= 40; n++) {
+          if (!cSet.has(n) && !nSet.has(n)) rPool.push(n);
+        }
+
+        // Check if we have enough in each pool
+        if (cPool.length < cCount || nPool.length < nCount || rPool.length < rCount) {
+          // Fallback: try hybrid
+          const hc = genHybrid(ds, sc, peak, clusters);
+          if (hc) return hc;
+          // Fallback: pure weighted top 6
+          const all = Object.keys(sc).map(Number);
+          const aw = all.map((n) => sc[n]);
+          for (let a = 0; a < 2000; a++) {
+            const combo = weightedPick(all, aw, 6);
+            if (combo.length === 6 && isValid(combo)) return combo;
+          }
+          return [...all].sort((a, b) => sc[b] - sc[a]).slice(0, 6);
+        }
+
+        const cw = cPool.map((n) => sc[n]);
+        const nw = nPool.map((n) => sc[n]);
+        const rw = rPool.map((n) => sc[n]);
+
+        for (let a = 0; a < 3000; a++) {
+          const combo = [
+            ...weightedPick(cPool, cw, cCount),
+            ...weightedPick(nPool, nw, nCount),
+            ...weightedPick(rPool, rw, rCount),
+          ];
+          if (combo.length === 6 && isValid(combo)) return combo;
+        }
+
+        // Fallback: use top weighted from each pool
+        const sortedC = [...cPool].sort((a, b) => sc[b] - sc[a]);
+        const sortedN = [...nPool].sort((a, b) => sc[b] - sc[a]);
+        const sortedR = [...rPool].sort((a, b) => sc[b] - sc[a]);
+        const combo = [
+          ...sortedC.slice(0, cCount),
+          ...sortedN.slice(0, nCount),
+          ...sortedR.slice(0, rCount),
+        ];
+        return combo.length === 6 ? combo : null;
+      }
+
       // ── Strategy 1: Hybrid (4 clusters + 2 random) ──
-      function genStrategy1(ds, sc, peak, clusters) {
+      function genHybrid(ds, sc, peak, clusters) {
         const cSet = new Set();
         clusters.forEach((c) => c.forEach((n) => cSet.add(n)));
         const cPool = [...cSet];
@@ -1859,7 +2041,6 @@
             if (combo.length === 6 && isValid(combo)) return combo;
           }
         }
-        // Fallback: top weighted numbers
         const thr = peak * 0.5;
         const all = [];
         for (let n = 1; n <= 40; n++) if (sc[n] >= thr) all.push(n);
@@ -1872,57 +2053,6 @@
         return [...all].sort((a, b) => sc[b] - sc[a]).slice(0, 6);
       }
 
-      // ── Strategy 2: 2 clusters + 2 neighbours + 2 random ──
-      function genStrategy2(ds, sc, peak, clusters) {
-        const cSet = new Set();
-        clusters.forEach((c) => c.forEach((n) => cSet.add(n)));
-        const cPool = [...cSet];
-
-        // Neighbour pool: numbers adjacent to clusters, but NOT in clusters
-        const nSet = new Set();
-        cPool.forEach((cn) => {
-          ADJ[cn].forEach((adj) => {
-            if (!cSet.has(adj)) nSet.add(adj);
-          });
-        });
-        const nPool = Array.from(nSet);
-
-        // Outside pool: numbers not in clusters and not neighbours
-        const oPool = [];
-        for (let n = 1; n <= 40; n++) {
-          if (!cSet.has(n) && !nSet.has(n)) oPool.push(n);
-        }
-
-        // Try to build a valid combo
-        if (cPool.length >= 2 && nPool.length >= 2 && oPool.length >= 2) {
-          const cw = cPool.map((n) => sc[n]);
-          const nw = nPool.map((n) => sc[n]);
-          const ow = oPool.map((n) => sc[n]);
-          for (let a = 0; a < 3000; a++) {
-            const combo = [
-              ...weightedPick(cPool, cw, 2),
-              ...weightedPick(nPool, nw, 2),
-              ...weightedPick(oPool, ow, 2),
-            ];
-            if (combo.length === 6 && isValid(combo)) return combo;
-          }
-        }
-
-        // Fallback 1: try Strategy 1
-        const s1 = genStrategy1(ds, sc, peak, clusters);
-        if (s1) return s1;
-
-        // Fallback 2: pure weighted top 6
-        const all = Object.keys(sc).map(Number);
-        const aw = all.map((n) => sc[n]);
-        for (let a = 0; a < 2000; a++) {
-          const combo = weightedPick(all, aw, 6);
-          if (combo.length === 6 && isValid(combo)) return combo;
-        }
-        return [...all].sort((a, b) => sc[b] - sc[a]).slice(0, 6);
-      }
-
-      // ── Backward-compatible mix (for UI predictions) ──
       function genMix(ds) {
         const freq = {};
         for (let n = 1; n <= 40; n++) freq[n] = 0;
@@ -1946,8 +2076,8 @@
         return oh.slice(0, 6).sort((a, b) => a - b);
       }
 
-      // ── Reusable single prediction ──
-      function predictFromDraws(ds, strategy = "strategy1") {
+      // ── Reusable prediction ──
+      function predictFromDraws(ds, strategy = "strategy2") {
         if (ds.length < 3) return null;
         const sc = computeRawWeights(ds);
         const peak = Math.max(1, ...Object.values(sc));
@@ -1955,13 +2085,18 @@
 
         let combo = null;
         if (strategy === "strategy1") {
-          combo = genStrategy1(ds, sc, peak, clusters);
-          if (!combo) combo = genMix(ds);
-        } else if (strategy === "strategy2") {
-          combo = genStrategy2(ds, sc, peak, clusters);
+          combo = genHybrid(ds, sc, peak, clusters);
           if (!combo) combo = genMix(ds);
         } else {
-          combo = genStrategy1(ds, sc, peak, clusters);
+          combo = genCustomStrategy(
+            ds,
+            sc,
+            peak,
+            clusters,
+            filterClusters,
+            filterNeighbours,
+            filterRandom,
+          );
           if (!combo) combo = genMix(ds);
         }
         return combo;
@@ -2013,7 +2148,7 @@
         setTimeout(() => {
           const results = [];
           for (let i = 0; i < 2; i++) {
-            let c = genStrategy1(ds, sc, peak, clusters);
+            let c = genHybrid(ds, sc, peak, clusters);
             if (!c) c = genMix(ds);
             if (c) {
               c.sort((a, b) => a - b);
@@ -2024,15 +2159,22 @@
               });
             }
           }
-          // Third prediction uses Strategy 2 for variety
-          let c3 = genStrategy2(ds, sc, peak, clusters);
+          let c3 = genCustomStrategy(
+            ds,
+            sc,
+            peak,
+            clusters,
+            filterClusters,
+            filterNeighbours,
+            filterRandom,
+          );
           if (!c3) c3 = genMix(ds);
           if (c3) {
             c3.sort((a, b) => a - b);
             results.push({
               combo: c3,
               label: "Prediction 3",
-              strategy: "Cluster + Neighbours + Random",
+              strategy: "Custom · cluster + neighbours + random",
             });
           }
           const el = document.getElementById("predictions");
@@ -2305,19 +2447,19 @@
             matchClass = "low";
           }
 
-          const matchBadge =
-            prediction && actual.join(",") === prediction.join(",")
-              ? ' <span style="color:var(--green-text); font-weight:600;">✓</span>'
-              : "";
-
           rowsHtml += `<tr>
-            <td>${drawNum}</td>
-            <td><span class="badge actual">${actualStr}</span></td>
+            <td><strong>${drawNum}</strong></td>
             <td>
-              <span class="badge ${prediction ? 'pred' : 'na'}">
-                ${predStr}
-              </span>
-              ${matchBadge}
+              <div class="pred-cell">
+                <span class="badge actual">${actualStr}</span>
+                <span class="pred-label">↑ Actual</span>
+              </div>
+            </td>
+            <td>
+              <div class="pred-cell">
+                <span class="badge ${prediction ? 'pred' : 'na'}">${predStr}</span>
+                <span class="pred-label">↑ Prediction</span>
+              </div>
             </td>
             <td><span class="matches-badge ${matchClass}">${matchDisplay}</span></td>
             <td><span class="trained-on">${trainedOn}</span></td>
@@ -2330,14 +2472,14 @@
 
         statsContainer.innerHTML = `
           <div class="stat"><div class="stat-val">${totalPredictions}</div><div class="stat-lbl">Predictions made</div></div>
-          <div class="stat"><div class="stat-val">${windowSize}</div><div class="stat-lbl">Training window</div></div>
+          <div class="stat"><div class="stat-val">${windowSize}</div><div class="stat-lbl">Training Window</div></div>
           <div class="stat"><div class="stat-val">${draws.length}</div><div class="stat-lbl">Total draws</div></div>
         `;
 
         const strategyName =
           strategy === "strategy1"
             ? "Strategy 1 (Hybrid)"
-            : "Strategy 2 (Cluster + Neighbours + Random)";
+            : "Strategy 2 (Custom)";
 
         const summary = `
           <div style="margin-top: 12px; padding: 10px 14px; background: var(--surface2); border-radius: var(--radius-md); border: 1px solid var(--border); font-size: 12px; color: var(--text2);">
@@ -2355,8 +2497,8 @@
               <thead>
                 <tr>
                   <th>Draw #</th>
-                  <th>Actual Draw</th>
-                  <th>Prediction (${windowSize}-draw window)</th>
+                  <th>Draw</th>
+                  <th>Prediction</th>
                   <th>Matches</th>
                   <th>Trained on</th>
                 </tr>
@@ -2374,7 +2516,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-   COMPARISON STATS (all windows) – uses the selected strategy
+   COMPARISON STATS (all windows)
    ═══════════════════════════════════════════════════════════ */
       function renderComparisonStats() {
         const container = document.getElementById("comparison-stats");
@@ -2590,20 +2732,19 @@
       );
 
       /* ═══════════════════════════════════════════════════════════
-   ANALYSIS STRATEGY & WINDOW SELECTORS
+   ANALYSIS CONTROLS
    ═══════════════════════════════════════════════════════════ */
       document
         .getElementById("strategySelect")
         .addEventListener("change", function () {
           analysisStrategy = this.value;
-          // Update description
           const desc = document.getElementById("strategyDescription");
           if (analysisStrategy === "strategy1") {
             desc.innerHTML =
               `<strong>Strategy 1 (Hybrid):</strong> 4 numbers are picked from the detected grid clusters (recency‑weighted). The remaining 2 numbers are chosen randomly from outside the clusters using recency‑weighted probability. This balances cluster strength with wider coverage.`;
           } else {
             desc.innerHTML =
-              `<strong>Strategy 2 (Cluster + Neighbours + Random):</strong> 2 numbers from inside clusters (weighted), 2 numbers from adjacent cells (8‑direction) to clusters but not inside them (weighted), and 2 numbers from the remaining pool (recency‑weighted). This encourages spatially connected picks.`;
+              `<strong>Strategy 2 (Custom):</strong> You control exactly how many numbers come from clusters, how many from neighbours (8‑direction adjacent to clusters), and how many from the remaining pool. All selections are recency‑weighted.`;
           }
           renderAnalysisTable();
         });
@@ -2614,6 +2755,36 @@
           analysisWindow = parseInt(this.value);
           renderAnalysisTable();
         });
+
+      document
+        .getElementById("applyFiltersBtn")
+        .addEventListener("click", function () {
+          const c = parseInt(document.getElementById("filterClusters").value) || 0;
+          const n = parseInt(document.getElementById("filterNeighbours").value) || 0;
+          const r = parseInt(document.getElementById("filterRandom").value) || 0;
+
+          // Ensure they sum to 6
+          const total = c + n + r;
+          if (total !== 6) {
+            toast(`The three numbers must sum to 6 (currently ${total}). Adjust them.`);
+            return;
+          }
+
+          filterClusters = c;
+          filterNeighbours = n;
+          filterRandom = r;
+          renderAnalysisTable();
+          toast(`Filters applied: ${c} clusters, ${n} neighbours, ${r} random.`);
+        });
+
+      // Also apply filters when Enter key is pressed in any filter input
+      document.querySelectorAll('#filterClusters, #filterNeighbours, #filterRandom').forEach((input) => {
+        input.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            document.getElementById('applyFiltersBtn').click();
+          }
+        });
+      });
 
       /* ═══════════════════════════════════════════════════════════
    TAB SWITCHING
