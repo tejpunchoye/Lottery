@@ -65,12 +65,14 @@
       .stat-grid-6 .stat-val { font-size: 15px; }
       .stat-grid-6 .stat-lbl { font-size: 9px; }
 
-      /* FILTER ROW */
-      .filter-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-      .filter-group { display: flex; align-items: center; gap: 6px; background: var(--surface2); padding: 6px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); }
-      .filter-group label { font-size: 11px; color: var(--text3); font-weight: 500; font-family: var(--font-sans); white-space: nowrap; }
-      .filter-group input { width: 36px; padding: 2px 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-family: var(--font-mono); font-size: 12px; text-align: center; }
+      /* FILTER GRID 2×2 */
+      .filter-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+      .filter-group { display: flex; align-items: center; gap: 6px; background: var(--surface2); padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); }
+      .filter-group label { font-size: 11px; color: var(--text3); font-weight: 500; font-family: var(--font-sans); white-space: nowrap; flex-shrink: 0; }
+      .filter-group input { width: 40px; padding: 3px 4px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-family: var(--font-mono); font-size: 13px; font-weight: 700; text-align: center; }
       .filter-group input:focus { border-color: var(--rose); outline: none; }
+      .filter-group select { flex: 1; padding: 3px 6px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-family: var(--font-mono); font-size: 12px; cursor: pointer; outline: none; min-width: 0; }
+      .filter-group select:focus { border-color: var(--rose); }
 
       /* APPLY BUTTON */
       .apply-btn { display: block; margin: 0 auto 20px; padding: 11px 40px; background: linear-gradient(135deg, var(--rose), #be123c); color: white; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; font-family: var(--font-sans); cursor: pointer; letter-spacing: .04em; box-shadow: 0 4px 12px rgba(225,29,72,.25); transition: opacity .15s, transform .1s; }
@@ -160,10 +162,13 @@
       .comparison-grid { margin-top: 20px; padding-top: 16px; border-top: 2px solid var(--border); }
       .comparison-grid .slabel { margin-bottom: 12px; }
 
+      /* Table color legend */
+      .table-color-legend { display: flex; gap: 14px; align-items: center; margin-bottom: 6px; margin-top: 8px; }
+      .tcl-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); font-family: var(--font-sans); }
+      .tcl-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
       /* Stacked draw/prediction cell */
       .draw-pred-stack { display: flex; flex-direction: column; gap: 3px; }
-      .draw-pred-stack .badge { display: inline-block; width: max-content; }
-      .draw-pred-stack .dp-label { font-size: 8px; color: var(--text3); font-weight: 500; font-family: var(--font-sans); text-transform: uppercase; letter-spacing: .04em; }
 
       /* ADD DRAW */
       .num-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
@@ -219,10 +224,11 @@
 
       /* RESPONSIVE */
       @media (max-width: 720px) {
-        .filter-row { gap: 8px; }
+        .filter-grid-2x2 { gap: 6px; }
       }
       @media (max-width: 640px) {
         .stat-grid-6 { grid-template-columns: repeat(3,1fr); }
+        .filter-grid-2x2 { grid-template-columns: 1fr 1fr; gap: 6px; }
         .big-cell .cn { font-size: 12px; }
         .big-cell .cw { font-size: 7px; }
         .ball { width: 38px; height: 38px; font-size: 13px; }
@@ -231,12 +237,11 @@
         .gen-btn { font-size: 12px; padding: 11px; }
         table { font-size: 11px; min-width: 280px; }
         table td, table th { padding: 5px 7px; }
-        .filter-row { flex-direction: row; flex-wrap: wrap; justify-content: center; }
-        .filter-group { justify-content: space-between; }
         .apply-btn { width: 100%; }
         .hint { font-size: 10px; }
       }
       @media (max-width: 380px) {
+        .filter-grid-2x2 { grid-template-columns: 1fr; }
         .num-grid { grid-template-columns: repeat(3,1fr); }
         .big-grid { gap: 3px; padding: 8px; min-width: 280px; }
         .big-cell .cn { font-size: 11px; }
@@ -255,7 +260,7 @@
       <div class="header">
         <div class="header-left">
           <h1>Draw Grid Explorer</h1>
-          <p id="hdr-sub">1–40 · visual clusters · file persistence</p>
+          <p id="hdr-sub"></p>
         </div>
         <div class="header-icon">🎲</div>
       </div>
@@ -316,24 +321,8 @@
       <!-- ── ANALYSIS ── -->
       <div id="pane-analysis" class="pane">
 
-        <!-- Cluster timeframe selector -->
-        <div class="filter-row" style="margin-bottom:10px;">
-          <div class="filter-group" style="gap:8px;">
-            <label style="font-size:12px;font-weight:600;color:var(--text2);">📊 Cluster window:</label>
-            <select id="clusterWindowSelect" style="padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:12px;cursor:pointer;outline:none;">
-              <option value="8">1 month (8)</option>
-              <option value="17">2 months (17)</option>
-              <option value="26" selected>3 months (26)</option>
-              <option value="35">4 months (35)</option>
-              <option value="43">5 months (43)</option>
-              <option value="52">6 months (52)</option>
-              <option value="0">All draws</option>
-            </select>
-          </div>
-        </div>
-
-        <!-- Filter row: 3 inputs on same line -->
-        <div class="filter-row">
+        <!-- 2×2 filter grid -->
+        <div class="filter-grid-2x2">
           <div class="filter-group">
             <label>From clusters:</label>
             <input type="number" id="filterClusters" value="2" min="0" max="6" />
@@ -345,6 +334,18 @@
           <div class="filter-group">
             <label>Random:</label>
             <input type="number" id="filterRandom" value="2" min="0" max="6" />
+          </div>
+          <div class="filter-group">
+            <label>📊 Cluster window:</label>
+            <select id="clusterWindowSelect">
+              <option value="8">1 month (8)</option>
+              <option value="17">2 months (17)</option>
+              <option value="26" selected>3 months (26)</option>
+              <option value="35">4 months (35)</option>
+              <option value="43">5 months (43)</option>
+              <option value="52">6 months (52)</option>
+              <option value="0">All draws</option>
+            </select>
           </div>
         </div>
 
@@ -1033,15 +1034,13 @@
             matchClass=matches>=4?"high":matches>=2?"medium":"low";
           } else { matchClass="low"; }
 
-          // Draw & prediction stacked in the same column
+          // Draw & prediction stacked in the same column — no labels
           rowsHtml+=`<tr>
             <td><strong>${drawNum}</strong></td>
             <td>
               <div class="draw-pred-stack">
                 <span class="badge actual">${actualStr}</span>
-                <span class="dp-label">↑ Actual</span>
-                <span class="badge ${prediction?"pred":"na"}" style="margin-top:4px">${predStr}</span>
-                <span class="dp-label">↑ Prediction</span>
+                <span class="badge ${prediction?"pred":"na"}">${predStr}</span>
               </div>
             </td>
             <td><span class="matches-badge ${matchClass}">${matchDisplay}</span></td>
@@ -1068,14 +1067,18 @@
           </div>`;
 
         container.innerHTML=`
+          <div class="table-color-legend">
+            <span class="tcl-item"><span class="tcl-dot" style="background:var(--rose)"></span>Actual draw</span>
+            <span class="tcl-item"><span class="tcl-dot" style="background:var(--blue)"></span>Prediction</span>
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Draw #</th>
-                  <th>Draw &amp; Prediction</th>
-                  <th>Matches</th>
-                  <th>Trained on</th>
+                  <th>Draw</th>
+                  <th>Numbers</th>
+                  <th>%</th>
+                  <th>Range</th>
                 </tr>
               </thead>
               <tbody>${rowsHtml}</tbody>
