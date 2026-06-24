@@ -60,10 +60,10 @@
       .stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; }
       .stat-val { font-size: 22px; font-weight: 700; color: var(--text); font-family: var(--font-mono); letter-spacing: -.5px; }
       .stat-lbl { font-size: 11px; color: var(--text3); margin-top: 3px; }
-      .stat-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 16px; }
-      .stat-grid-6 .stat { padding: 10px 8px; }
-      .stat-grid-6 .stat-val { font-size: 18px; }
-      .stat-grid-6 .stat-lbl { font-size: 10px; }
+      .stat-grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; }
+      .stat-grid-6 .stat { padding: 8px 6px; text-align: center; }
+      .stat-grid-6 .stat-val { font-size: 15px; }
+      .stat-grid-6 .stat-lbl { font-size: 9px; }
 
       /* FILTER ROW */
       .filter-row { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -139,27 +139,31 @@
 
       /* ANALYSIS TABLE */
       .table-wrap { overflow-x: auto; margin-top: 8px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
-      table { width: 100%; border-collapse: collapse; font-size: 13px; font-family: var(--font-mono); min-width: 360px; }
-      table th { background: var(--surface2); color: var(--text2); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; padding: 10px 12px; text-align: left; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 2; font-family: var(--font-sans); }
-      table td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+      table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: var(--font-mono); min-width: 320px; table-layout: auto; }
+      table th { background: var(--surface2); color: var(--text2); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; padding: 8px 10px; text-align: left; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 2; font-family: var(--font-sans); white-space: nowrap; }
+      table td { padding: 7px 10px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
       table tr:last-child td { border-bottom: none; }
       table tr:hover td { background: var(--surface2); }
-      .table-wrap .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; background: var(--surface2); border: 1px solid var(--border2); font-size: 12px; font-family: var(--font-mono); color: var(--text2); letter-spacing: .02em; }
+      /* Fixed-width columns */
+      table td:first-child, table th:first-child { width: 44px; }
+      table td:nth-child(3), table th:nth-child(3) { width: 80px; white-space: nowrap; }
+      table td:nth-child(4), table th:nth-child(4) { width: 90px; white-space: nowrap; }
+      .table-wrap .badge { display: inline-block; padding: 2px 7px; border-radius: 20px; background: var(--surface2); border: 1px solid var(--border2); font-size: 11px; font-family: var(--font-mono); color: var(--text2); letter-spacing: .02em; white-space: nowrap; }
       .table-wrap .badge.actual { background: var(--rose-bg); border-color: var(--rose); color: var(--rose-text); }
       .table-wrap .badge.pred { background: var(--blue-bg); border-color: var(--blue); color: var(--blue-text); }
       .table-wrap .badge.na { background: var(--surface2); border-color: var(--border2); color: var(--text3); font-weight: 400; }
-      .matches-badge { font-weight: 600; font-size: 12px; }
+      .matches-badge { font-weight: 600; font-size: 12px; white-space: nowrap; }
       .matches-badge.high { color: var(--green-text); }
       .matches-badge.medium { color: var(--amber-text); }
       .matches-badge.low { color: var(--text3); }
-      .trained-on { font-size: 11px; color: var(--text3); font-family: var(--font-mono); }
+      .trained-on { font-size: 10px; color: var(--text3); font-family: var(--font-mono); white-space: nowrap; }
       .comparison-grid { margin-top: 20px; padding-top: 16px; border-top: 2px solid var(--border); }
       .comparison-grid .slabel { margin-bottom: 12px; }
 
       /* Stacked draw/prediction cell */
-      .draw-pred-stack { display: flex; flex-direction: column; gap: 4px; }
-      .draw-pred-stack .badge { display: block; width: fit-content; }
-      .draw-pred-stack .dp-label { font-size: 9px; color: var(--text3); font-weight: 500; font-family: var(--font-sans); text-transform: uppercase; letter-spacing: .04em; margin-top: 1px; }
+      .draw-pred-stack { display: flex; flex-direction: column; gap: 3px; }
+      .draw-pred-stack .badge { display: inline-block; width: max-content; }
+      .draw-pred-stack .dp-label { font-size: 8px; color: var(--text3); font-weight: 500; font-family: var(--font-sans); text-transform: uppercase; letter-spacing: .04em; }
 
       /* ADD DRAW */
       .num-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
@@ -215,20 +219,19 @@
 
       /* RESPONSIVE */
       @media (max-width: 720px) {
-        .stat-grid-6 { grid-template-columns: repeat(3,1fr); }
         .filter-row { gap: 8px; }
       }
       @media (max-width: 640px) {
-        .stat-grid-6 { grid-template-columns: repeat(2,1fr); }
+        .stat-grid-6 { grid-template-columns: repeat(3,1fr); }
         .big-cell .cn { font-size: 12px; }
         .big-cell .cw { font-size: 7px; }
         .ball { width: 38px; height: 38px; font-size: 13px; }
         .header-left h1 { font-size: 16px; }
         .tab { font-size: 11px; flex: 1 1 auto; }
         .gen-btn { font-size: 12px; padding: 11px; }
-        table { font-size: 12px; min-width: 300px; }
-        table td, table th { padding: 6px 8px; }
-        .filter-row { flex-direction: column; align-items: stretch; }
+        table { font-size: 11px; min-width: 280px; }
+        table td, table th { padding: 5px 7px; }
+        .filter-row { flex-direction: row; flex-wrap: wrap; justify-content: center; }
         .filter-group { justify-content: space-between; }
         .apply-btn { width: 100%; }
         .hint { font-size: 10px; }
@@ -239,9 +242,9 @@
         .big-cell .cn { font-size: 11px; }
         .ball { width: 34px; height: 34px; font-size: 12px; }
         .btn-row2 { flex-direction: column; }
-        table { font-size: 11px; min-width: 280px; }
-        table td, table th { padding: 4px 6px; }
-        .stat-grid-6 { grid-template-columns: 1fr 1fr; }
+        table { font-size: 10px; min-width: 260px; }
+        table td, table th { padding: 4px 5px; }
+        .stat-grid-6 { grid-template-columns: 1fr 1fr 1fr; }
         .hint { font-size: 9px; }
       }
     </style>
@@ -312,6 +315,22 @@
 
       <!-- ── ANALYSIS ── -->
       <div id="pane-analysis" class="pane">
+
+        <!-- Cluster timeframe selector -->
+        <div class="filter-row" style="margin-bottom:10px;">
+          <div class="filter-group" style="gap:8px;">
+            <label style="font-size:12px;font-weight:600;color:var(--text2);">📊 Cluster window:</label>
+            <select id="clusterWindowSelect" style="padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text);font-family:var(--font-mono);font-size:12px;cursor:pointer;outline:none;">
+              <option value="8">1 month (8)</option>
+              <option value="17">2 months (17)</option>
+              <option value="26" selected>3 months (26)</option>
+              <option value="35">4 months (35)</option>
+              <option value="43">5 months (43)</option>
+              <option value="52">6 months (52)</option>
+              <option value="0">All draws</option>
+            </select>
+          </div>
+        </div>
 
         <!-- Filter row: 3 inputs on same line -->
         <div class="filter-row">
@@ -460,6 +479,7 @@
       let analysisWindow = 26;
       let analysisStrategy = "strategy2";
       let filterClusters = 2, filterNeighbours = 2, filterRandom = 2;
+      let clusterWindow = 26; // draws used to compute clusters for analysis predictions
 
       /* ═══════════════════════════════════════════════════════════
          INDEXEDDB
@@ -679,8 +699,8 @@
         if (!arrangement.length) return [];
         const freq={};
         ds.forEach(d=>d.forEach(n=>{freq[n]=(freq[n]||0)+1;}));
-        return arrangement.map((row,i)=>({label:`Row ${i+1}`,score:row.reduce((s,n)=>s+(freq[n]||0),0)}))
-          .sort((a,b)=>b.score-a.score);
+        // Keep original arrangement order (Row 1, Row 2, ...) — no sorting
+        return arrangement.map((row,i)=>({label:`Row ${i+1}`,score:row.reduce((s,n)=>s+(freq[n]||0),0)}));
       }
 
       /* ═══════════════════════════════════════════════════════════
@@ -780,11 +800,16 @@
         return oh.slice(0,6).sort((a,b)=>a-b);
       }
 
-      function predictFromDraws(ds, strategy="strategy2") {
+      // predictFromDraws: ds = training window for weighting; clusterDs = subset used for cluster detection (optional)
+      function predictFromDraws(ds, strategy="strategy2", clusterDs=null) {
         if(ds.length<3) return null;
         const sc=computeRawWeights(ds);
         const peak=Math.max(1,...Object.values(sc));
-        const clusters=findClusters(sc,peak);
+        // Use clusterDs for cluster detection if provided, otherwise use full ds
+        const cDs = clusterDs && clusterDs.length >= 3 ? clusterDs : ds;
+        const cSc = cDs === ds ? sc : computeRawWeights(cDs);
+        const cPeak = cDs === ds ? peak : Math.max(1,...Object.values(cSc));
+        const clusters=findClusters(cSc,cPeak);
         let combo=null;
         if(strategy==="strategy1"){
           combo=genHybrid(ds,sc,peak,clusters);
@@ -989,7 +1014,10 @@
         for(let i=windowSize;i<draws.length;i++){
           const trainingData=draws.slice(i-windowSize,i);
           const actual=draws[i];
-          const prediction=predictFromDraws(trainingData,strategy);
+          // Cluster window: take the most recent clusterWindow draws from within the training data
+          const cwSize = clusterWindow === 0 ? trainingData.length : Math.min(clusterWindow, trainingData.length);
+          const clusterData = trainingData.slice(Math.max(0, trainingData.length - cwSize));
+          const prediction=predictFromDraws(trainingData,strategy,clusterData);
           const drawNum=i+1;
           const actualStr=actual.join(" ");
           const predStr=prediction?prediction.join(" "):"N/A";
@@ -1071,7 +1099,10 @@
           if(draws.length<size+1){html+=`<div class="stat"><div class="stat-val">—</div><div class="stat-lbl">${w.label}</div></div>`;continue;}
           let totalPredictions=draws.length-size, totalMatches=0, exactMatches=0, successfulPredictions=0;
           for(let i=size;i<draws.length;i++){
-            const prediction=predictFromDraws(draws.slice(i-size,i),strategy);
+            const tData=draws.slice(i-size,i);
+            const cwSize2 = clusterWindow === 0 ? tData.length : Math.min(clusterWindow, tData.length);
+            const clusterData2 = tData.slice(Math.max(0, tData.length - cwSize2));
+            const prediction=predictFromDraws(tData,strategy,clusterData2);
             if(prediction){
               const predSet=new Set(prediction); let matches=0;
               draws[i].forEach(n=>{if(predSet.has(n))matches++;});
@@ -1174,6 +1205,11 @@
       /* ═══════════════════════════════════════════════════════════
          ANALYSIS CONTROLS
       ═══════════════════════════════════════════════════════════ */
+      document.getElementById("clusterWindowSelect").addEventListener("change", function() {
+        clusterWindow = parseInt(this.value);
+        renderAnalysisTable();
+      });
+
       document.getElementById("applyFiltersBtn").addEventListener("click",function(){
         const c=parseInt(document.getElementById("filterClusters").value)||0;
         const n=parseInt(document.getElementById("filterNeighbours").value)||0;
