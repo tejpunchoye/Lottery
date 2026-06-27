@@ -118,6 +118,17 @@
       .bar-fill { height: 4px; background: var(--amber); border-radius: 2px; transition: width .5s cubic-bezier(.4,0,.2,1); }
       .bar-score { font-size: 11px; color: var(--text2); width: 28px; text-align: right; font-family: var(--font-mono); flex-shrink: 0; }
 
+      /* PREDICTION FILTER CARD */
+      .pred-filter-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
+      .pred-filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+      .pred-filter-group { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; min-width: 60px; }
+      .pred-filter-group label { font-size: 10px; color: var(--text3); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+      .pred-filter-group input { width: 100%; max-width: 60px; padding: 6px 4px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface2); color: var(--text); font-family: var(--font-mono); font-size: 16px; font-weight: 700; text-align: center; -moz-appearance: textfield; }
+      .pred-filter-group input::-webkit-outer-spin-button, .pred-filter-group input::-webkit-inner-spin-button { -webkit-appearance: none; }
+      .pred-filter-group input:focus { outline: none; border-color: var(--rose); background: var(--surface); }
+      .pred-filter-sum { font-size: 12px; font-weight: 700; font-family: var(--font-mono); padding: 4px 10px; border-radius: 20px; white-space: nowrap; background: var(--green-bg); color: var(--green-text); border: 1px solid rgba(5,150,105,.3); transition: background .2s, color .2s; }
+      .pred-filter-sum.invalid { background: var(--rose-bg); color: var(--rose-text); border-color: rgba(225,29,72,.3); }
+
       /* GENERATE */
       .gen-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--rose), #be123c); color: white; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; font-family: var(--font-sans); cursor: pointer; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .1s; box-shadow: 0 4px 12px rgba(225,29,72,.25); letter-spacing: .01em; }
       .gen-btn:hover { opacity: .93; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(225,29,72,.3); }
@@ -363,6 +374,24 @@
         <div class="row-card" id="row-card" style="display:none">
           <div class="slabel">Row activity</div>
           <div id="row-bars"></div>
+        </div>
+        <div class="pred-filter-card">
+          <div class="slabel" style="margin-bottom:8px">Prediction mix (must sum to 6)</div>
+          <div class="pred-filter-row">
+            <div class="pred-filter-group">
+              <label>Clusters</label>
+              <input type="number" id="gridFilterClusters" value="2" min="0" max="6" />
+            </div>
+            <div class="pred-filter-group">
+              <label>Neighbours</label>
+              <input type="number" id="gridFilterNeighbours" value="2" min="0" max="6" />
+            </div>
+            <div class="pred-filter-group">
+              <label>Random</label>
+              <input type="number" id="gridFilterRandom" value="2" min="0" max="6" />
+            </div>
+            <div class="pred-filter-sum" id="gridFilterSum">= 6 ✓</div>
+          </div>
         </div>
         <button class="gen-btn" id="gen-btn" onclick="generate()">
           <i class="ti ti-bolt" aria-hidden="true"></i>
@@ -856,6 +885,13 @@
       function generate() {
         const ds=windowDraws(currentRange);
         if(ds.length<3){toast("Need at least 3 draws in the current window.");return;}
+
+        // Read grid-page filter values
+        const gC = parseInt(document.getElementById("gridFilterClusters").value) || 0;
+        const gN = parseInt(document.getElementById("gridFilterNeighbours").value) || 0;
+        const gR = parseInt(document.getElementById("gridFilterRandom").value) || 0;
+        if (gC + gN + gR !== 6) { toast(`Clusters + Neighbours + Random must sum to 6 (currently ${gC+gN+gR}).`); return; }
+
         const sc=computeRawWeights(ds);
         const peak=Math.max(1,...Object.values(sc));
         const clusters=findClusters(sc,peak);
@@ -868,14 +904,12 @@
         btn.disabled=true;btn.innerHTML='<i class="ti ti-loader" aria-hidden="true"></i> Generating…';
         setTimeout(()=>{
           const results=[];
-          for(let i=0;i<2;i++){
-            let c=genHybrid(ds,sc,peak,clusters);
+          // All 3 predictions use the custom strategy with the user's chosen C/N/R mix
+          for(let i=0;i<3;i++){
+            let c=genCustomStrategy(ds,sc,peak,clusters,gC,gN,gR);
             if(!c)c=genMix(ds);
-            if(c){c.sort((a,b)=>a-b);results.push({combo:c,label:`Prediction ${i+1}`,strategy:"Hybrid · 4 clusters + 2 random"});}
+            if(c){c.sort((a,b)=>a-b);results.push({combo:c,label:`Prediction ${i+1}`,strategy:`${gC}C + ${gN}N + ${gR}R`});}
           }
-          let c3=genCustomStrategy(ds,sc,peak,clusters,filterClusters,filterNeighbours,filterRandom);
-          if(!c3)c3=genMix(ds);
-          if(c3){c3.sort((a,b)=>a-b);results.push({combo:c3,label:"Prediction 3",strategy:"Custom · cluster + neighbours + random"});}
 
           const el=document.getElementById("predictions");
           if(!results.length){
@@ -1167,14 +1201,14 @@
           </div>`;
         }).join('');
 
-        // Total % = sum of all individual % values (i.e. % of predictions with any match)
+        // Total % = predictions with 3 or more matches (prize-winning threshold)
+        const threeOrMoreCount = matchCounts.slice(2).reduce((s, c) => s + c, 0);
         const totalMatchedPct = totalPredictions > 0
-          ? ((matchCounts.reduce((s, c) => s + c, 0) / totalPredictions) * 100).toFixed(1)
+          ? ((threeOrMoreCount / totalPredictions) * 100).toFixed(1)
           : "0.0";
         const matchDistTotalEl = document.getElementById("match-dist-total");
-        if (matchDistTotalEl) matchDistTotalEl.textContent = `${totalMatchedPct}% hit rate`;
+        if (matchDistTotalEl) matchDistTotalEl.textContent = `${totalMatchedPct}% (3+ match)`;
 
-        const winDesc = analysisWindow === 0 ? "all draws" : `last ${analysisWindow}`;
         insights.innerHTML = `
           <div class="match-insight-card">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;gap:8px;">
@@ -1184,7 +1218,6 @@
             <div class="fcc-grid" id="fcc-rows">
               <div style="font-size:11px;color:var(--text3);padding:8px 0;grid-column:1/-1;">Computing…</div>
             </div>
-            <p style="font-size:11px;color:var(--text3);margin-top:10px;">10 C+N+R presets each using window = ${winDesc} for both training and cluster detection. Sorted ascending by avg matches. Your config in amber.</p>
           </div>`;
 
         setTimeout(() => renderFilterComparison(), 10);
@@ -1232,23 +1265,24 @@
           return { cfg, avg, label: `${cfg.c}C+${cfg.n}N+${cfg.r}R` };
         });
 
-        // Sort ascending by avg (lowest first → highest last)
-        results.sort((a, b) => a.avg - b.avg);
+        // Keep configs in fixed placement — never re-order
+        // Medals awarded by score (best avg gets 🥇) but positions stay fixed
+        const sorted = [...results].sort((a, b) => b.avg - a.avg);
         const rankLabels = {};
-        if (results.length >= 1) rankLabels[results[results.length - 1].label] = '🥇';
-        if (results.length >= 2) rankLabels[results[results.length - 2].label] = '🥈';
-        if (results.length >= 3) rankLabels[results[results.length - 3].label] = '🥉';
+        if (sorted.length >= 1) rankLabels[sorted[0].label] = '🥇';
+        if (sorted.length >= 2) rankLabels[sorted[1].label] = '🥈';
+        if (sorted.length >= 3) rankLabels[sorted[2].label] = '🥉';
 
         // Set FCC total — sum of all avg scores across presets
         const fccSum = results.reduce((s, r) => s + r.avg, 0);
         const fccTotalEl = document.getElementById("fcc-total");
         if (fccTotalEl) fccTotalEl.textContent = `Σ ${fccSum.toFixed(2)}`;
 
-        fccEl.innerHTML = results.map((r, i) => {
+        fccEl.innerHTML = results.map((r) => {
           const isCurrent = r.label === currentLabel;
-          const isTop = i === results.length - 1;
+          const isGold = rankLabels[r.label] === '🥇';
           const medal = rankLabels[r.label] || '';
-          return `<div class="fcc-card${isTop ? ' rank-1' : ''}${isCurrent ? ' current' : ''}">
+          return `<div class="fcc-card${isGold ? ' rank-1' : ''}${isCurrent ? ' current' : ''}">
             <div class="fcc-card-label">${medal}${r.label}</div>
             <div class="fcc-card-score">${r.avg.toFixed(2)}</div>
             <div class="fcc-card-rank">${isCurrent ? '← you' : ''}&nbsp;</div>
@@ -1385,6 +1419,22 @@
         document.getElementById("sliderVal").textContent=`${v} / ${draws.length}`;
         renderStats();renderRowBars();renderGrid();document.getElementById("predictions").innerHTML="";
       }));
+
+      /* ═══════════════════════════════════════════════════════════
+         GRID PAGE FILTER SUM DISPLAY
+      ═══════════════════════════════════════════════════════════ */
+      function updateGridFilterSum() {
+        const c = parseInt(document.getElementById("gridFilterClusters").value) || 0;
+        const n = parseInt(document.getElementById("gridFilterNeighbours").value) || 0;
+        const r = parseInt(document.getElementById("gridFilterRandom").value) || 0;
+        const total = c + n + r;
+        const sumEl = document.getElementById("gridFilterSum");
+        sumEl.textContent = total === 6 ? `= 6 ✓` : `= ${total} (need 6)`;
+        sumEl.className = total === 6 ? "pred-filter-sum" : "pred-filter-sum invalid";
+      }
+      document.querySelectorAll('#gridFilterClusters,#gridFilterNeighbours,#gridFilterRandom').forEach(input => {
+        input.addEventListener('input', updateGridFilterSum);
+      });
 
       /* ═══════════════════════════════════════════════════════════
          ANALYSIS CONTROLS
