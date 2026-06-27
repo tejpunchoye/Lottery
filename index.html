@@ -80,6 +80,12 @@
       .filter-group select { flex: 1; min-width: 0; padding: 3px 6px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-family: var(--font-mono); font-size: 12px; cursor: pointer; outline: none; max-width: 100%; }
       .filter-group select:focus { border-color: var(--rose); }
 
+      /* GENERATE ANALYSIS BUTTON */
+      .gen-analysis-btn { width: 100%; padding: 11px; background: linear-gradient(135deg, var(--rose), #be123c); color: white; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; font-family: var(--font-sans); cursor: pointer; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .1s; box-shadow: 0 4px 12px rgba(225,29,72,.25); letter-spacing: .01em; }
+      .gen-analysis-btn:hover { opacity: .93; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(225,29,72,.3); }
+      .gen-analysis-btn:active { transform: scale(.98); box-shadow: none; }
+      .gen-analysis-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+
       /* SLIDER */
       .slider-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
       .slider-row { display: flex; align-items: center; gap: 14px; }
@@ -417,6 +423,10 @@
             </select>
           </div>
         </div>
+
+        <button class="gen-analysis-btn" id="genAnalysisBtn" onclick="runAnalysis()">
+          <i class="ti ti-refresh-dot" aria-hidden="true"></i> Generate Analysis
+        </button>
 
         <!-- Match Distribution Section — immediately after filters -->
         <div class="match-dist-section" id="match-dist-section" style="display:none">
@@ -1378,41 +1388,63 @@
 
       /* ═══════════════════════════════════════════════════════════
          ANALYSIS CONTROLS
+         Filters update a "pending" state only.
+         The Generate Analysis button commits pending → active and renders.
+         The displayed results remain unchanged while the user tweaks filters.
       ═══════════════════════════════════════════════════════════ */
-      document.getElementById("windowSelect").addEventListener("change", function() {
-        // Both training window and cluster window move together
-        const val = parseInt(this.value);
-        analysisWindow = val;
-        clusterWindow = val;
-        renderAnalysisTable();
-      });
 
-      /* ═══════════════════════════════════════════════════════════
-         ANALYSIS CONTROLS — all changes are automatic
-      ═══════════════════════════════════════════════════════════ */
-      document.getElementById("windowSelect").addEventListener("change", function() {
-        const val = parseInt(this.value);
-        analysisWindow = val;
-        clusterWindow = val;
-        renderAnalysisTable();
-      });
+      // Pending state — mirrors the UI inputs, not yet applied to the analysis
+      let pendingClusters = filterClusters;
+      let pendingNeighbours = filterNeighbours;
+      let pendingRandom = filterRandom;
+      let pendingWindow = analysisWindow;
 
-      // Debounce helper so typing into the number inputs doesn't hammer re-renders
-      let _filterDebounce = null;
-      function scheduleFilterRender() {
-        clearTimeout(_filterDebounce);
-        _filterDebounce = setTimeout(() => {
-          const c = parseInt(document.getElementById("filterClusters").value) || 0;
-          const n = parseInt(document.getElementById("filterNeighbours").value) || 0;
-          const r = parseInt(document.getElementById("filterRandom").value) || 0;
-          if (c + n + r !== 6) return; // silently wait until the total is valid
-          filterClusters = c; filterNeighbours = n; filterRandom = r;
-          renderAnalysisTable();
-        }, 400);
+      function updatePendingFromUI() {
+        pendingClusters = parseInt(document.getElementById("filterClusters").value) || 0;
+        pendingNeighbours = parseInt(document.getElementById("filterNeighbours").value) || 0;
+        pendingRandom = parseInt(document.getElementById("filterRandom").value) || 0;
+        pendingWindow = parseInt(document.getElementById("windowSelect").value);
+        // Show a subtle "pending" indicator on the button if pending differs from active
+        const btn = document.getElementById("genAnalysisBtn");
+        const isDirty =
+          pendingClusters !== filterClusters ||
+          pendingNeighbours !== filterNeighbours ||
+          pendingRandom !== filterRandom ||
+          pendingWindow !== analysisWindow;
+        btn.innerHTML = isDirty
+          ? '<i class="ti ti-refresh-dot" aria-hidden="true"></i> Generate Analysis <span style="font-size:10px;opacity:.8;margin-left:4px;">● changes pending</span>'
+          : '<i class="ti ti-refresh-dot" aria-hidden="true"></i> Generate Analysis';
       }
 
+      function runAnalysis() {
+        const c = pendingClusters;
+        const n = pendingNeighbours;
+        const r = pendingRandom;
+        if (c + n + r !== 6) {
+          toast(`Clusters + Neighbours + Random must sum to 6 (currently ${c + n + r}).`);
+          return;
+        }
+        const btn = document.getElementById("genAnalysisBtn");
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Analysing…';
+        // Commit pending → active state
+        filterClusters = c;
+        filterNeighbours = n;
+        filterRandom = r;
+        analysisWindow = pendingWindow;
+        clusterWindow = pendingWindow;
+        // Defer to let the UI paint the disabled state first
+        setTimeout(() => {
+          renderAnalysisTable();
+          btn.disabled = false;
+          btn.innerHTML = '<i class="ti ti-refresh-dot" aria-hidden="true"></i> Generate Analysis';
+        }, 30);
+      }
+
+      // Inputs only update pending state — never trigger a re-render on their own
+      document.getElementById("windowSelect").addEventListener("change", updatePendingFromUI);
       document.querySelectorAll('#filterClusters,#filterNeighbours,#filterRandom').forEach(input => {
-        input.addEventListener('input', scheduleFilterRender);
+        input.addEventListener('input', updatePendingFromUI);
       });
 
       /* ═══════════════════════════════════════════════════════════
