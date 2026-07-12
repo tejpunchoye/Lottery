@@ -539,7 +539,7 @@
           <div id="match-insights"></div>
         </div>
 
-        <div id="analysis-table-container"></div>
+        <div id="analysis-table-placeholder" style="display:none"></div>
       </div>
 
       <!-- ── COMBINATION MATRIX (new page) ── -->
@@ -880,17 +880,79 @@
         const s=[...pool];for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];}return s.slice(0,n);
       }
       function genCustomStrategy(ds,sc,peak,clusters,cCount,nCount,rCount) {
-        const cSet=new Set();clusters.forEach(c=>c.forEach(n=>cSet.add(n)));
-        const cPool=[...cSet];
-        const nSet=new Set();cPool.forEach(cn=>{ADJ[cn].forEach(adj=>{if(!cSet.has(adj))nSet.add(adj);});});
-        const nPool=Array.from(nSet);
-        const rPool=[];for(let n=1;n<=40;n++){if(!cSet.has(n)&&!nSet.has(n))rPool.push(n);}
-        if(cPool.length<cCount||nPool.length<nCount||rPool.length<rCount){const hc=genHybrid(ds,sc,peak,clusters);if(hc)return hc;const all=Object.keys(sc).map(Number),aw=all.map(n=>sc[n]);for(let a=0;a<2000;a++){const combo=weightedPick(all,aw,6);if(combo.length===6&&isValid(combo))return combo;}return[...all].sort((a,b)=>sc[b]-sc[a]).slice(0,6);}
-        const cw=cPool.map(n=>sc[n]),nw=nPool.map(n=>sc[n]),rw=rPool.map(n=>sc[n]);
-        for(let a=0;a<3000;a++){const combo=[...weightedPick(cPool,cw,cCount),...weightedPick(nPool,nw,nCount),...weightedPick(rPool,rw,rCount)];if(combo.length===6&&isValid(combo))return combo;}
-        const sortedC=[...cPool].sort((a,b)=>sc[b]-sc[a]),sortedN=[...nPool].sort((a,b)=>sc[b]-sc[a]),sortedR=[...rPool].sort((a,b)=>sc[b]-sc[a]);
-        const combo=[...sortedC.slice(0,cCount),...sortedN.slice(0,nCount),...sortedR.slice(0,rCount)];
-        return combo.length===6?combo:null;
+        // Build per-cluster pools sorted by weight descending
+        const perCluster = clusters.map(comp => [...comp].sort((a,b) => sc[b]-sc[a]));
+        const cSet = new Set();
+        clusters.forEach(c => c.forEach(n => cSet.add(n)));
+
+        // Per-cluster neighbour pools: cells adjacent to each cluster but not in any cluster
+        const perClusterNeighbours = clusters.map(comp => {
+          const nbSet = new Set();
+          comp.forEach(n => { ADJ[n].forEach(adj => { if (!cSet.has(adj)) nbSet.add(adj); }); });
+          return [...nbSet].sort((a,b) => sc[b]-sc[a]);
+        });
+
+        // Random pool: not in any cluster, not in any neighbourhood
+        const allNbSet = new Set(perClusterNeighbours.flat());
+        const rPool = [];
+        for (let n=1; n<=40; n++) { if (!cSet.has(n) && !allNbSet.has(n)) rPool.push(n); }
+
+        // Feasibility check
+        const totalNbAvail = allNbSet.size;
+        if (perCluster.length === 0 || cSet.size < cCount || totalNbAvail < nCount || rPool.length < rCount) {
+          const hc=genHybrid(ds,sc,peak,clusters); if(hc)return hc;
+          const all=Object.keys(sc).map(Number),aw=all.map(n=>sc[n]);
+          for(let a=0;a<2000;a++){const combo=weightedPick(all,aw,6);if(combo.length===6&&isValid(combo))return combo;}
+          return[...all].sort((a,b)=>sc[b]-sc[a]).slice(0,6);
+        }
+
+        // Try combos: cCount numbers from DIFFERENT clusters (round-robin),
+        // nCount neighbours from DIFFERENT cluster neighbourhoods (round-robin)
+        for (let attempt=0; attempt<3000; attempt++) {
+          const picked = new Set();
+          let ok = true;
+
+          // Cluster picks — one per cluster, cycling
+          for (let i=0; i<cCount; i++) {
+            const ci = i % perCluster.length;
+            const pool = perCluster[ci].filter(n => !picked.has(n));
+            if (!pool.length) { ok=false; break; }
+            const chosen = weightedPick(pool, pool.map(n=>sc[n]), 1);
+            if (!chosen.length) { ok=false; break; }
+            picked.add(chosen[0]);
+          }
+          if (!ok) continue;
+
+          // Neighbour picks — one per cluster neighbourhood, cycling
+          for (let i=0; i<nCount; i++) {
+            const ci = i % perClusterNeighbours.length;
+            const pool = perClusterNeighbours[ci].filter(n => !picked.has(n));
+            if (!pool.length) { ok=false; break; }
+            const chosen = weightedPick(pool, pool.map(n=>sc[n]), 1);
+            if (!chosen.length) { ok=false; break; }
+            picked.add(chosen[0]);
+          }
+          if (!ok) continue;
+
+          // Random picks
+          const rAvail = rPool.filter(n => !picked.has(n));
+          if (rAvail.length < rCount) continue;
+          const rChosen = weightedPick(rAvail, rAvail.map(n=>sc[n]), rCount);
+          if (rChosen.length < rCount) continue;
+          rChosen.forEach(n => picked.add(n));
+
+          const combo = [...picked];
+          if (combo.length===6 && isValid(combo)) return combo;
+        }
+
+        // Deterministic fallback
+        const fb = new Set();
+        for (let i=0; i<cCount; i++) { const n=perCluster[i%perCluster.length].find(x=>!fb.has(x)); if(n!==undefined)fb.add(n); }
+        for (let i=0; i<nCount; i++) { const n=perClusterNeighbours[i%perClusterNeighbours.length].find(x=>!fb.has(x)); if(n!==undefined)fb.add(n); }
+        const rSorted=[...rPool].sort((a,b)=>sc[b]-sc[a]);
+        for(const n of rSorted){ if(fb.size>=6)break; if(!fb.has(n))fb.add(n); }
+        const fallback=[...fb];
+        return fallback.length===6?fallback:null;
       }
       function genHybrid(ds,sc,peak,clusters) {
         const cSet=new Set();clusters.forEach(c=>c.forEach(n=>cSet.add(n)));
@@ -1207,10 +1269,7 @@
         renderMatchDistribution(matchCounts, totalPredictions, successfulPredictions, avgMatch, avgMatchPercent);
         // Render performance comparison — driven by all 4 filters
         renderComparisonStats();
-
-        // Paginated table
-        currentPage = 1;
-        renderTablePage();
+        // Table removed from Analysis page per user request
       }
 
       function renderTablePage() {
