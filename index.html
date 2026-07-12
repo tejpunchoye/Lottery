@@ -144,6 +144,8 @@
       .pred-mix-rows { display: flex; flex-direction: column; gap: 8px; }
       .pred-mix-row { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 8px 10px; flex-wrap: nowrap; }
       .pred-mix-lbl { font-size: 11px; font-weight: 700; color: var(--text2); font-family: var(--font-mono); width: 42px; flex-shrink: 0; }
+      .pred-mix-month { font-size: 12px; font-weight: 800; font-family: var(--font-mono); color: var(--purple-text); background: var(--purple-bg); border: 1px solid rgba(124,58,237,.3); border-radius: 20px; padding: 3px 9px; flex-shrink: 0; white-space: nowrap; min-width: 42px; text-align: center; }
+      .pred-mix-month.populated { color: var(--green-text); background: var(--green-bg); border-color: rgba(5,150,105,.3); }
       .pred-mix-row .pred-filter-group { flex: 1; min-width: 0; }
       .pred-mix-row .pred-filter-group input { max-width: 100%; }
       .pred-mix-row .pred-filter-sum { flex-shrink: 0; }
@@ -449,13 +451,15 @@
           <div class="slabel" style="margin-bottom:10px">Prediction mix — 2 sets (each must sum to 6)</div>
           <div class="pred-mix-rows">
             <div class="pred-mix-row">
-              <span class="pred-mix-lbl">Mix 1</span>
+              <span class="pred-mix-month" id="gMW1" title="Best window from matrix">—</span>
+              <input type="hidden" id="gWS1" value="0" />
               <div class="pred-filter-group"><label>Clusters</label><input type="number" id="gFC1" value="2" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Neighbours</label><input type="number" id="gFN1" value="2" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Random</label><input type="number" id="gFR1" value="2" min="0" max="6" /></div>
             </div>
             <div class="pred-mix-row">
-              <span class="pred-mix-lbl">Mix 2</span>
+              <span class="pred-mix-month" id="gMW2" title="Best window from matrix">—</span>
+              <input type="hidden" id="gWS2" value="0" />
               <div class="pred-filter-group"><label>Clusters</label><input type="number" id="gFC2" value="3" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Neighbours</label><input type="number" id="gFN2" value="2" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Random</label><input type="number" id="gFR2" value="1" min="0" max="6" /></div>
@@ -1056,66 +1060,83 @@
          GENERATE ACTION
       ═══════════════════════════════════════════════════════════ */
       function generate() {
-        const ds=windowDraws(currentRange);
-        if(ds.length<3){toast("Need at least 3 draws in the current window.");return;}
+        // Each mix has its own window — just ensure we have draws at all
+        if(draws.length < 3){toast("Need at least 3 draws loaded.");return;}
 
-        // Read the 2 prediction mix rows
-        const mixes = [1,2].map(i => ({
-          c: parseInt(document.getElementById(`gFC${i}`).value) || 0,
-          n: parseInt(document.getElementById(`gFN${i}`).value) || 0,
-          r: parseInt(document.getElementById(`gFR${i}`).value) || 0,
-        }));
+        // Read the 2 prediction mix rows — each may have its own window from the matrix
+        const mixes = [1,2].map(i => {
+          const wsRaw = parseInt(document.getElementById(`gWS${i}`).value);
+          // If window size is set by matrix (not default 0), use it; else fall back to slider
+          const wsVal = !isNaN(wsRaw) ? wsRaw : 0;
+          const ds = wsVal === 0 ? windowDraws(currentRange) : windowDraws(wsVal);
+          return {
+            c: parseInt(document.getElementById(`gFC${i}`).value) || 0,
+            n: parseInt(document.getElementById(`gFN${i}`).value) || 0,
+            r: parseInt(document.getElementById(`gFR${i}`).value) || 0,
+            ds,
+            windowLabel: document.getElementById(`gMW${i}`).textContent || "—",
+          };
+        });
         for (let i = 0; i < mixes.length; i++) {
           const m = mixes[i];
           if (m.c + m.n + m.r !== 6) { toast(`Mix ${i+1}: Clusters + Neighbours + Random must sum to 6 (currently ${m.c+m.n+m.r}).`); return; }
         }
 
-        const sc=computeRawWeights(ds);
-        const peak=Math.max(1,...Object.values(sc));
-        const clusters=findClusters(sc,peak);
-        const freq={};for(let n=1;n<=40;n++)freq[n]=0;ds.forEach(d=>d.forEach(n=>freq[n]++));
-        const rf={};for(let n=1;n<=40;n++)rf[n]=0;ds.slice(-20).forEach(d=>d.forEach(n=>rf[n]++));
-        const hotSet=new Set(Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
-        const recentSet=new Set(Object.entries(rf).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
-        const clusterSet=new Set();clusters.forEach(c=>c.forEach(n=>clusterSet.add(n)));
         const btn=document.getElementById("gen-btn");
         btn.disabled=true;btn.innerHTML='<i class="ti ti-loader" aria-hidden="true"></i> Generating…';
         setTimeout(()=>{
           const results=[];
-          // Each of the 3 predictions uses its own mix row
+          // Each mix uses its own draw window (from matrix) for weights, clusters, and prediction
           mixes.forEach((m,i)=>{
-            let c=genCustomStrategy(ds,sc,peak,clusters,m.c,m.n,m.r);
-            if(!c)c=genMix(ds);
-            if(c){c.sort((a,b)=>a-b);results.push({combo:c,label:`Prediction ${i+1}`,strategy:`${m.c}C + ${m.n}N + ${m.r}R`});}
+            const mDs = m.ds;
+            if (mDs.length < 3) {
+              results.push(null); return;
+            }
+            const mSc = computeRawWeights(mDs);
+            const mPeak = Math.max(1,...Object.values(mSc));
+            const mClusters = findClusters(mSc, mPeak);
+            // Classify balls relative to this mix's own data
+            const freq={};for(let n=1;n<=40;n++)freq[n]=0;mDs.forEach(d=>d.forEach(n=>freq[n]++));
+            const rf={};for(let n=1;n<=40;n++)rf[n]=0;mDs.slice(-20).forEach(d=>d.forEach(n=>rf[n]++));
+            const hotSet=new Set(Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
+            const recentSet=new Set(Object.entries(rf).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
+            const clusterSet=new Set();mClusters.forEach(c=>c.forEach(n=>clusterSet.add(n)));
+            let c=genCustomStrategy(mDs,mSc,mPeak,mClusters,m.c,m.n,m.r);
+            if(!c)c=genMix(mDs);
+            if(c){
+              c.sort((a,b)=>a-b);
+              results.push({combo:c,label:`Prediction ${i+1}`,strategy:`${m.c}C + ${m.n}N + ${m.r}R`,windowLabel:m.windowLabel,ds:mDs,hotSet,recentSet,clusterSet});
+            }
           });
 
           const el=document.getElementById("predictions");
-          if(!results.length){
+          const validResults = results.filter(Boolean);
+          if(!validResults.length){
             el.innerHTML='<div class="no-combo">No valid combinations found. Try widening the draw window.</div>';
           } else {
-            el.innerHTML=results.map((r,ri)=>{
+            el.innerHTML=validResults.map((r,ri)=>{
               const balls=r.combo.map(n=>{
-                const cls=classifyBall(n,hotSet,recentSet,clusterSet);
+                const cls=classifyBall(n,r.hotSet,r.recentSet,r.clusterSet);
                 return `<div class="ball ball-${cls}" title="${cls}">${n}</div>`;
               }).join("");
-              const cNums=r.combo.filter(n=>clusterSet.has(n));
-              const hNums=r.combo.filter(n=>hotSet.has(n)&&!clusterSet.has(n)&&!recentSet.has(n));
-              const rNums=r.combo.filter(n=>recentSet.has(n)&&!clusterSet.has(n));
-              const fNums=r.combo.filter(n=>!clusterSet.has(n)&&!hotSet.has(n)&&!recentSet.has(n));
+              const cNums=r.combo.filter(n=>r.clusterSet.has(n));
+              const hNums=r.combo.filter(n=>r.hotSet.has(n)&&!r.clusterSet.has(n)&&!r.recentSet.has(n));
+              const rNums=r.combo.filter(n=>r.recentSet.has(n)&&!r.clusterSet.has(n));
+              const fNums=r.combo.filter(n=>!r.clusterSet.has(n)&&!r.hotSet.has(n)&&!r.recentSet.has(n));
               const reasons=[];
               if(cNums.length)reasons.push({t:`${cNums.join(", ")} from active grid clusters.`,c:"#e11d48"});
-              if(hNums.length)reasons.push({t:`${hNums.join(", ")} most drawn across all ${ds.length} draws.`,c:"#e8a020"});
-              if(rNums.length)reasons.push({t:`${rNums.join(", ")} trending in the last 20 draws.`,c:"#2563eb"});
+              if(hNums.length)reasons.push({t:`${hNums.join(", ")} most drawn across ${r.ds.length} draws.`,c:"#e8a020"});
+              if(rNums.length)reasons.push({t:`${rNums.join(", ")} trending in last 20 draws.`,c:"#2563eb"});
               if(fNums.length)reasons.push({t:`${fNums.join(", ")} chosen by recency-weighted probability.`,c:"#8a94a5"});
               const sum=r.combo.reduce((a,b)=>a+b,0);
               const odd=r.combo.filter(x=>x%2!==0).length;
               const low=r.combo.filter(x=>x<=25).length;
               reasons.push({t:`Balance: ${odd} odd / ${6-odd} even · ${low} low / ${6-low} high · sum ${sum}`,c:"#8a94a5"});
-              // Encode combo for onclick
               const comboJson = JSON.stringify(r.combo);
+              const windowBadge = r.windowLabel && r.windowLabel !== "—" ? `<span style="font-size:10px;background:var(--green-bg);color:var(--green-text);border:1px solid rgba(5,150,105,.3);border-radius:20px;padding:1px 7px;margin-left:6px;font-family:var(--font-mono);font-weight:700;">${r.windowLabel}</span>` : "";
               return `<div class="pred-card">
                 <div class="pred-header">
-                  <div class="pred-lbl">${r.label} <span style="font-weight:400;color:var(--text3)">· ${r.strategy}</span></div>
+                  <div class="pred-lbl">${r.label}${windowBadge} <span style="font-weight:400;color:var(--text3)">· ${r.strategy}</span></div>
                   <button class="grid-view-btn" onclick='openGridModal(${comboJson},"${r.label}")'>
                     <i class="ti ti-layout-grid" aria-hidden="true"></i> View on Grid
                   </button>
@@ -1891,14 +1912,22 @@
       }
 
       // After matrix completes, find the 2 combos with the highest total count
-      // across all windows and auto-populate the prediction mix rows.
+      // across all windows, and for each combo find the best window column.
+      // Populates the prediction mix month badges and window-size hidden inputs.
       function populateTopCombosFromMatrix(results, runsPerCell) {
-        // Sum each combo's count across all windows
+        // For each combo: sum counts across all windows (for ranking combos)
+        // and find the best individual window (highest count for that combo)
         const comboTotals = MATRIX_COMBOS.map((combo, ci) => {
-          const total = MATRIX_WINDOWS.reduce((sum, w, wi) => {
-            return sum + (results[ci][wi].possible ? results[ci][wi].count : 0);
-          }, 0);
-          return { combo, total };
+          let total = 0;
+          let bestWi = 0, bestCount = -1;
+          MATRIX_WINDOWS.forEach((w, wi) => {
+            const cell = results[ci][wi];
+            if (cell.possible) {
+              total += cell.count;
+              if (cell.count > bestCount) { bestCount = cell.count; bestWi = wi; }
+            }
+          });
+          return { combo, total, bestWi };
         });
 
         // Sort descending by total, take top 2
@@ -1908,12 +1937,21 @@
         top2.forEach((entry, i) => {
           const rowNum = i + 1;
           const [c, n, r] = entry.combo;
+          // Populate C/N/R inputs
           document.getElementById(`gFC${rowNum}`).value = c;
           document.getElementById(`gFN${rowNum}`).value = n;
           document.getElementById(`gFR${rowNum}`).value = r;
+          // Populate best window
+          const bestWindow = MATRIX_WINDOWS[entry.bestWi];
+          document.getElementById(`gWS${rowNum}`).value = bestWindow.size;
+          // Update month badge
+          const badge = document.getElementById(`gMW${rowNum}`);
+          badge.textContent = bestWindow.label;
+          badge.className = "pred-mix-month populated";
+          badge.title = `Best window from matrix: ${bestWindow.label} (${bestWindow.size === 0 ? "all draws" : bestWindow.size + " draws"})`;
         });
 
-        toast(`Top 2 combos → Mix 1: ${top2[0].combo.join('-')}, Mix 2: ${top2[1].combo.join('-')} — prediction mix updated.`);
+        toast(`Prediction mix updated: #1 ${top2[0].combo.join('-')} @ ${MATRIX_WINDOWS[top2[0].bestWi].label}, #2 ${top2[1].combo.join('-')} @ ${MATRIX_WINDOWS[top2[1].bestWi].label}`);
       }
 
       /* ═══════════════════════════════════════════════════════════
