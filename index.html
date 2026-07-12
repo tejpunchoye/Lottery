@@ -113,7 +113,7 @@
       .big-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; padding: 12px; background: var(--surface2); border-radius: var(--radius-md); border: 1px solid var(--border); min-width: 340px; position: relative; }
       .big-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 1/1; border-radius: 6px; position: relative; transition: transform .15s; border: 1px solid transparent; background: rgba(255,255,255,.3); }
       .big-cell .cn { font-size: 15px; font-weight: 700; color: var(--text); font-family: var(--font-mono); line-height: 1.2; transition: color .3s; }
-      .big-cell .cw { font-size: 8px; color: var(--text3); margin-top: 1px; font-family: var(--font-mono); }
+      .big-cell .cw { font-size: 8px; color: #000; margin-top: 1px; font-family: var(--font-mono); font-weight: 600; }
       .big-cell.undrawn .cn { color: var(--text3); font-weight: 400; }
       .big-cell.undrawn .cw { visibility: hidden; }
       .big-cell:not(.undrawn):hover { transform: scale(1.06); z-index: 2; border-color: var(--rose); }
@@ -429,9 +429,12 @@
             <span class="slider-val" id="sliderVal">0 / 0</span>
           </div>
           <div class="mark-row">
-            <span class="mark" data-v="26">3 mo (26)</span>
-            <span class="mark" data-v="52">6 mo (52)</span>
-            <span class="mark" data-v="104">1 yr (104)</span>
+            <span class="mark" data-v="8">1m</span>
+            <span class="mark" data-v="17">2m</span>
+            <span class="mark" data-v="26">3m</span>
+            <span class="mark" data-v="35">4m</span>
+            <span class="mark" data-v="43">5m</span>
+            <span class="mark" data-v="52">6m</span>
             <span class="mark" data-v="0">All</span>
           </div>
         </div>
@@ -445,34 +448,25 @@
           <div id="row-bars"></div>
         </div>
         <div class="pred-filter-card">
-          <div class="slabel" style="margin-bottom:10px">Prediction mix — 3 sets (each must sum to 6)</div>
+          <div class="slabel" style="margin-bottom:10px">Prediction mix — 2 sets (each must sum to 6)</div>
           <div class="pred-mix-rows">
             <div class="pred-mix-row">
               <span class="pred-mix-lbl">Mix 1</span>
               <div class="pred-filter-group"><label>Clusters</label><input type="number" id="gFC1" value="2" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Neighbours</label><input type="number" id="gFN1" value="2" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Random</label><input type="number" id="gFR1" value="2" min="0" max="6" /></div>
-              <div class="pred-filter-sum" id="gridFilterSum1">= 6 ✓</div>
             </div>
             <div class="pred-mix-row">
               <span class="pred-mix-lbl">Mix 2</span>
               <div class="pred-filter-group"><label>Clusters</label><input type="number" id="gFC2" value="3" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Neighbours</label><input type="number" id="gFN2" value="2" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Random</label><input type="number" id="gFR2" value="1" min="0" max="6" /></div>
-              <div class="pred-filter-sum" id="gridFilterSum2">= 6 ✓</div>
-            </div>
-            <div class="pred-mix-row">
-              <span class="pred-mix-lbl">Mix 3</span>
-              <div class="pred-filter-group"><label>Clusters</label><input type="number" id="gFC3" value="4" min="0" max="6" /></div>
-              <div class="pred-filter-group"><label>Neighbours</label><input type="number" id="gFN3" value="1" min="0" max="6" /></div>
-              <div class="pred-filter-group"><label>Random</label><input type="number" id="gFR3" value="1" min="0" max="6" /></div>
-              <div class="pred-filter-sum" id="gridFilterSum3">= 6 ✓</div>
             </div>
           </div>
         </div>
         <button class="gen-btn" id="gen-btn" onclick="generate()">
           <i class="ti ti-bolt" aria-hidden="true"></i>
-          Generate 3 predictions
+          Generate 2 predictions
         </button>
         <div class="legend">
           <span class="leg"><span class="leg-dot" style="background:var(--rose)"></span>Cluster</span>
@@ -1008,8 +1002,8 @@
         const ds=windowDraws(currentRange);
         if(ds.length<3){toast("Need at least 3 draws in the current window.");return;}
 
-        // Read the 3 prediction mix rows
-        const mixes = [1,2,3].map(i => ({
+        // Read the 2 prediction mix rows
+        const mixes = [1,2].map(i => ({
           c: parseInt(document.getElementById(`gFC${i}`).value) || 0,
           n: parseInt(document.getElementById(`gFN${i}`).value) || 0,
           r: parseInt(document.getElementById(`gFR${i}`).value) || 0,
@@ -1244,7 +1238,7 @@
           </tr>`;
         }).join("");
 
-        // Pagination controlss
+        // Pagination controls
         let pageButtons = '';
         // Prev
         pageButtons += `<button class="page-btn" onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
@@ -1554,22 +1548,9 @@
       }));
 
       /* ═══════════════════════════════════════════════════════════
-         GRID PAGE — 3 PREDICTION MIX ROWS, SUM DISPLAY
+         GRID PAGE — 2 PREDICTION MIX ROWS
       ═══════════════════════════════════════════════════════════ */
-      function updateGridMixSum(i) {
-        const c = parseInt(document.getElementById(`gFC${i}`).value) || 0;
-        const n = parseInt(document.getElementById(`gFN${i}`).value) || 0;
-        const r = parseInt(document.getElementById(`gFR${i}`).value) || 0;
-        const total = c + n + r;
-        const sumEl = document.getElementById(`gridFilterSum${i}`);
-        sumEl.textContent = total === 6 ? `= 6 ✓` : `= ${total} (need 6)`;
-        sumEl.className = total === 6 ? "pred-filter-sum" : "pred-filter-sum invalid";
-      }
-      [1,2,3].forEach(i => {
-        [`gFC${i}`,`gFN${i}`,`gFR${i}`].forEach(id => {
-          document.getElementById(id).addEventListener('input', () => updateGridMixSum(i));
-        });
-      });
+      // No sum display — inputs are self-explanatory; validation happens on generate()
 
       /* ═══════════════════════════════════════════════════════════
          ANALYSIS CONTROLS
@@ -1821,6 +1802,7 @@
         }
 
         renderMatrixTable(results, runsPerCell, pctThreshold);
+        populateTopCombosFromMatrix(results, runsPerCell);
         progressText.textContent = `Done — ${totalCells} cells × ${runsPerCell} runs · threshold ${pctThreshold}%.`;
         progressFill.style.width = "100%";
         btn.disabled = false;
@@ -1851,6 +1833,32 @@
           bodyHtml += `<tr><th>${rowLabel}</th>${cells}</tr>`;
         });
         container.innerHTML = `<table class="matrix-table"><thead>${headHtml}</thead><tbody>${bodyHtml}</tbody></table>`;
+      }
+
+      // After matrix completes, find the 2 combos with the highest total count
+      // across all windows and auto-populate the prediction mix rows.
+      function populateTopCombosFromMatrix(results, runsPerCell) {
+        // Sum each combo's count across all windows
+        const comboTotals = MATRIX_COMBOS.map((combo, ci) => {
+          const total = MATRIX_WINDOWS.reduce((sum, w, wi) => {
+            return sum + (results[ci][wi].possible ? results[ci][wi].count : 0);
+          }, 0);
+          return { combo, total };
+        });
+
+        // Sort descending by total, take top 2
+        comboTotals.sort((a, b) => b.total - a.total);
+        const top2 = comboTotals.slice(0, 2);
+
+        top2.forEach((entry, i) => {
+          const rowNum = i + 1;
+          const [c, n, r] = entry.combo;
+          document.getElementById(`gFC${rowNum}`).value = c;
+          document.getElementById(`gFN${rowNum}`).value = n;
+          document.getElementById(`gFR${rowNum}`).value = r;
+        });
+
+        toast(`Top 2 combos → Mix 1: ${top2[0].combo.join('-')}, Mix 2: ${top2[1].combo.join('-')} — prediction mix updated.`);
       }
 
       /* ═══════════════════════════════════════════════════════════
