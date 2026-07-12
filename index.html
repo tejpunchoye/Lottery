@@ -76,10 +76,10 @@
       .stat-lbl { font-size: 11px; color: var(--text3); margin-top: 3px; }
       .stat.stat-active { border-color: var(--amber); background: var(--amber-bg); }
       .stat.stat-active .stat-val { color: var(--amber-text); }
-      .stat-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 16px; min-width: 0; }
-      .stat-grid-6 .stat { padding: 10px 6px; text-align: center; }
-      .stat-grid-6 .stat-val { font-size: 22px; font-weight: 700; font-family: var(--font-mono); }
-      .stat-grid-6 .stat-lbl { font-size: 9px; line-height: 1.4; }
+      .stat-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 12px; min-width: 0; }
+      .stat-grid-6 .stat { padding: 6px 4px; text-align: center; }
+      .stat-grid-6 .stat-val { font-size: 15px; font-weight: 700; font-family: var(--font-mono); }
+      .stat-grid-6 .stat-lbl { font-size: 8px; line-height: 1.4; }
 
       /* FILTER GRID 2×2 — allows 5th item to sit on next row spanning full */
       .filter-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; min-width: 0; }
@@ -234,15 +234,15 @@
       /* ═══ MATCH DISTRIBUTION SECTION ═══ */
       .match-dist-section { margin-top: 20px; padding-top: 16px; border-top: 2px solid var(--border); }
       .match-dist-section .slabel { margin-bottom: 12px; }
-      .match-dist-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 16px; }
-      .match-dist-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 6px; text-align: center; box-shadow: var(--shadow-sm); }
+      .match-dist-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 12px; }
+      .match-dist-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 4px; text-align: center; box-shadow: var(--shadow-sm); }
       .match-dist-card.dimmed { background: var(--surface2); border-color: var(--border); opacity: .55; }
       .match-dist-card.active { border-color: var(--amber); background: var(--amber-bg); }
-      .match-dist-num { font-size: 22px; font-weight: 700; font-family: var(--font-mono); color: var(--text); }
+      .match-dist-num { font-size: 15px; font-weight: 700; font-family: var(--font-mono); color: var(--text); }
       .match-dist-card.active .match-dist-num { color: var(--amber-text); }
       .match-dist-card.dimmed .match-dist-num { color: var(--text3); }
-      .match-dist-pct { font-size: 10px; color: var(--text3); margin-top: 2px; }
-      .match-dist-lbl { font-size: 9px; color: var(--text3); margin-top: 1px; letter-spacing: .04em; }
+      .match-dist-pct { font-size: 9px; color: var(--text3); margin-top: 1px; }
+      .match-dist-lbl { font-size: 8px; color: var(--text3); margin-top: 1px; letter-spacing: .03em; }
       .match-insight-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); min-width: 0; overflow: hidden; }
       .match-insight-title { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .08em; }
       .insight-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
@@ -344,7 +344,7 @@
       .info-item-body { font-size: 12px; color: var(--text2); line-height: 1.6; flex: 1; }
       .info-item-body strong { color: var(--text); font-weight: 600; }
       /* ═══ COMBINATION MATRIX PAGE ═══ */
-      .matrix-header-row { display: flex; align-items: center; }
+      .matrix-header-row { display: flex; align-items: center; margin-bottom: 18px; }
       .matrix-back-btn { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text2); padding: 7px 14px; border-radius: var(--radius-md); font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; }
       .matrix-back-btn:hover { background: var(--border); }
       .matrix-desc { font-size: 12px; color: var(--text3); line-height: 1.6; margin: 6px 0 14px; }
@@ -356,12 +356,12 @@
       .matrix-progress-fill { height: 100%; background: linear-gradient(90deg, var(--rose), var(--amber)); width: 0%; transition: width .2s linear; }
       .matrix-progress-text { font-size: 11px; color: var(--text3); margin-top: 6px; font-family: var(--font-mono); text-align: center; }
       .matrix-table-wrap { max-height: 70vh; overflow: auto; }
+      /* table-layout: fixed + colgroup controls all column widths — no per-cell overrides needed */
       .matrix-table { border-collapse: separate; border-spacing: 0; font-size: 10px; table-layout: fixed; width: max-content; min-width: 100%; }
-      .matrix-table th, .matrix-table td { padding: 5px 0; text-align: center; border: 1px solid var(--border); white-space: nowrap; min-width: 42px; width: 42px; }
-      .matrix-table tbody th { min-width: 58px; width: 58px; text-align: left; padding: 5px 6px; }
+      .matrix-table th, .matrix-table td { padding: 5px 3px; text-align: center; border: 1px solid var(--border); overflow: hidden; }
       .matrix-table thead th { position: sticky; top: 0; z-index: 3; background: var(--surface2); font-family: var(--font-mono); font-size: 10px; color: var(--text2); }
-      .matrix-table thead th:first-child { left: 0; z-index: 4; }
-      .matrix-table tbody th { position: sticky; left: 0; z-index: 2; background: var(--surface2); font-family: var(--font-mono); font-weight: 700; color: var(--text); }
+      .matrix-table thead th:first-child { left: 0; z-index: 4; text-align: left; padding: 5px 6px; }
+      .matrix-table tbody th { position: sticky; left: 0; z-index: 2; background: var(--surface2); font-family: var(--font-mono); font-weight: 700; color: var(--text); text-align: left; padding: 5px 6px; }
       .matrix-cell { font-family: var(--font-mono); font-weight: 700; color: var(--text3); background: var(--surface); }
       .matrix-cell.has-score { color: var(--text); }
       .matrix-cell.score-low { background: var(--surface2); }
@@ -1872,7 +1872,16 @@
 
       function renderMatrixTable(results, runsPerCell, pctThreshold) {
         const container = document.getElementById("matrix-table-container");
-        let headHtml = `<tr><th>C-N-R</th>${MATRIX_WINDOWS.map(w => `<th>${w.label}</th>`).join("")}</tr>`;
+        const COL_W = 44;   // px — every data column, including 2M and 3M
+        const LABEL_W = 58; // px — the C-N-R label column
+
+        // colgroup forces table-layout:fixed to honour exact widths
+        const colgroup = `<colgroup>
+          <col style="width:${LABEL_W}px">
+          ${MATRIX_WINDOWS.map(() => `<col style="width:${COL_W}px">`).join('')}
+        </colgroup>`;
+
+        const headHtml = `<tr><th>C-N-R</th>${MATRIX_WINDOWS.map(w => `<th>${w.label}</th>`).join('')}</tr>`;
         let bodyHtml = "";
         MATRIX_COMBOS.forEach((combo, ci) => {
           const rowLabel = `${combo[0]}-${combo[1]}-${combo[2]}`;
@@ -1886,12 +1895,12 @@
               let cls = "matrix-cell has-score score-low";
               if (pct >= 70) cls = "matrix-cell has-score score-high";
               else if (pct >= 30) cls = "matrix-cell has-score score-mid";
-              cells += `<td class="${cls}" title="${cell.count} of ${runsPerCell} runs scored >${pctThreshold}%">${cell.count}/${runsPerCell}</td>`;
+              cells += `<td class="${cls}" title="${cell.count}/${runsPerCell} runs >${pctThreshold}%">${cell.count}/${runsPerCell}</td>`;
             }
           });
           bodyHtml += `<tr><th>${rowLabel}</th>${cells}</tr>`;
         });
-        container.innerHTML = `<table class="matrix-table"><thead>${headHtml}</thead><tbody>${bodyHtml}</tbody></table>`;
+        container.innerHTML = `<table class="matrix-table">${colgroup}<thead>${headHtml}</thead><tbody>${bodyHtml}</tbody></table>`;
       }
 
       // After matrix completes, find the 2 combos with the highest total count
