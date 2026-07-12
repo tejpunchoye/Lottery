@@ -76,9 +76,9 @@
       .stat-lbl { font-size: 11px; color: var(--text3); margin-top: 3px; }
       .stat.stat-active { border-color: var(--amber); background: var(--amber-bg); }
       .stat.stat-active .stat-val { color: var(--amber-text); }
-      .stat-grid-6 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 16px; min-width: 0; }
-      .stat-grid-6 .stat { padding: 8px 6px; text-align: center; }
-      .stat-grid-6 .stat-val { font-size: 15px; }
+      .stat-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-bottom: 16px; min-width: 0; }
+      .stat-grid-6 .stat { padding: 10px 6px; text-align: center; }
+      .stat-grid-6 .stat-val { font-size: 22px; font-weight: 700; font-family: var(--font-mono); }
       .stat-grid-6 .stat-lbl { font-size: 9px; line-height: 1.4; }
 
       /* FILTER GRID 2×2 — allows 5th item to sit on next row spanning full */
@@ -356,11 +356,12 @@
       .matrix-progress-fill { height: 100%; background: linear-gradient(90deg, var(--rose), var(--amber)); width: 0%; transition: width .2s linear; }
       .matrix-progress-text { font-size: 11px; color: var(--text3); margin-top: 6px; font-family: var(--font-mono); text-align: center; }
       .matrix-table-wrap { max-height: 70vh; overflow: auto; }
-      .matrix-table { border-collapse: separate; border-spacing: 0; font-size: 10px; table-layout: auto; width: max-content; min-width: 100%; }
-      .matrix-table th, .matrix-table td { padding: 5px 6px; text-align: center; border: 1px solid var(--border); white-space: nowrap; }
+      .matrix-table { border-collapse: separate; border-spacing: 0; font-size: 10px; table-layout: fixed; width: max-content; min-width: 100%; }
+      .matrix-table th, .matrix-table td { padding: 5px 0; text-align: center; border: 1px solid var(--border); white-space: nowrap; min-width: 42px; width: 42px; }
+      .matrix-table tbody th { min-width: 58px; width: 58px; text-align: left; padding: 5px 6px; }
       .matrix-table thead th { position: sticky; top: 0; z-index: 3; background: var(--surface2); font-family: var(--font-mono); font-size: 10px; color: var(--text2); }
       .matrix-table thead th:first-child { left: 0; z-index: 4; }
-      .matrix-table tbody th { position: sticky; left: 0; z-index: 2; background: var(--surface2); font-family: var(--font-mono); font-weight: 700; color: var(--text); text-align: left; }
+      .matrix-table tbody th { position: sticky; left: 0; z-index: 2; background: var(--surface2); font-family: var(--font-mono); font-weight: 700; color: var(--text); }
       .matrix-cell { font-family: var(--font-mono); font-weight: 700; color: var(--text3); background: var(--surface); }
       .matrix-cell.has-score { color: var(--text); }
       .matrix-cell.score-low { background: var(--surface2); }
@@ -567,8 +568,6 @@
         <div class="matrix-header-row">
           <button class="matrix-back-btn" onclick="closeMatrixPage()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back to Analysis</button>
         </div>
-        <div class="slabel" style="margin-top:14px">Combination Matrix — every C+N+R mix × every window</div>
-        <p class="matrix-desc">Each cell runs <strong>Generate Analysis</strong> the chosen number of times. A run counts toward the cell's score whenever the resulting <strong>3+ match rate exceeds the threshold</strong> below.</p>
 
         <div class="matrix-controls">
           <div class="filter-group">
@@ -589,27 +588,7 @@
         </div>
 
         <div class="table-wrap matrix-table-wrap" id="matrix-table-container">
-          <div class="empty">Set the runs per cell and the match-rate threshold, then tap <strong>Run Matrix</strong> to begin. This computes 27 combinations × 7 windows = 189 cells, so it may take a while on large draw histories.</div>
-        </div>
-
-        <!-- Filter Combination Comparison — moved here from Analysis page -->
-        <div class="match-dist-section" style="margin-top:24px;">
-          <div class="slabel-row">
-            <span class="slabel" style="margin-bottom:0">Filter Combination Comparison</span>
-            <span class="slabel-total" id="fcc-total"></span>
-          </div>
-          <div class="fcc-grid" id="fcc-rows">
-            <div style="font-size:11px;color:var(--text3);padding:8px 0;grid-column:1/-1;">Open this page and run analysis from the Analysis tab first.</div>
-          </div>
-        </div>
-
-        <!-- Performance Across Training Windows — moved here from Analysis page -->
-        <div class="comparison-grid" style="border-top:none;padding-top:0;margin-top:20px;">
-          <div class="slabel-row">
-            <span class="slabel" style="margin-bottom:0">Performance across training windows (active filters applied)</span>
-            <span class="slabel-total" id="comparison-total"></span>
-          </div>
-          <div class="stat-grid-6" id="comparison-stats"></div>
+          <div class="empty">Set runs per cell and threshold, then tap <strong>Run Matrix</strong>.</div>
         </div>
       </div>
 
@@ -1722,14 +1701,18 @@
               </div>
 
               <div class="info-section">
-                <span class="info-section-title">Prediction table</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Each row replays history: a prediction is generated from the training window before that draw, then compared to what was actually drawn. Rows with <strong>3, 4, 5, or 6 matches are highlighted</strong> — amber for 3–4, green for 5–6 — since these are the prize-winning thresholds.</div></div>
+                <span class="info-section-title">Performance across training windows</span>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Runs your <strong>current C/N/R mix</strong> against 6 fixed window sizes (1m=8 draws, 2m=17, 3m=26, 4m=35, 5m=43, 6m=52). For each window it does a full rolling back-test — train on draws before each historical draw, predict that draw, count how many of the 6 numbers matched — then shows the <strong>average number of correct picks per prediction</strong>. Your active window is highlighted in amber with a ◀. The sub-text shows average match % and the hit-rate (% of predictions with at least 1 match). Use this to find whether more or less history produces better results for your current mix.</div></div>
+              </div>
+
+              <div class="info-section">
+                <span class="info-section-title">Filter Combination Comparison</span>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Fixes the <strong>window size</strong> at your active setting and back-tests <strong>10 preset C/N/R combinations</strong> (e.g. 3C+2N+1R, 2C+2N+2R, 4C+1N+1R and others). Each card shows the average matches per prediction for that preset. Your current config is highlighted in amber. 🥇🥈🥉 medals go to the top 3. Use this alongside Performance across windows to find the best (window, mix) combination — they answer complementary questions: Performance asks "which window length?", FCC asks "which split of cluster/neighbour/random?".</div></div>
               </div>
 
               <div class="info-section">
                 <span class="info-section-title">Combination Matrix page</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Tap the stats bar (Predictions made / Window / Total draws) at the top of the Analysis page to open a dedicated page testing <strong>every possible C+N+R combination</strong> (27 total) against <strong>every window size</strong> (1M–6M, All). Each cell runs Generate Analysis a configurable number of times and counts how often the 3+ match rate beats 6%.</div></div>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Filter Combination Comparison</strong> and <strong>Performance Across Training Windows</strong> now live on this page too, since they compare multiple configurations rather than one active filter set.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Tap the stats bar (Predictions made / Window / Total draws) to open this page. It tests <strong>all 27 C+N+R combinations</strong> against <strong>7 window sizes</strong> (1M–6M, All) — 189 cells total. Each cell runs the analysis a configurable number of times and counts how often the 3+ match rate beats your chosen threshold. Cells are colour-coded: green = beats threshold ≥70% of runs, amber = 30–69%, grey = below 30%.</div></div>
               </div>
 
               <div class="info-section">
@@ -1772,9 +1755,6 @@
       function openMatrixPage() {
         document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
         document.getElementById("pane-matrix").classList.add("active");
-        // Refresh the FCC + Performance sections that now live on this page
-        renderFilterComparison();
-        renderComparisonStats();
       }
       function closeMatrixPage() {
         document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
