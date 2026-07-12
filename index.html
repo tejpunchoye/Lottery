@@ -540,6 +540,26 @@
         </div>
 
         <div id="analysis-table-placeholder" style="display:none"></div>
+
+        <!-- Performance Across Training Windows -->
+        <div class="comparison-grid" style="border-top:none;padding-top:0;margin-top:16px;">
+          <div class="slabel-row">
+            <span class="slabel" style="margin-bottom:0">Performance across training windows (active filters applied)</span>
+            <span class="slabel-total" id="comparison-total"></span>
+          </div>
+          <div class="stat-grid-6" id="comparison-stats"></div>
+        </div>
+
+        <!-- Filter Combination Comparison -->
+        <div class="match-dist-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
+          <div class="slabel-row">
+            <span class="slabel" style="margin-bottom:0">Filter Combination Comparison</span>
+            <span class="slabel-total" id="fcc-total"></span>
+          </div>
+          <div class="fcc-grid" id="fcc-rows">
+            <div style="font-size:11px;color:var(--text3);padding:8px 0;grid-column:1/-1;">Run analysis to see results.</div>
+          </div>
+        </div>
       </div>
 
       <!-- ── COMBINATION MATRIX (new page) ── -->
