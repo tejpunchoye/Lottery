@@ -42,7 +42,8 @@
       .header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--surface); z-index: 10; box-shadow: var(--shadow-sm); }
       .header-left h1 { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -.02em; }
       .header-left p { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: var(--font-mono); }
-      .header-icon { font-size: 24px; line-height: 1; }
+      .header-icon { font-size: 24px; line-height: 1; cursor: pointer; transition: transform .2s; user-select: none; }
+      .header-icon:hover { transform: scale(1.15) rotate(-10deg); }
 
       /* TABS */
       .tabs { display: flex; padding: 10px 20px 0; gap: 4px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 57px; z-index: 9; flex-wrap: wrap; }
@@ -327,10 +328,6 @@
       .arr-badges { display: flex; flex-wrap: wrap; gap: 4px; }
       .badge { padding: 3px 8px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; font-size: 11px; color: var(--text2); font-family: var(--font-mono); }
 
-      /* FLOATING INFO BUTTON */
-      .fab-info { position: fixed; bottom: 24px; right: 20px; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, var(--purple), #6d28d9); color: white; border: none; cursor: pointer; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(124,58,237,.4); z-index: 150; transition: transform .15s, box-shadow .15s; }
-      .fab-info:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(124,58,237,.5); }
-      .fab-info:active { transform: scale(.95); }
       /* Info modal */
       .info-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; display: flex; align-items: flex-end; justify-content: center; padding: 0; backdrop-filter: blur(4px); animation: fadeIn .2s ease; }
       .info-modal-box { background: var(--surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 20px 20px 32px; max-width: 520px; width: 100%; box-shadow: 0 -12px 48px rgba(0,0,0,.2); animation: slideUpModal .25s ease; max-height: 85vh; overflow-y: auto; }
@@ -410,7 +407,7 @@
           <h1>Draw Grid Explorer</h1>
           <p id="hdr-sub"></p>
         </div>
-        <div class="header-icon">🎲</div>
+        <div class="header-icon" id="diceIcon" title="How this works" role="button" aria-label="How this works">🎲</div>
       </div>
 
       <!-- TABS -->
@@ -653,7 +650,6 @@
       </div>
     </div>
 
-    <button class="fab-info" id="fabInfo" title="How this works" aria-label="Help">?</button>
     <div id="infoModalRoot"></div>
     <div class="toast" id="toast"></div>
 
@@ -1672,7 +1668,7 @@
       });
 
       /* ═══════════════════════════════════════════════════════════
-         FLOATING INFO BUTTON — explains analysis sections & strategies
+         DICE ICON — opens the "How this works" info modal
       ═══════════════════════════════════════════════════════════ */
       function openInfoModal() {
         const root = document.getElementById('infoModalRoot');
@@ -1680,46 +1676,37 @@
           <div class="info-modal-overlay" id="infoModalOverlay">
             <div class="info-modal-box">
               <div class="info-modal-header">
-                <span class="info-modal-title">📖 How the Analysis page works</span>
+                <span class="info-modal-title">🎲 How the Analysis page works</span>
                 <button class="modal-close" onclick="closeInfoModal()">✕</button>
               </div>
 
               <div class="info-section">
-                <span class="info-section-title">Filters</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>From Clusters / Neighbours / Random</strong> — how many of the 6 predicted numbers come from each pool. Clusters are grid hot-zones, Neighbours are cells adjacent to a cluster, Random fills the rest. Must always sum to 6.</div></div>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Window</strong> — how many past draws are used both to train the prediction and to detect clusters. Applies to training and cluster detection together.</div></div>
-              </div>
-
-              <div class="info-section">
-                <span class="info-section-title">Generate Analysis button</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Filter changes are staged ("pending") and only applied once you click <strong>Generate Analysis</strong>. This keeps the displayed results stable while you experiment with new filter values.</div></div>
-              </div>
-
-              <div class="info-section">
                 <span class="info-section-title">Match Distribution &amp; Accuracy Insights</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Shows how many historical predictions landed exactly 1–6 matching numbers. <strong>1 and 2 matches are greyed out</strong> because most lotteries require 3+ matches to win a prize. The header badge shows the <strong>% of predictions with 3+ matches</strong> — turns <strong>green when above 6%</strong>.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Shows how many historical predictions landed exactly 1–6 matching numbers. <strong>1 and 2 matches are greyed out</strong> — most lotteries require 3+ to win any prize. The header badge shows the <strong>% of predictions with 3+ matches</strong> and turns green when above 6%.</div></div>
               </div>
 
               <div class="info-section">
                 <span class="info-section-title">Performance across training windows</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Runs your <strong>current C/N/R mix</strong> against 6 fixed window sizes (1m=8 draws, 2m=17, 3m=26, 4m=35, 5m=43, 6m=52). For each window it does a full rolling back-test — train on draws before each historical draw, predict that draw, count how many of the 6 numbers matched — then shows the <strong>average number of correct picks per prediction</strong>. Your active window is highlighted in amber with a ◀. The sub-text shows average match % and the hit-rate (% of predictions with at least 1 match). Use this to find whether more or less history produces better results for your current mix.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Runs your <strong>current C/N/R mix</strong> against 6 fixed history lengths (1m=8 draws, 2m=17, 3m=26, 4m=35, 5m=43, 6m=52). For each length it rolls through every historical draw: train on the draws before it, generate a prediction, count how many numbers matched. The card shows the <strong>average matches per prediction</strong>. Your active window is highlighted in amber. Sub-text shows average match % and hit-rate (% of predictions with ≥1 match). Use this to answer: does more or less history help my current mix?</div></div>
               </div>
 
               <div class="info-section">
                 <span class="info-section-title">Filter Combination Comparison</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Fixes the <strong>window size</strong> at your active setting and back-tests <strong>10 preset C/N/R combinations</strong> (e.g. 3C+2N+1R, 2C+2N+2R, 4C+1N+1R and others). Each card shows the average matches per prediction for that preset. Your current config is highlighted in amber. 🥇🥈🥉 medals go to the top 3. Use this alongside Performance across windows to find the best (window, mix) combination — they answer complementary questions: Performance asks "which window length?", FCC asks "which split of cluster/neighbour/random?".</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Keeps the window fixed at your active setting and tests <strong>10 preset C/N/R splits</strong>. Each card shows the average matches per prediction for that split. Your active config is amber, best three get 🥇🥈🥉. Use this to answer: for my chosen window length, which cluster/neighbour/random split produces the most matches?</div></div>
               </div>
 
               <div class="info-section">
                 <span class="info-section-title">Combination Matrix page</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Tap the stats bar (Predictions made / Window / Total draws) to open this page. It tests <strong>all 27 C+N+R combinations</strong> against <strong>7 window sizes</strong> (1M–6M, All) — 189 cells total. Each cell runs the analysis a configurable number of times and counts how often the 3+ match rate beats your chosen threshold. Cells are colour-coded: green = beats threshold ≥70% of runs, amber = 30–69%, grey = below 30%.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Tap the stats bar to open this page. It tests <strong>all 27 C+N+R combinations × 7 window sizes</strong> = 189 cells. Each cell runs the analysis a configurable number of times and counts how often the 3+ match rate beats your threshold. Green ≥70% of runs, amber 30–69%, grey below 30%.</div></div>
               </div>
 
               <div class="info-section">
                 <span class="info-section-title">Strategies used</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Strategy 2 (Custom)</strong> — the default. Builds a combination from exactly your C/N/R mix: picks from cluster numbers, then their grid-adjacent neighbours, then the remaining pool at random, each weighted by recency-adjusted draw frequency.</div></div>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Strategy 1 (Hybrid)</strong> — a fallback approach: 4 numbers from active clusters plus 2 weighted-random numbers from the full pool, used automatically when a custom mix can't be satisfied (e.g. not enough cluster numbers available).</div></div>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Every generated combination is filtered for <strong>balance</strong>: 2–4 odd numbers, 2–4 low numbers (≤25), and a sum between 100–200, mirroring typical real-world draw distributions.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Cluster detection:</strong> the grid is divided into 8×5 cells (numbers 1–40). A recency-weighted score is computed for each number — draws are weighted by position, so the most recent draws count more. Numbers scoring above 50% of the peak weight form the "hot zone". Connected hot-zone cells are grouped into up to 4 spatial clusters using a flood-fill algorithm.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Custom strategy (C/N/R):</strong> the default. Numbers are drawn from three separate pools. <em>Cluster picks</em> — one number per cluster, cycling across different clusters (e.g. with C=3: one from Cluster 1, one from Cluster 2, one from Cluster 3). This prevents all cluster picks from coming from the same hot zone. <em>Neighbour picks</em> — one from each cluster's border zone (the grid cells touching that cluster but not inside it), also cycling across different cluster borders. <em>Random picks</em> — from numbers not in any cluster or border zone, weighted by draw frequency. All picks use weighted-random selection so higher-frequency numbers appear more often.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Hybrid strategy (fallback):</strong> used automatically when the custom strategy can't form a valid combination (e.g. not enough detected clusters for the requested C count). Takes 4 numbers from the union of all clusters weighted by frequency, plus 2 numbers chosen uniformly from the remaining pool. Less precise than custom but always produces a result.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Balance filter:</strong> every generated combination — regardless of strategy — must pass three checks before being accepted: (1) 2–4 odd numbers out of 6, (2) 2–4 low numbers (≤25) out of 6, and (3) a total sum between 100 and 200. Combinations failing any check are discarded and regenerated. Up to 3000 attempts are made before falling back to a deterministic top-weight selection.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Why these constraints?</strong> Real lottery draws rarely produce all-odd, all-even, all-high or all-low results. The odd/even and high/low splits reflect the statistical distribution of historical draws. The sum range (100–200) eliminates extreme outliers — with 6 numbers from 1–40, the theoretical min is 21 and max is 225, but actual draws cluster in the 100–200 band in most pick-6 lotteries.</div></div>
               </div>
             </div>
           </div>`;
@@ -1728,7 +1715,7 @@
       function closeInfoModal() {
         document.getElementById('infoModalRoot').innerHTML = '';
       }
-      document.getElementById('fabInfo').addEventListener('click', openInfoModal);
+      document.getElementById('diceIcon').addEventListener('click', openInfoModal);
 
       /* ═══════════════════════════════════════════════════════════
          COMBINATION MATRIX PAGE
