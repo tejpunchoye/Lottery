@@ -1771,59 +1771,46 @@
         document.querySelector('.tab[onclick*="analysis"]').classList.add("active");
       }
 
-      // Mirrors renderAnalysisTable EXACTLY:
-      // - same rolling-window loop from draw[windowSize] to draws[end]
-      // - same cluster detection: clusterData = last min(windowSize, trainingData.length) draws of trainingData
-      // - same prediction call: genCustomStrategy with provided c/n/r, fallback genMix
-      // - same match counting: predSet intersection with actual draw
-      // - returns the 3+ match % exactly as renderMatchDistribution computes it
-      function singleAnalysisPass(windowSize, c, n, r) {
-        const wSize = windowSize === 0 ? Math.max(1, draws.length - 1) : windowSize;
-        if (draws.length < wSize + 1) return null;
-
-        const totalPredictions = draws.length - wSize;
-        const matchCounts = [0, 0, 0, 0, 0, 0]; // index 0 = 1 match … 5 = 6 matches
-
+      // ─── PRE-COMPUTED CONTEXT CACHE ─────────────────────────────────────────
+      // Build weights+clusters for every draw position ONCE per window size.
+      // All 27 combos and all N runs then reuse this cache — only the random
+      // selection inside genCustomStrategy varies between runs.
+      function buildWindowCache(wSize) {
+        const cache = [];
         for (let i = wSize; i < draws.length; i++) {
           const trainingData = draws.slice(i - wSize, i);
-          const actual = draws[i]; // raw draw — same as Analysis page (not sorted; only used for Set lookup)
-
-          // Cluster detection uses the same unified window (clusterWindow = analysisWindow)
-          // For the matrix each cell defines its own window, so cwSize = wSize
+          const actual = draws[i];
           const cwSize = Math.min(wSize, trainingData.length);
           const clusterData = trainingData.slice(Math.max(0, trainingData.length - cwSize));
-
-          // Weights from full training data — exactly as predictFromDraws does
           const sc = computeRawWeights(trainingData);
           const peak = Math.max(1, ...Object.values(sc));
-
-          // Clusters from the cluster-window subset — exactly as predictFromDraws does
           const cSc = computeRawWeights(clusterData);
           const cPeak = Math.max(1, ...Object.values(cSc));
           const clusters = findClusters(cSc, cPeak);
+          cache.push({ sc, peak, clusters, actual, trainingData });
+        }
+        return cache;
+      }
 
-          // Generate prediction using custom strategy with provided c/n/r
-          // Falls back to genMix if custom strategy can't satisfy the constraints
+      // One pass using pre-built cache — only random picks vary between runs.
+      function singlePassFromCache(cache, c, n, r) {
+        const matchCounts = [0, 0, 0, 0, 0, 0];
+        for (const { sc, peak, clusters, actual, trainingData } of cache) {
           let prediction = genCustomStrategy(trainingData, sc, peak, clusters, c, n, r);
           if (!prediction) prediction = genMix(trainingData);
-
           if (prediction) {
             const predSet = new Set(prediction);
             const matches = actual.filter(x => predSet.has(x)).length;
             if (matches >= 1 && matches <= 6) matchCounts[matches - 1]++;
           }
         }
-
-        // Compute 3+ match % exactly as renderMatchDistribution does:
-        // threeOrMoreCount = matchCounts[2] + matchCounts[3] + matchCounts[4] + matchCounts[5]
-        const threeOrMoreCount = matchCounts.slice(2).reduce((s, c) => s + c, 0);
-        return totalPredictions > 0 ? (threeOrMoreCount / totalPredictions) * 100 : 0;
+        const threeOrMore = matchCounts.slice(2).reduce((s, v) => s + v, 0);
+        return cache.length > 0 ? (threeOrMore / cache.length) * 100 : 0;
       }
 
       async function runMatrix() {
         if (matrixRunning) return;
         const runsPerCell = Math.max(1, Math.min(200, parseInt(document.getElementById("matrixRuns").value) || 20));
-        // Read user-defined threshold — defaults to 6 if blank/invalid
         const threshold = parseFloat(document.getElementById("matrixThreshold").value);
         const pctThreshold = isNaN(threshold) ? 6 : Math.max(0, Math.min(100, threshold));
         if (draws.length < 10) { toast("Need at least 10 draws to run the matrix."); return; }
@@ -1837,32 +1824,42 @@
         const progressText = document.getElementById("matrixProgressText");
         progressWrap.style.display = "block";
 
-        const totalCells = MATRIX_COMBOS.length * MATRIX_WINDOWS.length;
-        let cellsDone = 0;
-        const results = MATRIX_COMBOS.map(() => MATRIX_WINDOWS.map(() => ({ count: 0, possible: true })));
+        const results = MATRIX_COMBOS.map(() => MATRIX_WINDOWS.map(() => ({ count: 0, possible: false })));
+        const totalWindows = MATRIX_WINDOWS.length;
+        const totalCombos = MATRIX_COMBOS.length;
 
-        for (let ci = 0; ci < MATRIX_COMBOS.length; ci++) {
-          const [c, n, r] = MATRIX_COMBOS[ci];
-          for (let wi = 0; wi < MATRIX_WINDOWS.length; wi++) {
-            const w = MATRIX_WINDOWS[wi];
+        // Outer loop: window — build cache ONCE, reuse for all 27 combos × N runs
+        for (let wi = 0; wi < totalWindows; wi++) {
+          const w = MATRIX_WINDOWS[wi];
+          const wSize = w.size === 0 ? Math.max(1, draws.length - 1) : w.size;
+
+          if (draws.length < wSize + 1) {
+            MATRIX_COMBOS.forEach((_, ci) => { results[ci][wi] = { count: 0, possible: false }; });
+            progressFill.style.width = `${Math.round(((wi + 1) / totalWindows) * 100)}%`;
+            progressText.textContent = `Window ${w.label}: not enough draws — skipping.`;
+            await new Promise(res => setTimeout(res, 0));
+            continue;
+          }
+
+          progressText.textContent = `Building cache for ${w.label} (${wSize} draws)…`;
+          await new Promise(res => setTimeout(res, 0));
+          const cache = buildWindowCache(wSize);
+
+          for (let ci = 0; ci < totalCombos; ci++) {
+            const [c, n, r] = MATRIX_COMBOS[ci];
             let count = 0;
-            let possible = true;
-            const wSize = w.size === 0 ? Math.max(1, draws.length - 1) : w.size;
-            if (draws.length < wSize + 1) {
-              possible = false;
-            } else {
-              for (let run = 0; run < runsPerCell; run++) {
-                const pct = singleAnalysisPass(w.size, c, n, r);
-                // Compare against the user-defined threshold (same metric as Analysis page badge)
-                if (pct !== null && pct > pctThreshold) count++;
-              }
+            for (let run = 0; run < runsPerCell; run++) {
+              const pct = singlePassFromCache(cache, c, n, r);
+              if (pct > pctThreshold) count++;
             }
-            results[ci][wi] = { count, possible };
-            cellsDone++;
-            if (cellsDone % 3 === 0 || cellsDone === totalCells) {
-              const prog = Math.round((cellsDone / totalCells) * 100);
-              progressFill.style.width = `${prog}%`;
-              progressText.textContent = `${cellsDone} / ${totalCells} cells · ${c}C+${n}N+${r}R @ ${w.label} · threshold ${pctThreshold}%`;
+            results[ci][wi] = { count, possible: true };
+
+            // Yield every 9 combos to keep UI responsive
+            if (ci % 9 === 8 || ci === totalCombos - 1) {
+              const done = wi * totalCombos + ci + 1;
+              const total = totalWindows * totalCombos;
+              progressFill.style.width = `${Math.round((done / total) * 100)}%`;
+              progressText.textContent = `${w.label} · ${c}C+${n}N+${r}R · ${done}/${total} cells`;
               await new Promise(res => setTimeout(res, 0));
             }
           }
@@ -1870,12 +1867,12 @@
 
         renderMatrixTable(results, runsPerCell, pctThreshold);
         populateTopCombosFromMatrix(results, runsPerCell);
-        progressText.textContent = `Done — ${totalCells} cells × ${runsPerCell} runs · threshold ${pctThreshold}%.`;
+        progressText.textContent = `Done — ${totalWindows * totalCombos} cells × ${runsPerCell} runs · threshold ${pctThreshold}%.`;
         progressFill.style.width = "100%";
         btn.disabled = false;
         btn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run Matrix';
         matrixRunning = false;
-        toast(`Matrix complete: ${totalCells} cells tested at >${pctThreshold}% threshold.`);
+        toast(`Matrix complete: ${totalWindows * totalCombos} cells tested.`);
       }
 
       function renderMatrixTable(results, runsPerCell, pctThreshold) {
