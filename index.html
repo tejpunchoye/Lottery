@@ -1771,10 +1771,13 @@
         document.querySelector('.tab[onclick*="analysis"]').classList.add("active");
       }
 
-      // ─── PRE-COMPUTED CONTEXT CACHE ─────────────────────────────────────────
-      // Build weights+clusters for every draw position ONCE per window size.
-      // All 27 combos and all N runs then reuse this cache — only the random
-      // selection inside genCustomStrategy varies between runs.
+      // ─── MATRIX-OPTIMISED ENGINE ────────────────────────────────────────────
+      // Key insight: perCluster, perClusterNeighbours, rPool depend only on
+      // (clusters, sc) — not on C/N/R. Pre-computing them once per draw
+      // position and sharing across all 27 combos cuts pool-building 27x.
+      // Also uses a lower attempt cap (200 vs 3000) since the matrix needs
+      // statistical sampling, not the perfectly balanced combos the UI needs.
+
       function buildWindowCache(wSize) {
         const cache = [];
         for (let i = wSize; i < draws.length; i++) {
@@ -1787,24 +1790,75 @@
           const cSc = computeRawWeights(clusterData);
           const cPeak = Math.max(1, ...Object.values(cSc));
           const clusters = findClusters(cSc, cPeak);
-          cache.push({ sc, peak, clusters, actual, trainingData });
+
+          // Pre-build pools — these are shared by all 27 combos at this position
+          const perCluster = clusters.map(comp => [...comp].sort((a,b) => sc[b]-sc[a]));
+          const cSet = new Set();
+          clusters.forEach(cl => cl.forEach(n => cSet.add(n)));
+          const perClusterNeighbours = clusters.map(comp => {
+            const nbSet = new Set();
+            comp.forEach(n => { ADJ[n].forEach(adj => { if (!cSet.has(adj)) nbSet.add(adj); }); });
+            return [...nbSet].sort((a,b) => sc[b]-sc[a]);
+          });
+          const allNbSet = new Set(perClusterNeighbours.flat());
+          const rPool = [];
+          for (let n=1; n<=40; n++) { if (!cSet.has(n) && !allNbSet.has(n)) rPool.push(n); }
+
+          cache.push({ sc, peak, clusters, perCluster, cSet, perClusterNeighbours, rPool, actual, trainingData });
         }
         return cache;
       }
 
-      // One pass using pre-built cache — only random picks vary between runs.
+      // Fast prediction using pre-built pools. Uses 200 attempts (vs 3000 in UI)
+      // since matrix cells need sampling accuracy, not guaranteed valid combos.
+      function fastPickFromPools(sc, peak, clusters, perCluster, cSet, perClusterNeighbours, rPool, trainingData, cCount, nCount, rCount) {
+        const totalNbAvail = new Set(perClusterNeighbours.flat()).size;
+        if (perCluster.length === 0 || cSet.size < cCount || totalNbAvail < nCount || rPool.length < rCount) {
+          return genHybrid(trainingData, sc, peak, clusters) || genMix(trainingData);
+        }
+        for (let attempt=0; attempt<200; attempt++) {
+          const picked = new Set();
+          let ok = true;
+          for (let i=0; i<cCount; i++) {
+            const ci = i % perCluster.length;
+            const pool = perCluster[ci].filter(n => !picked.has(n));
+            if (!pool.length) { ok=false; break; }
+            const chosen = weightedPick(pool, pool.map(n=>sc[n]), 1);
+            if (!chosen.length) { ok=false; break; }
+            picked.add(chosen[0]);
+          }
+          if (!ok) continue;
+          for (let i=0; i<nCount; i++) {
+            const ci = i % perClusterNeighbours.length;
+            const pool = perClusterNeighbours[ci].filter(n => !picked.has(n));
+            if (!pool.length) { ok=false; break; }
+            const chosen = weightedPick(pool, pool.map(n=>sc[n]), 1);
+            if (!chosen.length) { ok=false; break; }
+            picked.add(chosen[0]);
+          }
+          if (!ok) continue;
+          const rAvail = rPool.filter(n => !picked.has(n));
+          if (rAvail.length < rCount) continue;
+          const rChosen = weightedPick(rAvail, rAvail.map(n=>sc[n]), rCount);
+          if (rChosen.length < rCount) continue;
+          rChosen.forEach(n => picked.add(n));
+          const combo = [...picked];
+          if (combo.length===6 && isValid(combo)) return combo;
+        }
+        return genMix(trainingData);
+      }
+
+      // One pass for a given combo using pre-built cache (pools already computed)
       function singlePassFromCache(cache, c, n, r) {
-        const matchCounts = [0, 0, 0, 0, 0, 0];
-        for (const { sc, peak, clusters, actual, trainingData } of cache) {
-          let prediction = genCustomStrategy(trainingData, sc, peak, clusters, c, n, r);
-          if (!prediction) prediction = genMix(trainingData);
+        let threeOrMore = 0;
+        for (const { sc, peak, clusters, perCluster, cSet, perClusterNeighbours, rPool, actual, trainingData } of cache) {
+          const prediction = fastPickFromPools(sc, peak, clusters, perCluster, cSet, perClusterNeighbours, rPool, trainingData, c, n, r);
           if (prediction) {
             const predSet = new Set(prediction);
             const matches = actual.filter(x => predSet.has(x)).length;
-            if (matches >= 1 && matches <= 6) matchCounts[matches - 1]++;
+            if (matches >= 3) threeOrMore++;
           }
         }
-        const threeOrMore = matchCounts.slice(2).reduce((s, v) => s + v, 0);
         return cache.length > 0 ? (threeOrMore / cache.length) * 100 : 0;
       }
 
@@ -1854,14 +1908,12 @@
             }
             results[ci][wi] = { count, possible: true };
 
-            // Yield every 9 combos to keep UI responsive
-            if (ci % 9 === 8 || ci === totalCombos - 1) {
-              const done = wi * totalCombos + ci + 1;
-              const total = totalWindows * totalCombos;
-              progressFill.style.width = `${Math.round((done / total) * 100)}%`;
-              progressText.textContent = `${w.label} · ${c}C+${n}N+${r}R · ${done}/${total} cells`;
-              await new Promise(res => setTimeout(res, 0));
-            }
+            // Yield after every combo so the UI updates smoothly
+            const done = wi * totalCombos + ci + 1;
+            const total = totalWindows * totalCombos;
+            progressFill.style.width = `${Math.round((done / total) * 100)}%`;
+            progressText.textContent = `${w.label} · ${c}C+${n}N+${r}R · ${done}/${total} cells`;
+            await new Promise(res => setTimeout(res, 0));
           }
         }
 
