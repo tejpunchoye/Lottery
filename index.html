@@ -258,13 +258,19 @@
       .fcc-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
       .fcc-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 4px; text-align: center; transition: border-color .15s; min-width: 0; overflow: hidden; }
       .fcc-card.current { border-color: var(--amber); background: var(--amber-bg); }
-      .fcc-card.rank-1 { border-color: var(--green); background: var(--green-bg); }
+      .fcc-card.rank-1 { border-color: var(--green) !important; background: var(--green-bg) !important; }
+      .fcc-card.rank-2 { border-color: var(--blue); background: var(--blue-bg); }
+      .fcc-card.rank-3 { border-color: var(--purple); background: var(--purple-bg); }
       .fcc-card-label { font-size: 9px; font-family: var(--font-mono); color: var(--text2); margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
       .fcc-card.current .fcc-card-label { color: var(--amber-text); }
-      .fcc-card.rank-1 .fcc-card-label { color: var(--green-text); }
+      .fcc-card.rank-1 .fcc-card-label { color: var(--green-text) !important; }
+      .fcc-card.rank-2 .fcc-card-label { color: var(--blue-text); }
+      .fcc-card.rank-3 .fcc-card-label { color: var(--purple-text); }
       .fcc-card-score { font-size: 14px; font-weight: 700; font-family: var(--font-mono); color: var(--text); }
       .fcc-card.current .fcc-card-score { color: var(--amber-text); }
-      .fcc-card.rank-1 .fcc-card-score { color: var(--green-text); }
+      .fcc-card.rank-1 .fcc-card-score { color: var(--green-text) !important; }
+      .fcc-card.rank-2 .fcc-card-score { color: var(--blue-text); }
+      .fcc-card.rank-3 .fcc-card-score { color: var(--purple-text); }
       .fcc-card-rank { font-size: 8px; color: var(--text3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       @media (max-width: 480px) {
         .fcc-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; }
@@ -557,6 +563,15 @@
           <div class="slabel-row">
             <span class="slabel" style="margin-bottom:0">Filter Combination Comparison</span>
             <span class="slabel-total" id="fcc-total"></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+            <span style="font-size:11px;color:var(--text3);">Presets to compare:</span>
+            <select id="fccPresetCount" style="padding:3px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--text);font-size:12px;font-family:var(--font-mono);cursor:pointer;">
+              <option value="5">5</option>
+              <option value="10" selected>10</option>
+              <option value="15">15</option>
+              <option value="27">All 27</option>
+            </select>
           </div>
           <div class="fcc-grid" id="fcc-rows">
             <div style="font-size:11px;color:var(--text3);padding:8px 0;grid-column:1/-1;">Run analysis to see results.</div>
@@ -1281,10 +1296,12 @@
         document.getElementById("asb-window").textContent = windowSize === 0 ? draws.length : windowSize;
         document.getElementById("asb-total").textContent = draws.length;
 
-        // Render match distribution (right after filters, before comparison)
+        // Render match distribution first (fast)
         renderMatchDistribution(matchCounts, totalPredictions, successfulPredictions, avgMatch, avgMatchPercent);
-        // Render performance comparison — driven by all 4 filters
-        renderComparisonStats();
+        // Defer the heavier FCC + comparison stats to the next tick
+        setTimeout(() => {
+          renderComparisonStats();
+        }, 0);
         // Table removed from Analysis page per user request
       }
 
@@ -1415,32 +1432,32 @@
         }
 
         insights.innerHTML = "";
-        // Filter Combination Comparison now lives on the Combination Matrix page
-        renderFilterComparison();
+        // Filter Combination Comparison deferred — runs after match dist and comparison stats
+        setTimeout(() => renderFilterComparison(), 0);
       }
 
       function renderFilterComparison() {
         const fccEl = document.getElementById("fcc-rows");
         if (!fccEl) return;
-        // Resolve training window (0 = all draws → use draws.length-1 as the window)
         const windowSize = analysisWindow === 0 ? Math.max(1, draws.length - 1) : analysisWindow;
         if (draws.length < windowSize + 1) { fccEl.innerHTML = '<div style="font-size:11px;color:var(--text3);grid-column:1/-1;">Not enough data.</div>'; return; }
 
-        // Capture all 4 active filter values at call time
         const cw = clusterWindow;
         const currentLabel = `${filterClusters}C+${filterNeighbours}N+${filterRandom}R`;
 
-        const configs = [
-          {c:3,n:2,r:1},{c:2,n:2,r:2},{c:4,n:1,r:1},{c:2,n:3,r:1},
-          {c:1,n:3,r:2},{c:3,n:1,r:2},{c:4,n:2,r:0},{c:2,n:4,r:0},
-          {c:1,n:2,r:3},{c:0,n:3,r:3}
-        ];
+        // All 27 valid C+N+R combos that sum to 6 (same list as the matrix)
+        const allConfigs = MATRIX_COMBOS.map(([c,n,r]) => ({c,n,r,label:`${c}C+${n}N+${r}R`}));
 
-        const results = configs.map(cfg => {
-          let totalMatches = 0, hits = 0;
+        // How many presets the user wants to compare
+        const presetCountEl = document.getElementById("fccPresetCount");
+        const presetCount = presetCountEl ? Math.min(parseInt(presetCountEl.value) || 10, allConfigs.length) : 10;
+
+        // Compute avg matches for all 27 so we can pick the top N to show
+        // (we always compute all so the user's active config always appears regardless of N)
+        const allResults = allConfigs.map(cfg => {
+          let totalMatches = 0;
           for (let i = windowSize; i < draws.length; i++) {
             const tData = draws.slice(i - windowSize, i);
-            // Use active clusterWindow filter for each preset too
             const cwSize = cw === 0 ? tData.length : Math.min(cw, tData.length);
             const clusterData = tData.slice(Math.max(0, tData.length - cwSize));
             const sc = computeRawWeights(tData);
@@ -1448,46 +1465,69 @@
             const cSc = computeRawWeights(clusterData);
             const cPeak = Math.max(1, ...Object.values(cSc));
             const clusters = findClusters(cSc, cPeak);
-            // Each preset uses its own C/N/R but shares the active clusterWindow
             const prediction = genCustomStrategy(tData, sc, peak, clusters, cfg.c, cfg.n, cfg.r);
             if (prediction) {
               const predSet = new Set(prediction);
               let m = 0; draws[i].forEach(n => { if (predSet.has(n)) m++; });
-              totalMatches += m; if (m > 0) hits++;
+              totalMatches += m;
             }
           }
           const total = draws.length - windowSize;
-          const avg = total > 0 ? totalMatches / total : 0;
-          return { cfg, avg, label: `${cfg.c}C+${cfg.n}N+${cfg.r}R` };
+          return { cfg, avg: total > 0 ? totalMatches / total : 0, label: cfg.label };
         });
 
-        // Keep configs in fixed placement — never re-order
-        // Medals awarded by score (best avg gets 🥇) but positions stay fixed
-        const sorted = [...results].sort((a, b) => b.avg - a.avg);
-        const rankLabels = {};
-        if (sorted.length >= 1) rankLabels[sorted[0].label] = '🥇';
-        if (sorted.length >= 2) rankLabels[sorted[1].label] = '🥈';
-        if (sorted.length >= 3) rankLabels[sorted[2].label] = '🥉';
+        // Pick the top presetCount by avg, always include the active config
+        const sorted = [...allResults].sort((a, b) => b.avg - a.avg);
+        let shown = sorted.slice(0, presetCount);
+        // Ensure active config is always visible even if outside top N
+        if (!shown.find(r => r.label === currentLabel)) {
+          const activeResult = allResults.find(r => r.label === currentLabel);
+          if (activeResult) { shown.pop(); shown.push(activeResult); }
+        }
+        // Re-sort shown by original MATRIX_COMBOS order (fixed placement)
+        const orderMap = {};
+        allConfigs.forEach((cfg, i) => { orderMap[cfg.label] = i; });
+        shown.sort((a, b) => (orderMap[a.label] ?? 99) - (orderMap[b.label] ?? 99));
 
-        // Set FCC total — sum of all avg scores across presets
-        const fccSum = results.reduce((s, r) => s + r.avg, 0);
+        // Medals and rank classes for top 3 within the shown set
+        const shownSorted = [...shown].sort((a, b) => b.avg - a.avg);
+        const rankClass = {};
+        const medalLabel = {};
+        if (shownSorted[0]) { rankClass[shownSorted[0].label] = 'rank-1'; medalLabel[shownSorted[0].label] = '🥇'; }
+        if (shownSorted[1]) { rankClass[shownSorted[1].label] = 'rank-2'; medalLabel[shownSorted[1].label] = '🥈'; }
+        if (shownSorted[2]) { rankClass[shownSorted[2].label] = 'rank-3'; medalLabel[shownSorted[2].label] = '🥉'; }
+
+        // FCC total
+        const fccSum = shown.reduce((s, r) => s + r.avg, 0);
         const fccTotalEl = document.getElementById("fcc-total");
         if (fccTotalEl) {
           fccTotalEl.textContent = `Σ ${fccSum.toFixed(2)}`;
           fccTotalEl.className = "slabel-total highlight-green";
         }
 
-        fccEl.innerHTML = results.map((r) => {
+        // Adjust grid columns to match shown count (max 5 per row)
+        const gridCols = Math.min(shown.length, 5);
+        fccEl.style.gridTemplateColumns = `repeat(${gridCols}, minmax(0, 1fr))`;
+
+        // Fully rebuild — ensures classes are always fresh after count change
+        fccEl.innerHTML = shown.map(r => {
           const isCurrent = r.label === currentLabel;
-          const isGold = rankLabels[r.label] === '🥇';
-          const medal = rankLabels[r.label] || '';
-          return `<div class="fcc-card${isGold ? ' rank-1' : ''}${isCurrent ? ' current' : ''}">
+          const rClass = rankClass[r.label] || '';
+          const medal = medalLabel[r.label] || '';
+          // rank-1 always overrides current styling via !important in CSS
+          const classes = ['fcc-card', rClass, isCurrent ? 'current' : ''].filter(Boolean).join(' ');
+          return `<div class="${classes}">
             <div class="fcc-card-label">${medal}${r.label}</div>
             <div class="fcc-card-score">${r.avg.toFixed(2)}</div>
             <div class="fcc-card-rank">${isCurrent ? '← you' : ''}&nbsp;</div>
           </div>`;
         }).join('');
       }
+
+      // Re-render FCC when preset count changes
+      document.getElementById("fccPresetCount")?.addEventListener("change", () => {
+        if (draws.length > 0) renderFilterComparison();
+      });
 
       /* ═══════════════════════════════════════════════════════════
          COMPARISON STATS (across training windows)
@@ -1612,14 +1652,16 @@
         currentRange=parseInt(this.value);
         const n=Math.min(currentRange,draws.length);
         document.getElementById("sliderVal").textContent=`${n} / ${draws.length}`;
-        renderStats();renderRowBars();renderGrid();document.getElementById("predictions").innerHTML="";
+        renderStats();renderRowBars();renderGrid();
+        // Predictions are NOT cleared — they persist until Generate is clicked again
       });
       document.querySelectorAll(".mark").forEach(m=>m.addEventListener("click",function(){
         let v=parseInt(this.dataset.v);
         if(v===0)v=draws.length;else v=Math.min(v,draws.length);
         currentRange=v;document.getElementById("drawSlider").value=v;
         document.getElementById("sliderVal").textContent=`${v} / ${draws.length}`;
-        renderStats();renderRowBars();renderGrid();document.getElementById("predictions").innerHTML="";
+        renderStats();renderRowBars();renderGrid();
+        // Predictions are NOT cleared — they persist until Generate is clicked again
       }));
 
       /* ═══════════════════════════════════════════════════════════
@@ -1717,8 +1759,30 @@
               </div>
 
               <div class="info-section">
-                <span class="info-section-title">Combination Matrix page</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Tap the stats bar to open this page. It tests <strong>all 27 C+N+R combinations × 7 window sizes</strong> = 189 cells. Each cell runs the analysis a configurable number of times and counts how often the 3+ match rate beats your threshold. Green ≥70% of runs, amber 30–69%, grey below 30%.</div></div>
+                <span class="info-section-title">Filter Combination Comparison vs Combination Matrix</span>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">
+                  These two tools answer related but different questions about which C/N/R mix works best:
+                </div></div>
+                <div style="overflow-x:auto;margin:8px 0 4px;">
+                  <table style="width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font-sans);">
+                    <thead>
+                      <tr style="background:var(--surface2);">
+                        <th style="padding:6px 8px;text-align:left;border:1px solid var(--border);color:var(--text3);font-weight:600;"></th>
+                        <th style="padding:6px 8px;text-align:left;border:1px solid var(--border);color:var(--purple-text);font-weight:700;">Filter Combination Comparison</th>
+                        <th style="padding:6px 8px;text-align:left;border:1px solid var(--border);color:var(--green-text);font-weight:700;">Combination Matrix</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Window</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Fixed at your active window setting</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">All 7 sizes tested simultaneously (1M–6M, All)</td></tr>
+                      <tr style="background:var(--surface2);"><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Combos shown</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">5, 10, 15, or all 27 (your choice)</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">All 27 combos always</td></tr>
+                      <tr><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Metric</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Average matches per prediction (1 pass through history)</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">How often 3+ match rate beats your threshold across N runs</td></tr>
+                      <tr style="background:var(--surface2);"><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Randomness</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">1 deterministic pass — same result every time</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">N random runs — measures consistency, not just average</td></tr>
+                      <tr><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Speed</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Fast — runs instantly</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Slow — 189 cells × N runs each</td></tr>
+                      <tr style="background:var(--surface2);"><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Best for</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Quick scan: which C/N/R split averages the most matches?</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Deep scan: which (combo + window) pair reliably beats a threshold?</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Recommended workflow:</strong> use FCC for a fast first pass to find promising C/N/R splits at your current window, then run the Matrix to validate those splits across all windows and see which holds up consistently under repeated random sampling.</div></div>
               </div>
 
               <div class="info-section">
@@ -1934,11 +1998,18 @@
          TAB SWITCHING
       ═══════════════════════════════════════════════════════════ */
       window.switchTab=function(name,btn){
+        // Step 1: class changes only — paints on the very next frame
         document.querySelectorAll(".pane").forEach(p=>p.classList.remove("active"));
         document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-        document.getElementById("pane-"+name).classList.add("active");btn.classList.add("active");
-        if(name==="grid")renderGrid();
-        if(name==="analysis")renderAnalysisTable();
+        document.getElementById("pane-"+name).classList.add("active");
+        btn.classList.add("active");
+        // Step 2: defer ALL computation until after the browser has painted the highlight
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            if(name==="grid") renderGrid();
+            if(name==="analysis") renderAnalysisTable();
+          });
+        });
       };
 
       /* ═══════════════════════════════════════════════════════════
