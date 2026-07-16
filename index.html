@@ -421,7 +421,7 @@
       <!-- TABS -->
       <div class="tabs">
         <button class="tab active" onclick="switchTab('grid', this)">Grid &amp; Predict</button>
-        <button class="tab" onclick="switchTab('analysis', this)">Analysis</button>
+        <button class="tab" onclick="switchTab('matrix', this)">Matrix</button>
         <button class="tab" onclick="switchTab('add', this)">Add draw</button>
         <button class="tab" onclick="switchTab('settings', this)">Settings</button>
       </div>
@@ -579,11 +579,9 @@
         </div>
       </div>
 
-      <!-- ── COMBINATION MATRIX (new page) ── -->
+      <!-- ── COMBINATION MATRIX ── -->
       <div id="pane-matrix" class="pane">
-        <div class="matrix-header-row">
-          <button class="matrix-back-btn" onclick="closeMatrixPage()"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back to Analysis</button>
-        </div>
+        <div style="height:4px"></div>
 
         <div class="matrix-controls">
           <div class="filter-group">
@@ -629,10 +627,10 @@
           <!-- Heatmap colour legend -->
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
             <span style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Best match tier per cell:</span>
-            <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(124,58,237,.3);"></span>6 matches (jackpot)</span>
-            <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(5,150,105,.28);"></span>5 matches</span>
+            <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(220,38,38,.22);"></span>6 matches (jackpot)</span>
+            <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(5,150,105,.35);"></span>5 matches</span>
             <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(5,150,105,.12);"></span>4 matches</span>
-            <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(232,160,32,.18);"></span>3 matches</span>
+            <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(234,179,8,.22);"></span>3 matches</span>
             <span style="font-size:10px;color:var(--text3);">· tap % to see full breakdown</span>
           </div>
 
@@ -954,10 +952,20 @@
         const allNbSet = new Set(perClusterNeighbours.flat());
         const rPool = [];
         for (let n=1; n<=40; n++) { if (!cSet.has(n) && !allNbSet.has(n)) rPool.push(n); }
-
-        // Feasibility check
         const totalNbAvail = allNbSet.size;
-        if (perCluster.length === 0 || cSet.size < cCount || totalNbAvail < nCount || rPool.length < rCount) {
+
+        // Feasibility check — only fail if we actually need pools we can't fill
+        // C=0 means we don't need any cluster numbers (clusters don't need to exist)
+        // N=0 means we don't need any neighbour numbers
+        // R=0 means we don't need any random numbers
+        const needClusters = cCount > 0;
+        const needNeighbours = nCount > 0;
+        const needRandom = rCount > 0;
+        const feasible =
+          (!needClusters || (perCluster.length > 0 && cSet.size >= cCount)) &&
+          (!needNeighbours || totalNbAvail >= nCount) &&
+          (!needRandom || rPool.length >= rCount);
+        if (!feasible) {
           const hc=genHybrid(ds,sc,peak,clusters); if(hc)return hc;
           const all=Object.keys(sc).map(Number),aw=all.map(n=>sc[n]);
           for(let a=0;a<2000;a++){const combo=weightedPick(all,aw,6);if(combo.length===6&&isValid(combo))return combo;}
@@ -1869,14 +1877,15 @@
       let matrixRunning = false;
 
       function openMatrixPage() {
+        // Stats bar click — navigate to matrix tab programmatically
+        const btn = document.querySelector('.tab[onclick*="matrix"]');
         document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
         document.getElementById("pane-matrix").classList.add("active");
+        if (btn) btn.classList.add("active");
       }
       function closeMatrixPage() {
-        document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
-        document.getElementById("pane-analysis").classList.add("active");
-        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-        document.querySelector('.tab[onclick*="analysis"]').classList.add("active");
+        // No longer used (matrix is a direct tab), keep for backwards compat
       }
 
       function singleAnalysisPass(windowSize, c, n, r) {
@@ -1938,6 +1947,7 @@
             const wSize = w.size === 0 ? Math.max(1, draws.length - 1) : w.size;
             const matchDetail = [0,0,0,0,0,0];
             let totalPredictions = 0;
+            let pctSum = 0; // sum of per-run 3+ match rates for averaging
             if (draws.length < wSize + 1) {
               possible = false;
             } else {
@@ -1945,13 +1955,15 @@
                 const res = singleAnalysisPass(w.size, c, n, r);
                 if (res !== null) {
                   if (res.pct > pctThreshold) count++;
-                  // Accumulate match counts across all runs
                   res.matchCounts.forEach((v, i) => { matchDetail[i] += v; });
-                  totalPredictions = res.totalPredictions; // same each run
+                  totalPredictions = res.totalPredictions;
+                  pctSum += res.pct;
                 }
               }
             }
-            results[ci][wi] = { count, possible, matchDetail, totalPredictions, runsPerCell };
+            // avgPct = average 3+ match rate across all runs (not diluted by totalSlots)
+            const avgPct3 = runsPerCell > 0 ? pctSum / runsPerCell : 0;
+            results[ci][wi] = { count, possible, matchDetail, totalPredictions, runsPerCell, avgPct3 };
             cellsDone++;
             if (cellsDone % 3 === 0 || cellsDone === totalCells) {
               const prog = Math.round((cellsDone / totalCells) * 100);
@@ -1996,19 +2008,20 @@
         document.getElementById('mst-pred').classList.add('active');
         document.getElementById('mst-rate').classList.remove('active');
 
-        // Pre-compute per-cell: total slots, per-matchlevel counts, 3+ %, best tier
+        // Pre-compute per-cell using avgPct3 = average 3+ match rate across all runs
+        // denominator = totalPredictions (draw positions), NOT totalPredictions × runs
         const cellData = MATRIX_COMBOS.map((combo, ci) =>
           MATRIX_WINDOWS.map((w, wi) => {
             const cell = results[ci]?.[wi];
             if (!cell || !cell.possible) return { possible: false };
             const totalSlots = cell.totalPredictions * runsPerCell;
-            const md = cell.matchDetail; // [m1,m2,m3,m4,m5,m6] accumulated
-            const threeOrMore = md.slice(2).reduce((s, v) => s + v, 0);
-            const pct3 = totalSlots > 0 ? (threeOrMore / totalSlots) * 100 : 0;
-            // Best tier: highest match level that has at least 1 occurrence (3–6 only)
-            let bestTier = 2; // default = 3 matches
+            const md = cell.matchDetail;
+            // Use stored avgPct3: average of per-run (threeOrMore/totalPredictions)*100
+            const pct3 = cell.avgPct3 || 0;
+            // Best tier: highest match level with ≥1 occurrence across all runs (3–6 only)
+            let bestTier = 2;
             for (let i = 5; i >= 2; i--) { if (md[i] > 0) { bestTier = i; break; } }
-            return { possible: true, totalSlots, md, pct3, bestTier, threeOrMore };
+            return { possible: true, totalSlots, md, pct3, bestTier };
           })
         );
 
@@ -2040,15 +2053,15 @@
         }).join('');
 
         // ── HEATMAP TABLE ───────────────────────────────────────────────────
-        // Cell background based on best tier (highest match level with ≥1 occurrence)
+        // Cell color based on best tier (highest match level with ≥1 occurrence among 3–6)
+        // 6 = red (jackpot), 5 = strong green, 4 = light green, 3 = yellow
         function cellStyle(c) {
           if (!c.possible) return { bg:'var(--surface2)', color:'var(--text3)', text:'—', cursor:'default' };
           const pctStr = c.pct3.toFixed(1) + '%';
-          // Color by best tier achieved
-          if (c.bestTier >= 5) return { bg:'rgba(124,58,237,.22)', color:'var(--purple-text)', text:pctStr, cursor:'pointer' }; // 6 matches
-          if (c.bestTier === 4) return { bg:'rgba(5,150,105,.28)',  color:'var(--green-text)',  text:pctStr, cursor:'pointer' }; // 5 matches
-          if (c.bestTier === 3) return { bg:'rgba(5,150,105,.12)',  color:'var(--green-text)',  text:pctStr, cursor:'pointer' }; // 4 matches
-          if (c.bestTier === 2) return { bg:'rgba(232,160,32,.18)', color:'var(--amber-text)',  text:pctStr, cursor:'pointer' }; // 3 matches
+          if (c.bestTier >= 5) return { bg:'rgba(220,38,38,.22)',   color:'#dc2626',             text:pctStr, cursor:'pointer' }; // 6 matches — red
+          if (c.bestTier === 4) return { bg:'rgba(5,150,105,.35)',   color:'var(--green-text)',   text:pctStr, cursor:'pointer' }; // 5 matches — strong green
+          if (c.bestTier === 3) return { bg:'rgba(5,150,105,.12)',   color:'var(--green-text)',   text:pctStr, cursor:'pointer' }; // 4 matches — light green
+          if (c.bestTier === 2) return { bg:'rgba(234,179,8,.22)',   color:'#854d0e',             text:pctStr, cursor:'pointer' }; // 3 matches — yellow
           return { bg:'transparent', color:'var(--text3)', text:pctStr, cursor:'pointer' };
         }
 
@@ -2095,35 +2108,43 @@
         }
 
         const md = cell.matchDetail;
-        const totalSlots = cell.totalPredictions * runsPerCell;
-        const maxCount = Math.max(1, ...md);
+        const totalSlots = cell.totalPredictions * runsPerCell; // total prediction slots
+        const perPos = cell.totalPredictions; // draw positions per run (the meaningful denominator)
+        // Base % on per-position average: md[i] accumulated across runs / runsPerCell / totalPredictions
+        // This gives average % of draw positions per run that produced exactly i+1 matches
+        const maxCount = Math.max(1, ...md.slice(2));
         const labels = ['1 match','2 matches','3 matches','4 matches','5 matches','6 matches 🎉'];
 
         function rs(i) {
-          if (i>=5) return 'background:rgba(124,58,237,.15);'; // jackpot — purple
-          if (i>=4) return 'background:rgba(5,150,105,.18);';
+          if (i>=5) return 'background:rgba(220,38,38,.15);';
+          if (i>=4) return 'background:rgba(5,150,105,.22);';
           if (i>=3) return 'background:rgba(5,150,105,.08);';
-          if (i>=2) return 'background:rgba(232,160,32,.08);';
+          if (i>=2) return 'background:rgba(234,179,8,.15);';
           return '';
         }
 
         const rowsHtml = md.map((count, i) => {
-          const pct = totalSlots > 0 ? ((count/totalSlots)*100).toFixed(2) : '0.00';
-          const bw = maxCount > 0 ? Math.round((count/maxCount)*100) : 0;
-          const dim = i < 2 ? 'color:var(--text3);' : '';
-          const bc = i>=5?'var(--purple)':i>=4?'var(--green)':i>=2?'var(--amber)':'var(--border2)';
+          // % = avg per run per draw position
+          const avgPerRun = runsPerCell > 0 ? count / runsPerCell : 0;
+          const pct = i < 2
+            ? '—'
+            : (perPos > 0 ? ((avgPerRun / perPos) * 100).toFixed(2) + '%' : '0.00%');
+          const bw = i < 2 ? 0 : (maxCount > 0 ? Math.round((count / maxCount) * 100) : 0);
+          const dim = i < 2 ? 'color:var(--text3);opacity:.5;' : '';
+          const bc = i>=5?'#dc2626':i>=4?'rgba(5,150,105,.9)':i>=3?'rgba(5,150,105,.4)':i>=2?'rgba(234,179,8,.8)':'var(--border2)';
           return `<tr style="${rs(i)}">
             <td style="padding:6px 10px;font-family:var(--font-mono);${dim}">${labels[i]}</td>
             <td style="padding:6px 10px;text-align:right;font-family:var(--font-mono);font-weight:700;${dim}">${count.toLocaleString()}</td>
-            <td style="padding:6px 10px;text-align:right;font-family:var(--font-mono);${dim}">${pct}%</td>
-            <td style="padding:6px 10px;min-width:70px;"><div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="height:5px;width:${bw}%;background:${bc};border-radius:3px;"></div></div></td>
+            <td style="padding:6px 10px;text-align:right;font-family:var(--font-mono);${dim}">${pct}</td>
+            <td style="padding:6px 10px;min-width:70px;">${i < 2 ? '' : `<div style="height:5px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="height:5px;width:${bw}%;background:${bc};border-radius:3px;"></div></div>`}</td>
           </tr>`;
         }).join('');
 
         const zm = totalSlots - md.reduce((s,v)=>s+v,0);
-        const zmPct = totalSlots>0?((zm/totalSlots)*100).toFixed(2):'0.00';
+        const zmPct = perPos > 0 && runsPerCell > 0 ? (((zm/runsPerCell)/perPos)*100).toFixed(2) : '0.00';
         const t3 = md.slice(2).reduce((s,v)=>s+v,0);
-        const t3Pct = totalSlots>0?((t3/totalSlots)*100).toFixed(2):'0.00';
+        const t3AvgPerRun = runsPerCell > 0 ? t3 / runsPerCell : 0;
+        const t3Pct = perPos > 0 ? ((t3AvgPerRun / perPos) * 100).toFixed(2) : '0.00';
         const isGreen = parseFloat(t3Pct) > 6;
 
         body.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:12px;">
@@ -2145,7 +2166,7 @@
           </tr></tfoot>
         </table>`;
 
-        caption.textContent = `${runsPerCell} run${runsPerCell>1?'s':''} × ${cell.totalPredictions} predictions = ${totalSlots.toLocaleString()} total slots`;
+        caption.textContent = `Count = total across ${runsPerCell} run${runsPerCell>1?'s':''}. % = avg per run ÷ ${perPos} draw positions. Total slots: ${totalSlots.toLocaleString()}.`;
       };
 
       function closeBreakdownModal() {
@@ -2231,16 +2252,14 @@
          TAB SWITCHING
       ═══════════════════════════════════════════════════════════ */
       window.switchTab=function(name,btn){
-        // Step 1: class changes only — paints on the very next frame
         document.querySelectorAll(".pane").forEach(p=>p.classList.remove("active"));
         document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
         document.getElementById("pane-"+name).classList.add("active");
         btn.classList.add("active");
-        // Step 2: defer ALL computation until after the browser has painted the highlight
         requestAnimationFrame(function(){
           requestAnimationFrame(function(){
             if(name==="grid") renderGrid();
-            if(name==="analysis") renderAnalysisTable();
+            if(name==="matrix") { /* matrix renders on Run, no auto-render needed */ }
           });
         });
       };
