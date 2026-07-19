@@ -338,7 +338,7 @@
 
       /* Info modal */
       .info-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; display: flex; align-items: flex-end; justify-content: center; padding: 0; backdrop-filter: blur(4px); animation: fadeIn .2s ease; }
-      .info-modal-box { background: var(--surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 20px 20px 32px; max-width: 520px; width: 100%; box-shadow: 0 -12px 48px rgba(0,0,0,.2); animation: slideUpModal .25s ease; max-height: 85vh; overflow-y: auto; }
+      .info-modal-box { background: var(--surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 20px 20px 32px; max-width: 680px; width: 100%; box-shadow: 0 -12px 48px rgba(0,0,0,.2); animation: slideUpModal .25s ease; max-height: 85vh; overflow-y: auto; }
       @keyframes slideUpModal { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
       .info-modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
       .info-modal-title { font-size: 15px; font-weight: 700; color: var(--text); }
@@ -348,6 +348,14 @@
       .info-item-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); flex-shrink: 0; margin-top: 6px; }
       .info-item-body { font-size: 12px; color: var(--text2); line-height: 1.6; flex: 1; }
       .info-item-body strong { color: var(--text); font-weight: 600; }
+      /* Info modal tables */
+      .info-table { width: 100%; border-collapse: collapse; font-size: 11px; font-family: var(--font-sans); margin: 8px 0 4px; table-layout: fixed; }
+      .info-table th { padding: 7px 8px; text-align: left; border: 1px solid var(--border); color: var(--text3); font-weight: 600; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; background: var(--surface2); word-break: break-word; }
+      .info-table td { padding: 6px 8px; border: 1px solid var(--border); color: var(--text2); vertical-align: top; line-height: 1.5; word-break: break-word; }
+      .info-table tr:nth-child(even) td { background: var(--surface2); }
+      .info-table td:first-child { font-weight: 700; color: var(--text); }
+      .info-table td.mono { font-family: var(--font-mono); }
+      .info-table td.note { font-size: 10px; color: var(--text3); }
       /* ═══ COMBINATION MATRIX PAGE ═══ */
       .matrix-header-row { display: flex; align-items: center; margin-bottom: 18px; }
       .matrix-back-btn { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text2); padding: 7px 14px; border-radius: var(--radius-md); font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; }
@@ -1816,25 +1824,150 @@
                   These two tools answer related but different questions about which C/N/R mix works best:
                 </div></div>
                 <div style="overflow-x:auto;margin:8px 0 4px;">
-                  <table style="width:100%;border-collapse:collapse;font-size:11px;font-family:var(--font-sans);">
+                  <table class="info-table">
+                    <colgroup>
+                      <col style="width:18%">
+                      <col style="width:41%">
+                      <col style="width:41%">
+                    </colgroup>
                     <thead>
-                      <tr style="background:var(--surface2);">
-                        <th style="padding:6px 8px;text-align:left;border:1px solid var(--border);color:var(--text3);font-weight:600;"></th>
-                        <th style="padding:6px 8px;text-align:left;border:1px solid var(--border);color:var(--purple-text);font-weight:700;">Filter Combination Comparison</th>
-                        <th style="padding:6px 8px;text-align:left;border:1px solid var(--border);color:var(--green-text);font-weight:700;">Combination Matrix</th>
+                      <tr>
+                        <th></th>
+                        <th style="color:var(--purple-text);">Filter Combination Comparison</th>
+                        <th style="color:var(--green-text);">Combination Matrix</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Window</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Fixed at your active window setting</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">All 7 sizes tested simultaneously (1M–6M, All)</td></tr>
-                      <tr style="background:var(--surface2);"><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Combos shown</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">5, 10, 15, or all 27 (your choice)</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">All 27 combos always</td></tr>
-                      <tr><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Metric</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Average matches per prediction (1 pass through history)</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">How often 3+ match rate beats your threshold across N runs</td></tr>
-                      <tr style="background:var(--surface2);"><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Randomness</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">1 deterministic pass — same result every time</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">N random runs — measures consistency, not just average</td></tr>
-                      <tr><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Speed</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Fast — runs instantly</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Slow — 189 cells × N runs each</td></tr>
-                      <tr style="background:var(--surface2);"><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text3);font-weight:600;">Best for</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Quick scan: which C/N/R split averages the most matches?</td><td style="padding:5px 8px;border:1px solid var(--border);color:var(--text2);">Deep scan: which (combo + window) pair reliably beats a threshold?</td></tr>
+                      <tr><td>Window</td><td>Fixed at your active window setting</td><td>All 7 sizes tested simultaneously (1M–6M, All)</td></tr>
+                      <tr><td>Combos shown</td><td>5, 10, 15, or all 27 (your choice)</td><td>All 27 combos always</td></tr>
+                      <tr><td>Metric</td><td>Average matches per prediction (1 pass through history)</td><td>How often 3+ match rate beats your threshold across N runs</td></tr>
+                      <tr><td>Randomness</td><td>1 deterministic pass — same result every time</td><td>N random runs — measures consistency, not just average</td></tr>
+                      <tr><td>Speed</td><td>Fast — runs instantly</td><td>Slow — 189 cells × N runs each</td></tr>
+                      <tr><td>Best for</td><td>Quick scan: which C/N/R split averages the most matches?</td><td>Deep scan: which (combo + window) pair reliably beats a threshold?</td></tr>
                     </tbody>
                   </table>
                 </div>
                 <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Recommended workflow:</strong> use FCC for a fast first pass to find promising C/N/R splits at your current window, then run the Matrix to validate those splits across all windows and see which holds up consistently under repeated random sampling.</div></div>
+              </div>
+
+              <div class="info-section">
+                <span class="info-section-title">Training draws vs prediction targets — what they mean</span>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Training draws</strong> are the past draws the algorithm looks at to detect clusters and compute number weights. They are the input — the history it learns from before making a guess.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Prediction target</strong> is the actual draw the algorithm tries to match. After generating a 6-number prediction from the training draws, the app counts how many of those 6 numbers appeared in the target draw. This tells you how good the prediction was.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>A draw can never predict itself.</strong> To predict draw #9, you train on draws #1–8. Draw #9 is the target. Then the window slides: to predict draw #10, you train on draws #2–9. Draw #10 is the new target. And so on — every draw except the first <em>window</em> draws gets its own prediction.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Nothing is ignored.</strong> Every draw plays at least one role. The first <em>window</em> draws are training-only because there is no history before them to learn from. Every other draw is both a training input for future predictions AND a prediction target itself. The very last draw in your history is a target only — there is no future draw after it to test against.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Example with 10 draws and a 3-draw window:</strong> Draws 1–3 are training-only — they have no history before them, so they cannot be predicted. Draw 4 is predicted using draws 1–3. Draw 5 is predicted using draws 2–4. Draw 6 using draws 3–5. All the way to draw 10, predicted using draws 7–9. So 7 out of 10 draws are prediction targets — none are wasted.</div></div>
+              </div>
+
+              <div class="info-section">
+                <span class="info-section-title">Window sizes — training draws vs prediction targets</span>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Each window option fixes how many past draws are used for training at each step. More training draws = more pattern history but fewer prediction targets — because the first <em>window</em> draws have no history before them and can never be predicted. Fewer training draws = more prediction targets but less pattern context. The table below shows the exact split for your current draw history.</div></div>
+                <div style="overflow-x:auto;margin:8px 0 4px;">
+                  <table class="info-table">
+                    <colgroup>
+                      <col style="width:20%">
+                      <col style="width:14%">
+                      <col style="width:14%">
+                      <col style="width:52%">
+                    </colgroup>
+                    <thead>
+                      <tr>
+                        <th>Window</th>
+                        <th>Draws</th>
+                        <th>Targets</th>
+                        <th>Why this window size</th>
+                      </tr>
+                    </thead>
+                    <tbody id="info-window-table-body">
+                    </tbody>
+                  </table>
+                </div>
+                <div id="info-window-example"></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Which window is best?</strong> A short window (1M) reacts quickly to recent trends but has less pattern data. A long window (6M or All) captures more history but may include draws from when the lottery behaved differently. The Performance section on the Analysis pane shows you the average match count for each window with your current C/N/R mix — use that to decide.</div></div>
+              </div>
+
+              <div class="info-section">
+                <span class="info-section-title">How the analysis works — flow diagram</span>
+                <svg width="100%" viewBox="0 0 640 900" role="img" style="display:block;margin:8px 0 14px;">
+                  <title>Analysis flow diagram</title>
+                  <desc>Flowchart showing how draws flow through training data selection, cluster detection, prediction generation, match counting and output.</desc>
+                  <defs>
+                    <marker id="im-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </marker>
+                  </defs>
+                  <!-- Step 1: draw history -->
+                  <rect x="195" y="24" width="250" height="48" rx="8" fill="var(--surface2,#f5f5f5)" stroke="var(--border,#ccc)" stroke-width="0.5"/>
+                  <text x="320" y="44" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:var(--text,#111)">Your draw history</text>
+                  <text x="320" y="62" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:var(--text2,#555)">e.g. 158 total draws</text>
+                  <!-- Arrow -->
+                  <line x1="320" y1="72" x2="320" y2="104" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <!-- Step 2: window -->
+                  <rect x="195" y="106" width="250" height="48" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
+                  <text x="320" y="126" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#3C3489">Choose window size</text>
+                  <text x="320" y="144" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#534AB7">1M=8 · 2M=17 · … · 6M=52 · All</text>
+                  <!-- Arrow + label -->
+                  <line x1="320" y1="154" x2="320" y2="186" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <text x="320" y="198" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">For each draw position i = window+1 to 158</text>
+                  <!-- Split lines -->
+                  <path d="M320 208 L175 208 L175 218" fill="none" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <path d="M320 208 L465 208 L465 218" fill="none" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <!-- Training box -->
+                  <rect x="68" y="220" width="214" height="60" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+                  <text x="175" y="240" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#085041">Training data</text>
+                  <text x="175" y="257" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#0F6E56">draws[i−window … i−1]</text>
+                  <text x="175" y="272" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#0F6E56">e.g. draws 92–99 for i=100</text>
+                  <!-- Target box -->
+                  <rect x="358" y="220" width="214" height="60" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
+                  <text x="465" y="240" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#4A1B0C">Prediction target</text>
+                  <text x="465" y="257" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#993C1D">draws[i] — actual lottery result</text>
+                  <text x="465" y="272" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#993C1D">never seen before prediction</text>
+                  <!-- Teal chain -->
+                  <line x1="175" y1="280" x2="175" y2="310" stroke="#0F6E56" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <rect x="68" y="312" width="214" height="56" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+                  <text x="175" y="332" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#085041">Compute weights</text>
+                  <text x="175" y="350" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#0F6E56">Recent draws score higher · rank 1–40</text>
+                  <line x1="175" y1="368" x2="175" y2="398" stroke="#0F6E56" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <rect x="68" y="400" width="214" height="56" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+                  <text x="175" y="420" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#085041">Detect clusters</text>
+                  <text x="175" y="438" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#0F6E56">Hot numbers ≥50% of peak · up to 4 groups</text>
+                  <line x1="175" y1="456" x2="175" y2="486" stroke="#0F6E56" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <rect x="68" y="488" width="214" height="56" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+                  <text x="175" y="508" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#085041">Build pools (C / N / R)</text>
+                  <text x="175" y="526" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#0F6E56">Cluster · Neighbour · Random</text>
+                  <line x1="175" y1="544" x2="175" y2="574" stroke="#0F6E56" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <rect x="68" y="576" width="214" height="48" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
+                  <text x="175" y="596" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#085041">Generate prediction</text>
+                  <text x="175" y="612" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#0F6E56">6 numbers · random-weighted</text>
+                  <!-- Merge lines -->
+                  <path d="M175 624 L175 666 L318 666" fill="none" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <path d="M465 280 L465 666 L322 666" fill="none" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <!-- Count matches -->
+                  <rect x="195" y="668" width="250" height="48" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
+                  <text x="320" y="688" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#633806">Count matches</text>
+                  <text x="320" y="706" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#854F0B">0–6 numbers in common</text>
+                  <!-- Slide window loop -->
+                  <path d="M445 692 L580 692 L580 264 L572 264" fill="none" stroke="var(--text3,#888)" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#im-arrow)"/>
+                  <text x="590" y="486" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">slide</text>
+                  <text x="590" y="500" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">window</text>
+                  <text x="590" y="514" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">+1 &amp;</text>
+                  <text x="590" y="528" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">repeat</text>
+                  <!-- Arrow to outputs -->
+                  <line x1="320" y1="716" x2="320" y2="748" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
+                  <!-- Outputs -->
+                  <rect x="195" y="750" width="250" height="48" rx="8" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
+                  <text x="320" y="770" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#173404">Outputs</text>
+                  <text x="320" y="788" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#3B6D11">Match dist · 3+ rate · Averages · Matrix scores</text>
+                </svg>
+                <div style="font-size:11px;color:var(--text3);line-height:1.7;border-top:1px solid var(--border);padding-top:10px;">
+                  <strong style="color:var(--text);display:block;margin-bottom:6px;">How to read this diagram</strong>
+                  <strong style="color:var(--text)">Top — setup:</strong> You load your draw history (e.g. 158 draws) and choose a window size (1M = 8 draws).<br>
+                  <strong style="color:var(--text)">The split:</strong> For each draw position, history splits into two roles simultaneously. The 8 draws before it become <span style="color:#0F6E56;font-weight:600">training data</span> (left). Draw i itself becomes the <span style="color:#993C1D;font-weight:600">prediction target</span> (right) — set aside and not seen yet.<br>
+                  <strong style="color:var(--text)">Left branch:</strong> Training draws flow through four steps — compute recency-weighted scores → detect clusters → build C/N/R pools → generate a 6-number prediction.<br>
+                  <strong style="color:var(--text)">Merge:</strong> The prediction meets the target. The app counts how many of the 6 predicted numbers appeared in the actual draw (0–6).<br>
+                  <strong style="color:var(--text)">Dashed loop:</strong> The window slides forward by 1 and the whole process repeats. With 158 draws and a 1M window, this runs 150 times.<br>
+                  <strong style="color:var(--text)">Bottom — outputs:</strong> All 150 match counts accumulate into the match distribution, 3+ match rate, averages, and matrix scores.
+                </div>
               </div>
 
               <div class="info-section">
@@ -1848,6 +1981,82 @@
             </div>
           </div>`;
         document.getElementById('infoModalOverlay').addEventListener('click', e => { if (e.target.id === 'infoModalOverlay') closeInfoModal(); });
+
+        // Populate window breakdown table dynamically using actual draws.length
+        const windowDefs = [
+          {
+            label: '1 month (1M)', size: 8,
+            why: 'The 8 most recent draws before each target are used as training. These 8 draws detect the hot clusters and compute number weights. Because only the first 8 draws have no history before them and cannot be predicted, almost all of your history becomes prediction targets — giving the most data points to test against, but with very limited pattern context per prediction.'
+          },
+          {
+            label: '2 months (2M)', size: 17,
+            why: 'The 17 draws before each target are used as training. A wider window than 1M — the algorithm sees more past draws to build clusters, which are likely to be more stable. The first 17 draws have no history before them and cannot be predicted, so fewer draws become prediction targets compared to 1M.'
+          },
+          {
+            label: '3 months (3M)', size: 26,
+            why: 'The 26 draws before each target are used as training. This is the default balance point — enough history to detect meaningful cluster patterns, while still leaving a good number of draws as prediction targets. Most users find this gives reliable cluster detection without over-fitting to old data.'
+          },
+          {
+            label: '4 months (4M)', size: 35,
+            why: 'The 35 draws before each target are used as training. The algorithm has a quarter-year of context per prediction. Clusters and weights are computed from a broader history, which can smooth out short-term noise. Fewer targets than 3M.'
+          },
+          {
+            label: '5 months (5M)', size: 43,
+            why: 'The 43 draws before each target are used as training. Almost half a year of draws inform each prediction. Useful if lottery patterns shift slowly over time. The first 43 draws have no history before them and cannot be predicted, so significantly fewer draws are available as prediction targets.'
+          },
+          {
+            label: '6 months (6M)', size: 52,
+            why: 'The 52 draws before each target are used as training — a full half-year of weekly draws. The algorithm sees the widest context of any fixed window, capturing seasonal or long-term trends. The trade-off is the fewest prediction targets among the fixed windows.'
+          },
+          {
+            label: 'All draws', size: 0,
+            why: 'All available draws except the very last one are used as training for the final prediction. When rolling, each position uses every draw before it as training. This maximises context but means only 1 draw is left as a prediction target — making the result statistically unreliable. Only useful if you have very few draws total.'
+          },
+        ];
+        const tbody = document.getElementById('info-window-table-body');
+        if (tbody) {
+          const total = draws.length;
+          tbody.innerHTML = windowDefs.map((w) => {
+            const wSize = w.size === 0 ? Math.max(1, total - 1) : w.size;
+            const targets = total > wSize ? total - wSize : 0;
+            const possible = total > wSize;
+            const targetColor = !possible ? 'color:var(--text3);' : targets < 20 ? 'color:var(--rose-text);font-weight:700;' : 'color:var(--green-text);font-weight:700;';
+            return `<tr>
+              <td>${w.label}</td>
+              <td class="mono">${wSize}</td>
+              <td class="mono" style="${targetColor}">${possible ? targets : 'not enough data'}</td>
+              <td class="note">${w.why}</td>
+            </tr>`;
+          }).join('');
+
+          // Live example block below the table
+          const exampleEl = document.getElementById('info-window-example');
+          if (exampleEl && total > 0) {
+            const rows = windowDefs.map((w, idx) => {
+              const wSize = w.size === 0 ? Math.max(1, total - 1) : w.size;
+              const targets = total > wSize ? total - wSize : 0;
+              const possible = total > wSize;
+              const targetStr = possible ? `${targets} draws` : '<span style="color:var(--rose-text);">not enough data</span>';
+              const targetStyle = possible ? (targets < 20 ? 'color:var(--rose-text);font-weight:700;' : 'color:var(--green-text);font-weight:700;') : 'color:var(--text3);';
+              const borderTop = idx > 0 ? 'border-top:1px solid var(--border);padding-top:10px;' : '';
+              return `<div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;${borderTop}">
+                <span style="font-weight:700;color:var(--text);font-size:12px;min-width:130px;flex-shrink:0;">${w.label}</span>
+                <span style="font-size:12px;color:var(--text2);">Training: <strong style="font-family:var(--font-mono);color:var(--text);">${wSize}</strong> draws</span>
+                <span style="font-size:12px;color:var(--text3);">·</span>
+                <span style="font-size:12px;${targetStyle}">Targets: <strong style="font-family:var(--font-mono);">${targetStr}</strong></span>
+              </div>`;
+            }).join('');
+            exampleEl.innerHTML = `
+              <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-md);padding:14px 16px;margin-top:16px;">
+                <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">
+                  With your <span style="color:var(--text);font-family:var(--font-mono);">${total}</span> loaded draw${total!==1?'s':''}:
+                </div>
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  ${rows}
+                </div>
+              </div>`;
+          }
+        }
       }
       function closeInfoModal() {
         document.getElementById('infoModalRoot').innerHTML = '';
