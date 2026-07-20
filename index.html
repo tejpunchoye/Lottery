@@ -38,29 +38,24 @@
       body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 14px; line-height: 1.5; min-height: 100vh; overflow-x: hidden; }
       .app { max-width: 900px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; min-width: 0; overflow-x: hidden; }
 
-      /* HEADER */
       .header { padding: 18px 20px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--surface); z-index: 10; box-shadow: var(--shadow-sm); }
       .header-left h1 { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: -.02em; }
       .header-left p { font-size: 11px; color: var(--text3); margin-top: 2px; font-family: var(--font-mono); }
       .header-icon { font-size: 24px; line-height: 1; cursor: pointer; transition: transform .2s; user-select: none; }
       .header-icon:hover { transform: scale(1.15) rotate(-10deg); }
 
-      /* TABS */
       .tabs { display: flex; padding: 10px 20px 0; gap: 4px; border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 57px; z-index: 9; flex-wrap: wrap; }
       .tab { padding: 7px 12px 11px; background: none; border: none; cursor: pointer; color: var(--text3); font-size: 12px; font-weight: 500; font-family: var(--font-sans); border-bottom: 2px solid transparent; transition: color .15s, border-color .15s; letter-spacing: .02em; flex: 1 1 auto; }
       .tab.active { color: var(--text); border-bottom-color: var(--amber); }
       .tab:hover:not(.active) { color: var(--text2); }
 
-      /* PANES */
       .pane { display: none; padding: 20px; flex: 1; min-width: 0; overflow-x: hidden; }
       .pane.active { display: block; }
       .slabel { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px; }
-      /* Section header row with inline total */
       .slabel-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 8px; }
       .slabel-total { font-size: 11px; font-weight: 700; font-family: var(--font-mono); color: var(--text2); background: var(--surface2); border: 1px solid var(--border2); border-radius: 20px; padding: 2px 9px; white-space: nowrap; flex-shrink: 0; }
       .slabel-total.highlight-green { background: var(--green-bg); color: var(--green-text); border-color: rgba(5,150,105,.3); }
       .slabel-total.highlight-default { background: var(--surface2); color: var(--text2); border-color: var(--border2); }
-      /* Table row match highlights */
       tr.match-3 td { background: rgba(232,160,32,.08); }
       tr.match-4 td { background: rgba(232,160,32,.15); }
       tr.match-5 td { background: rgba(5,150,105,.12); }
@@ -70,7 +65,6 @@
       tr.match-5:hover td { background: rgba(5,150,105,.2); }
       tr.match-6:hover td { background: rgba(5,150,105,.32); }
 
-      /* STAT CARDS */
       .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; min-width: 0; }
       .stat { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 12px 14px; min-width: 0; overflow: hidden; }
       .stat-val { font-size: 22px; font-weight: 700; color: var(--text); font-family: var(--font-mono); letter-spacing: -.5px; }
@@ -82,7 +76,6 @@
       .stat-grid-6 .stat-val { font-size: 15px; font-weight: 700; font-family: var(--font-mono); }
       .stat-grid-6 .stat-lbl { font-size: 8px; line-height: 1.4; }
 
-      /* FILTER GRID 2×2 — allows 5th item to sit on next row spanning full */
       .filter-grid-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; min-width: 0; }
       .filter-group { display: flex; align-items: center; gap: 6px; background: var(--surface2); padding: 8px 12px; border-radius: var(--radius-md); border: 1px solid var(--border); min-width: 0; overflow: hidden; }
       .filter-group.full-span { grid-column: 1 / -1; }
@@ -92,13 +85,11 @@
       .filter-group select { flex: 1; min-width: 0; padding: 3px 6px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); font-family: var(--font-mono); font-size: 12px; cursor: pointer; outline: none; max-width: 100%; }
       .filter-group select:focus { border-color: var(--rose); }
 
-      /* GENERATE ANALYSIS BUTTON */
       .gen-analysis-btn { width: 100%; padding: 11px; background: linear-gradient(135deg, var(--rose), #be123c); color: white; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; font-family: var(--font-sans); cursor: pointer; margin-bottom: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .1s; box-shadow: 0 4px 12px rgba(225,29,72,.25); letter-spacing: .01em; }
       .gen-analysis-btn:hover { opacity: .93; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(225,29,72,.3); }
       .gen-analysis-btn:active { transform: scale(.98); box-shadow: none; }
       .gen-analysis-btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
 
-      /* SLIDER */
       .slider-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
       .slider-row { display: flex; align-items: center; gap: 14px; }
       .slider-row input[type="range"] { flex: 1; height: 6px; -webkit-appearance: none; background: var(--border); border-radius: 4px; outline: none; cursor: pointer; }
@@ -109,7 +100,6 @@
       .mark { font-size: 10px; color: var(--text3); cursor: pointer; padding: 2px 6px; border-radius: 20px; font-family: var(--font-mono); transition: color .15s, background .15s; border: 1px solid transparent; }
       .mark:hover { color: var(--rose-text); background: var(--rose-bg); border-color: rgba(225,29,72,.2); }
 
-      /* GRID */
       .grid-outer { overflow-x: auto; padding: 4px 0 8px; }
       .big-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 5px; padding: 12px; background: var(--surface2); border-radius: var(--radius-md); border: 1px solid var(--border); min-width: 340px; position: relative; }
       .big-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; aspect-ratio: 1/1; border-radius: 6px; position: relative; transition: transform .15s; border: 1px solid transparent; background: rgba(255,255,255,.3); }
@@ -121,7 +111,6 @@
       .cluster-svg { position: absolute; top: 0; left: 0; pointer-events: none; width: 100%; height: 100%; }
       .grid-info { font-size: 11px; color: var(--text3); margin-top: 8px; font-family: var(--font-mono); }
 
-      /* ROW ACTIVITY */
       .row-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 16px; box-shadow: var(--shadow-sm); }
       .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
       .bar-row:last-child { margin-bottom: 0; }
@@ -130,7 +119,6 @@
       .bar-fill { height: 4px; background: var(--amber); border-radius: 2px; transition: width .5s cubic-bezier(.4,0,.2,1); }
       .bar-score { font-size: 11px; color: var(--text2); width: 28px; text-align: right; font-family: var(--font-mono); flex-shrink: 0; }
 
-      /* PREDICTION FILTER CARD */
       .pred-filter-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
       .pred-filter-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
       .pred-filter-group { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; min-width: 60px; }
@@ -140,7 +128,6 @@
       .pred-filter-group input:focus { outline: none; border-color: var(--rose); background: var(--surface); }
       .pred-filter-sum { font-size: 12px; font-weight: 700; font-family: var(--font-mono); padding: 4px 10px; border-radius: 20px; white-space: nowrap; background: var(--green-bg); color: var(--green-text); border: 1px solid rgba(5,150,105,.3); transition: background .2s, color .2s; }
       .pred-filter-sum.invalid { background: var(--rose-bg); color: var(--rose-text); border-color: rgba(225,29,72,.3); }
-      /* Prediction mix — 3 horizontal rows */
       .pred-mix-rows { display: flex; flex-direction: column; gap: 8px; }
       .pred-mix-row { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 8px 10px; flex-wrap: nowrap; }
       .pred-mix-lbl { font-size: 11px; font-weight: 700; color: var(--text2); font-family: var(--font-mono); width: 42px; flex-shrink: 0; }
@@ -157,7 +144,6 @@
         .pred-mix-row .pred-filter-sum { font-size: 10px; padding: 3px 6px; }
       }
 
-      /* GENERATE */
       .gen-btn { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--rose), #be123c); color: white; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; font-family: var(--font-sans); cursor: pointer; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity .15s, transform .1s; box-shadow: 0 4px 12px rgba(225,29,72,.25); letter-spacing: .01em; }
       .gen-btn:hover { opacity: .93; transform: translateY(-1px); box-shadow: 0 6px 16px rgba(225,29,72,.3); }
       .gen-btn:active { transform: scale(.98); box-shadow: none; }
@@ -167,7 +153,6 @@
       .leg { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); }
       .leg-dot { width: 7px; height: 7px; border-radius: 50%; }
 
-      /* PREDICTION CARDS */
       .pred-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow-sm); animation: fadeUp .3s ease both; }
       .pred-card:nth-child(2) { animation-delay: .07s; }
       .pred-card:nth-child(3) { animation-delay: .14s; }
@@ -188,7 +173,6 @@
       .r-text { font-size: 11px; color: var(--text2); line-height: 1.6; flex: 1; }
       .no-combo { font-size: 13px; color: var(--text3); padding: 20px; text-align: center; border: 1px dashed var(--border2); border-radius: var(--radius-lg); }
 
-      /* ═══ GRID VIEW MODAL ═══ */
       .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); animation: fadeIn .2s ease; }
       @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
       .modal-box { background: var(--surface); border-radius: var(--radius-lg); padding: 20px; max-width: 420px; width: 100%; box-shadow: 0 24px 64px rgba(0,0,0,.2); animation: slideUp .22s ease; max-height: 90vh; overflow-y: auto; }
@@ -199,14 +183,12 @@
       .modal-close:hover { color: var(--rose); background: var(--rose-bg); }
       .modal-numbers-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
       .modal-ball { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; font-family: var(--font-mono); background: var(--rose-bg); border: 2px solid var(--rose); color: var(--rose-text); }
-      /* Fixed 6×7 modal grid */
       .modal-fixed-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
       .modal-cell { height: 40px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; font-family: var(--font-mono); border: 1.5px solid var(--border); background: var(--surface2); color: var(--text3); transition: transform .15s; }
       .modal-cell.highlighted { background: var(--rose-bg); border-color: var(--rose); color: var(--rose-text); transform: scale(1.08); box-shadow: 0 2px 8px rgba(225,29,72,.25); }
       .modal-cell.empty-slot { background: transparent; border-color: transparent; }
       .modal-no-arr { font-size: 13px; color: var(--text3); padding: 20px; text-align: center; border: 1px dashed var(--border2); border-radius: var(--radius-md); }
 
-      /* ANALYSIS TABLE */
       .table-wrap { overflow-x: auto; margin-top: 8px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); max-width: 100%; }
       table { width: 100%; border-collapse: collapse; font-size: 12px; font-family: var(--font-mono); table-layout: fixed; }
       table th { background: var(--surface2); color: var(--text2); font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: .04em; padding: 8px 8px; text-align: left; border-bottom: 2px solid var(--border); position: sticky; top: 0; z-index: 2; font-family: var(--font-sans); overflow: hidden; }
@@ -234,7 +216,6 @@
       .draw-pred-stack { display: flex; flex-direction: column; gap: 3px; min-width: 0; overflow: hidden; }
       .draw-pred-stack .badge { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 
-      /* ═══ MATCH DISTRIBUTION SECTION ═══ */
       .match-dist-section { margin-top: 20px; padding-top: 16px; border-top: 2px solid var(--border); }
       .match-dist-section .slabel { margin-bottom: 12px; }
       .match-dist-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-bottom: 12px; }
@@ -254,7 +235,6 @@
       .insight-val { font-size: 12px; font-weight: 700; color: var(--text); font-family: var(--font-mono); }
       .insight-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 2px; }
       .insight-bar-fill { height: 4px; border-radius: 2px; transition: width .5s cubic-bezier(.4,0,.2,1); }
-      /* Filter combination comparison — 2 rows of 5 cards, no overflow */
       .fcc-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
       .fcc-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 7px 4px; text-align: center; transition: border-color .15s; min-width: 0; overflow: hidden; }
       .fcc-card.current { border-color: var(--amber); background: var(--amber-bg); }
@@ -278,7 +258,6 @@
         .fcc-card-label { font-size: 8px; }
         .fcc-card-score { font-size: 12px; }
       }
-      /* Analysis inline stats bar — single row above filters */
       .analysis-stats-bar { display: flex; align-items: center; gap: 20px; padding: 10px 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 14px; flex-wrap: wrap; }
       .analysis-stats-bar.clickable { cursor: pointer; transition: background .15s, border-color .15s; position: relative; padding-right: 36px; }
       .analysis-stats-bar.clickable:hover { background: var(--amber-bg); border-color: var(--amber); }
@@ -287,7 +266,6 @@
       .asb-val { font-size: 20px; font-weight: 700; font-family: var(--font-mono); color: var(--text); letter-spacing: -.5px; }
       .asb-lbl { font-size: 11px; color: var(--text3); white-space: nowrap; }
       .asb-sep { width: 1px; height: 20px; background: var(--border2); flex-shrink: 0; }
-      /* Pagination right-aligned */
       .pagination { display: flex; align-items: center; justify-content: flex-end; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
       .page-btn { padding: 5px 10px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px; font-family: var(--font-mono); color: var(--text2); cursor: pointer; transition: background .15s, border-color .15s; min-width: 34px; text-align: center; }
       .page-btn:hover { background: var(--border); }
@@ -295,7 +273,6 @@
       .page-btn:disabled { opacity: .4; cursor: not-allowed; }
       .page-info { font-size: 11px; color: var(--text3); font-family: var(--font-mono); }
 
-      /* ADD DRAW */
       .num-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 12px; }
       .num-inp { width: 100%; aspect-ratio: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); font-size: 18px; font-weight: 700; font-family: var(--font-mono); text-align: center; padding: 0; -moz-appearance: textfield; transition: border-color .15s, background .15s; }
       .num-inp::-webkit-outer-spin-button, .num-inp::-webkit-inner-spin-button { -webkit-appearance: none; }
@@ -314,13 +291,13 @@
       .draw-nums { font-size: 13px; color: var(--text2); font-family: var(--font-mono); letter-spacing: .04em; }
       .empty { text-align: center; padding: 24px 0; color: var(--text3); font-size: 13px; }
 
-      /* SETTINGS */
       .setting-group { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow-sm); }
       .setting-group-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
       .setting-group-title { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .1em; text-transform: uppercase; }
       .status-badge { font-size: 10px; padding: 3px 10px; border-radius: 20px; color: var(--text2); border: 1px solid var(--border); white-space: nowrap; font-weight: 600; background: var(--surface2); }
       .status-badge.ok { background: var(--green-bg); color: var(--green-text); border-color: rgba(5,150,105,.3); }
       .status-badge.has-path { background: var(--blue-bg); color: var(--blue-text); border-color: rgba(37,99,235,.3); }
+      .status-badge.cached { background: var(--amber-bg); color: var(--amber-text); border-color: rgba(232,160,32,.3); }
       .file-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
       .file-select-btn { padding: 8px 16px; border-radius: var(--radius-sm); font-size: 12px; font-weight: 600; border: none; cursor: pointer; color: white; transition: opacity .15s, background .2s; display: flex; align-items: center; gap: 6px; white-space: nowrap; max-width: 260px; overflow: hidden; text-overflow: ellipsis; }
       .file-select-btn.no-file { background: var(--rose); }
@@ -336,7 +313,6 @@
       .arr-badges { display: flex; flex-wrap: wrap; gap: 4px; }
       .badge { padding: 3px 8px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 6px; font-size: 11px; color: var(--text2); font-family: var(--font-mono); }
 
-      /* Info modal */
       .info-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; display: flex; align-items: flex-end; justify-content: center; padding: 0; backdrop-filter: blur(4px); animation: fadeIn .2s ease; }
       .info-modal-box { background: var(--surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding: 20px 20px 32px; max-width: 680px; width: 100%; box-shadow: 0 -12px 48px rgba(0,0,0,.2); animation: slideUpModal .25s ease; max-height: 85vh; overflow-y: auto; }
       @keyframes slideUpModal { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -348,7 +324,6 @@
       .info-item-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); flex-shrink: 0; margin-top: 6px; }
       .info-item-body { font-size: 12px; color: var(--text2); line-height: 1.6; flex: 1; }
       .info-item-body strong { color: var(--text); font-weight: 600; }
-      /* Info modal tables */
       .info-table { width: 100%; border-collapse: collapse; font-size: 11px; font-family: var(--font-sans); margin: 8px 0 4px; table-layout: fixed; }
       .info-table th { padding: 7px 8px; text-align: left; border: 1px solid var(--border); color: var(--text3); font-weight: 600; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; background: var(--surface2); word-break: break-word; }
       .info-table td { padding: 6px 8px; border: 1px solid var(--border); color: var(--text2); vertical-align: top; line-height: 1.5; word-break: break-word; }
@@ -356,7 +331,7 @@
       .info-table td:first-child { font-weight: 700; color: var(--text); }
       .info-table td.mono { font-family: var(--font-mono); }
       .info-table td.note { font-size: 10px; color: var(--text3); }
-      /* ═══ COMBINATION MATRIX PAGE ═══ */
+
       .matrix-header-row { display: flex; align-items: center; margin-bottom: 18px; }
       .matrix-back-btn { display: flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border2); color: var(--text2); padding: 7px 14px; border-radius: var(--radius-md); font-size: 12px; font-weight: 600; cursor: pointer; transition: background .15s; }
       .matrix-back-btn:hover { background: var(--border); }
@@ -369,7 +344,6 @@
       .matrix-progress-fill { height: 100%; background: linear-gradient(90deg, var(--rose), var(--amber)); width: 0%; transition: width .2s linear; }
       .matrix-progress-text { font-size: 11px; color: var(--text3); margin-top: 6px; font-family: var(--font-mono); text-align: center; }
       .matrix-table-wrap { max-height: 70vh; overflow: auto; }
-      /* table-layout: fixed + colgroup controls all column widths — no per-cell overrides needed */
       .matrix-table { border-collapse: separate; border-spacing: 0; font-size: 10px; table-layout: fixed; width: max-content; min-width: 100%; }
       .matrix-table th, .matrix-table td { padding: 5px 3px; text-align: center; border: 1px solid var(--border); overflow: hidden; }
       .matrix-table thead th { position: sticky; top: 0; z-index: 3; background: var(--surface2); font-family: var(--font-mono); font-size: 10px; color: var(--text2); }
@@ -384,7 +358,6 @@
       .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(10px); background: var(--surface); border: 1px solid var(--border2); color: var(--text); padding: 9px 18px; border-radius: 100px; font-size: 12px; font-weight: 600; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; white-space: nowrap; z-index: 300; box-shadow: var(--shadow-md); }
       .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-      /* RESPONSIVE */
       @media (max-width: 640px) {
         .match-dist-grid { grid-template-columns: repeat(3,1fr); }
         .stat-grid-6 { grid-template-columns: repeat(3,1fr); }
@@ -413,6 +386,27 @@
         .modal-cell { height: 28px; font-size: 10px; }
         .fcc-grid { grid-template-columns: repeat(5, 1fr); }
       }
+      /* --- draw sim styles (unchanged) --- */
+      .sim-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:4px; padding:12px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:16px; position:relative; }
+      .sim-cell { aspect-ratio:1; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; font-family:var(--font-mono); background:var(--surface); border:1.5px solid var(--border); color:var(--text); transition:background .15s, color .15s; position:relative; }
+      .sim-cell.shuffling { animation:simShake .18s ease-in-out infinite alternate; }
+      .sim-cell.hot { background:rgba(225,29,72,.18); border-color:var(--rose); color:var(--rose-text); }
+      .sim-cell.drawn { background:var(--rose); border-color:var(--rose); color:#fff; transform:scale(1.12); box-shadow:0 4px 14px rgba(225,29,72,.4); z-index:2; }
+      .sim-cell.gone { background:var(--surface2); border-color:var(--border); color:var(--text3); opacity:.35; }
+      @keyframes simShake { from{transform:translate(-1px,-1px)} to{transform:translate(1px,1px)} }
+      @keyframes simPop { 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1.1)} }
+      .sim-status { text-align:center; font-size:13px; color:var(--text2); margin-bottom:8px; min-height:20px; font-family:var(--font-mono); }
+      .sim-phase { text-align:center; font-size:22px; font-weight:700; color:var(--text); margin-bottom:6px; min-height:32px; font-family:var(--font-mono); }
+      .sim-timer { display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+      .sim-timer-bar { height:8px; background:var(--border); border-radius:4px; overflow:hidden; flex:1; max-width:300px; }
+      .sim-timer-fill { height:8px; border-radius:4px; background:var(--rose); transition:width .1s linear; }
+      .sim-results { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:16px; min-height:56px; }
+      .sim-ball { width:52px; height:52px; border-radius:50%; background:var(--rose-bg); border:2px solid var(--rose); color:var(--rose-text); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; font-family:var(--font-mono); animation:simPop .35s ease; }
+      .sim-start-btn { width:100%; padding:13px; background:linear-gradient(135deg,var(--rose),#be123c); color:#fff; border:none; border-radius:var(--radius-md); font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 12px rgba(225,29,72,.25); transition:opacity .15s,transform .1s; }
+      .sim-start-btn:hover{opacity:.93;transform:translateY(-1px);}
+      .sim-start-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+      .sim-round-label { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); text-align:center; margin-bottom:6px; }
+      .sim-cell.selected { background:var(--amber); border-color:var(--amber); color:#fff; transform:scale(1.06); }
     </style>
   </head>
   <body>
@@ -467,7 +461,6 @@
             <div class="pred-mix-row">
               <span class="pred-mix-month" id="gMW1" title="Best window from matrix">—</span>
               <input type="hidden" id="gWS1" value="0" />
-              <!-- Keep gWS2/gFC2 etc as hidden stubs so JS doesn't crash -->
               <input type="hidden" id="gWS2" value="0" />
               <input type="hidden" id="gFC2" value="0" />
               <input type="hidden" id="gFN2" value="0" />
@@ -495,7 +488,6 @@
 
       <!-- ── ANALYSIS ── -->
       <div id="pane-analysis" class="pane">
-        <!-- Stats inline bar — clickable, opens the Combination Matrix page -->
         <div class="analysis-stats-bar clickable" id="analysis-stats-bar" style="display:none" onclick="openMatrixPage()" title="Tap to open the Combination Matrix">
           <div class="asb-item">
             <span class="asb-val" id="asb-predictions">—</span>
@@ -545,7 +537,6 @@
           <i class="ti ti-refresh-dot" aria-hidden="true"></i> Generate Analysis
         </button>
 
-        <!-- Match Distribution Section — immediately after filters -->
         <div class="match-dist-section" id="match-dist-section" style="display:none">
           <div class="slabel-row">
             <span class="slabel" style="margin-bottom:0">Match distribution &amp; accuracy insights</span>
@@ -557,7 +548,6 @@
 
         <div id="analysis-table-container" style="display:none"></div>
 
-        <!-- Performance Across Training Windows -->
         <div class="comparison-grid" style="border-top:none;padding-top:0;margin-top:16px;">
           <div class="slabel-row">
             <span class="slabel" style="margin-bottom:0">Performance across training windows (active filters applied)</span>
@@ -566,7 +556,6 @@
           <div class="stat-grid-6" id="comparison-stats"></div>
         </div>
 
-        <!-- Filter Combination Comparison -->
         <div class="match-dist-section" style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border);">
           <div class="slabel-row">
             <span class="slabel" style="margin-bottom:0">Filter Combination Comparison</span>
@@ -605,33 +594,27 @@
           <div class="matrix-progress-text" id="matrixProgressText">Starting…</div>
         </div>
 
-        <!-- Sub-tabs — hidden until matrix has run -->
         <div id="matrix-subtabs" style="display:none;margin-bottom:0;">
           <div class="tabs" style="position:static;border-bottom:1px solid var(--border);padding:8px 0 0;margin-bottom:0;">
             <button class="tab active" id="mst-rate" onclick="switchMatrixTab('rate',this)">Match Rate</button>
           </div>
         </div>
 
-        <!-- matrix-pane-pred and matrix-table-container kept as hidden stubs for JS compatibility -->
         <div id="matrix-pane-pred" style="display:none;"></div>
         <div id="matrix-table-container" style="display:none;"></div>
 
-        <!-- Tab 2: 3+ Match Rate heatmap -->
         <div id="matrix-pane-rate" style="display:none;margin-top:12px;">
-          <!-- Top performers leaderboard -->
           <div class="slabel-row" style="margin-bottom:10px;">
             <span class="slabel" style="margin-bottom:0">🏆 Top performers (3+ match %)</span>
           </div>
           <div id="matrix-leaderboard" style="margin-bottom:18px;"></div>
 
-          <!-- 3-match inclusion toggle -->
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
             <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text2);">
               <input type="checkbox" id="include3Matches" checked onchange="if(window._matrixResults)renderMatchDetail();" style="cursor:pointer;">
               Include 3-match combinations in weighted score
             </label>
           </div>
-          <!-- Heatmap colour legend -->
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
             <span style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Best match tier per cell:</span>
             <span style="font-size:10px;display:flex;align-items:center;gap:4px;"><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(220,38,38,.22);"></span>6 matches (jackpot)</span>
@@ -683,23 +666,18 @@
 
         <div class="slabel" style="margin-bottom:12px;">Draw Simulation</div>
 
-        <!-- Phase label -->
         <div class="sim-phase" id="simPhase">Ready</div>
         <div class="sim-status" id="simStatus">Press Start to begin the draw</div>
 
-        <!-- Timer bar -->
         <div class="sim-timer">
           <div class="sim-timer-bar"><div class="sim-timer-fill" id="simTimerFill" style="width:0%"></div></div>
         </div>
 
-        <!-- The 40-number grid -->
         <div class="sim-grid" id="simGrid"></div>
 
-        <!-- Results balls -->
         <div class="sim-round-label" id="simRoundLabel"></div>
         <div class="sim-results" id="simResults"></div>
 
-        <!-- Start/Reset button -->
         <button class="sim-start-btn" id="simStartBtn" onclick="startSimulation()">
           <i class="ti ti-player-play" aria-hidden="true"></i> Start Draw
         </button>
@@ -737,7 +715,7 @@
           </div>
           <p class="hint">
             <strong>📌 Select a file once — the path is saved permanently.</strong><br />
-            On reload, tap <strong>Activate</strong> to re‑grant permission for that session.
+            On reload, data is loaded from cache automatically. Tap <strong>Activate</strong> to re‑grant permission for writing new draws.
             The path is <span class="highlight">never forgotten</span> unless you click <strong>Forget</strong>.
           </p>
         </div>
@@ -843,23 +821,40 @@
       let clusterWindow = 26;
 
       /* ═══════════════════════════════════════════════════════════
-         INDEXEDDB
+         INDEXEDDB — extended with drawsCache
       ═══════════════════════════════════════════════════════════ */
-      const DB_NAME = "DrawGridExplorerPro", DB_VER = 1, DB_STORE = "handles";
+      const DB_NAME = "DrawGridExplorerPro", DB_VER = 2, DB_STORE = "handles";
       function openDB() {
         return new Promise((res, rej) => {
           const r = indexedDB.open(DB_NAME, DB_VER);
           r.onerror = () => rej(r.error);
           r.onsuccess = () => res(r.result);
-          r.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains(DB_STORE)) e.target.result.createObjectStore(DB_STORE); };
+          r.onupgradeneeded = e => {
+            const db = e.target.result;
+            if (!db.objectStoreNames.contains(DB_STORE)) db.createObjectStore(DB_STORE);
+            // v2: we now store drawsCache as a separate key, no schema change needed
+          };
         });
       }
-      async function dbSet(k, v) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readwrite");const r=tx.objectStore(DB_STORE).put(v,k);r.onerror=()=>{console.error("[DB] save FAILED",k,r.error);rej(r.error);};r.onsuccess=()=>{console.log("[DB] saved OK",k, typeof v==='string'?v:(v?.name||typeof v));res();};tx.oncomplete=()=>db.close();}); }
-      async function dbGet(k) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readonly");const r=tx.objectStore(DB_STORE).get(k);r.onerror=()=>{console.error("[DB] get FAILED",k,r.error);rej(r.error);};r.onsuccess=()=>{console.log("[DB] get",k,"→",r.result?.name||r.result||"null");res(r.result||null);};tx.oncomplete=()=>db.close();}); }
+      async function dbSet(k, v) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readwrite");const r=tx.objectStore(DB_STORE).put(v,k);r.onerror=()=>rej(r.error);r.onsuccess=()=>res();tx.oncomplete=()=>db.close();}); }
+      async function dbGet(k) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readonly");const r=tx.objectStore(DB_STORE).get(k);r.onerror=()=>rej(r.error);r.onsuccess=()=>res(r.result||null);tx.oncomplete=()=>db.close();}); }
       async function dbDel(k) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readwrite");const r=tx.objectStore(DB_STORE).delete(k);r.onerror=()=>rej(r.error);r.onsuccess=()=>res();tx.oncomplete=()=>db.close();}); }
 
+      // Cache the parsed draws in IndexedDB so they survive page reloads
+      const CACHE_KEY = "drawsCache";
+      async function cacheDraws(data) {
+        if (!data || !data.length) return;
+        await dbSet(CACHE_KEY, data);
+      }
+      async function loadCachedDraws() {
+        try { return await dbGet(CACHE_KEY); } catch { return null; }
+      }
+      async function clearCachedDraws() {
+        await dbDel(CACHE_KEY);
+      }
+
       /* ═══════════════════════════════════════════════════════════
-         FILE HANDLING — DRAWS
+         FILE HANDLING — DRAWS (with cache fallback)
       ═══════════════════════════════════════════════════════════ */
       document.getElementById("selectDrawsBtn").addEventListener("click", async () => {
         if (!window.showOpenFilePicker) { toast("File picker not supported in this browser."); return; }
@@ -867,46 +862,112 @@
           const [h] = await window.showOpenFilePicker({ types: [{ description:"Text file", accept:{"text/plain":[".txt",".csv"]} }] });
           drawsHandle = h; drawsName = h.name; drawsOk = false;
           await dbSet("drawsH", h); await dbSet("drawsN", drawsName);
-          updateDrawsUI(); fullRender();
-          toast(`Selected: ${drawsName}. Tap Activate to load.`);
+          updateDrawsUI();
+          // Load and cache immediately
+          await activateDraws(true);
+          toast(`Selected: ${drawsName}. Data cached.`);
         } catch(e) { if (e.name !== "AbortError") toast("Selection failed: " + e.message); }
       });
-      document.getElementById("refreshDrawsBtn").addEventListener("click", async () => { await activateDraws(true); });
+
+      document.getElementById("refreshDrawsBtn").addEventListener("click", async () => {
+        // Activate re-grants permission and re-loads from file, then updates cache
+        await activateDraws(true);
+      });
+
       async function activateDraws(showToast=true) {
-        if (!drawsHandle) { if (showToast) toast("No draws file selected."); return false; }
+        if (!drawsHandle) {
+          // Try to load from cache as fallback
+          const cached = await loadCachedDraws();
+          if (cached && cached.length) {
+            draws = cached;
+            drawsOk = false; // not writable, but we have data
+            updateDrawsUI();
+            fullRender();
+            if (showToast) toast(`Loaded ${draws.length} draws from cache (file not activated).`);
+            return true;
+          }
+          if (showToast) toast("No draws file selected.");
+          return false;
+        }
         try {
           const p = await drawsHandle.requestPermission({ mode:"readwrite" });
-          if (p !== "granted") { if (showToast) toast("Permission denied."); drawsOk=false; updateDrawsUI(); return false; }
+          if (p !== "granted") {
+            // Permission denied — try cache
+            const cached = await loadCachedDraws();
+            if (cached && cached.length) {
+              draws = cached;
+              drawsOk = false;
+              updateDrawsUI();
+              fullRender();
+              if (showToast) toast(`Permission denied. Using ${draws.length} cached draws.`);
+              return true;
+            }
+            if (showToast) toast("Permission denied and no cache available.");
+            drawsOk=false; updateDrawsUI(); return false;
+          }
           const file = await drawsHandle.getFile();
           draws = parseDrawsText(await file.text());
           drawsOk = true;
+          // Cache the parsed data
+          await cacheDraws(draws);
           updateDrawsUI(); fullRender();
           if (showToast) toast(`Loaded ${draws.length} draws from ${drawsName}.`);
           return true;
-        } catch(e) { console.error(e); if (showToast) toast("Failed to load the file."); drawsOk=false; updateDrawsUI(); return false; }
+        } catch(e) { console.error(e);
+          // Fallback to cache
+          const cached = await loadCachedDraws();
+          if (cached && cached.length) {
+            draws = cached;
+            drawsOk = false;
+            updateDrawsUI();
+            fullRender();
+            if (showToast) toast(`Failed to load file. Using ${draws.length} cached draws.`);
+            return true;
+          }
+          if (showToast) toast("Failed to load the file.");
+          drawsOk=false; updateDrawsUI(); return false;
+        }
       }
+
       document.getElementById("clearDrawsBtn").addEventListener("click", async () => {
-        await dbDel("drawsH"); await dbDel("drawsN");
+        await dbDel("drawsH"); await dbDel("drawsN"); await clearCachedDraws();
         drawsHandle=null; drawsName=""; drawsOk=false; draws=[];
-        updateDrawsUI(); fullRender(); toast("File forgotten.");
+        updateDrawsUI(); fullRender(); toast("File and cache forgotten.");
       });
+
       async function appendToFile(d) {
-        if (!drawsHandle || !drawsOk) return false;
+        if (!drawsHandle || !drawsOk) {
+          // If we can't write, at least update the cache
+          draws.push(d);
+          await cacheDraws(draws);
+          fullRender();
+          return false;
+        }
         try {
           const file = await drawsHandle.getFile(); let c = await file.text();
           if (c.length && !c.endsWith("\n")) c += "\n";
           const wr = await drawsHandle.createWritable();
-          await wr.write(c + d.join(" ") + "\n"); await wr.close(); return true;
-        } catch(e) { console.error(e); drawsOk=false; updateDrawsUI(); return false; }
+          await wr.write(c + d.join(" ") + "\n"); await wr.close();
+          // Also update cache
+          await cacheDraws(draws);
+          return true;
+        } catch(e) { console.error(e);
+          // Still update memory + cache
+          await cacheDraws(draws);
+          drawsOk=false; updateDrawsUI(); return false;
+        }
       }
+
       function updateDrawsUI() {
         const btn=document.getElementById("selectDrawsBtn"),lbl=document.getElementById("drawsBtnLabel"),s=document.getElementById("drawsStatus");
         if (drawsName) { lbl.textContent=drawsName; btn.className="file-select-btn has-file"; }
         else { lbl.textContent="Select file"; btn.className="file-select-btn no-file"; }
         if (drawsOk) { s.textContent="✅ Active & writable"; s.className="status-badge ok"; }
+        else if (draws.length && drawsName) { s.textContent="📦 Cache loaded"; s.className="status-badge cached"; }
         else if (drawsName) { s.textContent="🔒 Needs access"; s.className="status-badge has-path"; }
         else { s.textContent="Not active"; s.className="status-badge"; }
       }
+
       function updateArrUI() {
         const btn=document.getElementById("selectArrBtn"),lbl=document.getElementById("arrBtnLabel"),s=document.getElementById("arrStatus");
         if (arrName) { lbl.textContent=arrName; btn.className="file-select-btn has-file"; }
@@ -917,7 +978,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-         FILE HANDLING — ARRANGEMENT
+         FILE HANDLING — ARRANGEMENT (unchanged)
       ═══════════════════════════════════════════════════════════ */
       document.getElementById("selectArrBtn").addEventListener("click", async () => {
         if (!window.showOpenFilePicker) { toast("File picker not supported."); return; }
@@ -929,7 +990,9 @@
           await activateArrangement(true);
         } catch(e) { if (e.name !== "AbortError") toast(e.message); }
       });
+
       document.getElementById("refreshArrBtn").addEventListener("click", async () => { await activateArrangement(true); });
+
       async function activateArrangement(showToast=true) {
         if (!arrHandle) { if (showToast) toast("No arrangement file selected."); return false; }
         try {
@@ -943,6 +1006,7 @@
           return true;
         } catch(e) { if (showToast) toast("Failed to load arrangement."); arrOk=false; updateArrUI(); return false; }
       }
+
       document.getElementById("clearArrBtn").addEventListener("click", async () => {
         await dbDel("arrH"); await dbDel("arrN");
         arrHandle=null; arrName=""; arrOk=false; arrangement=[];
@@ -950,21 +1014,28 @@
       });
 
       /* ═══════════════════════════════════════════════════════════
-         RESTORE ON PAGE LOAD
-      ═══════════════════════════════════════════════════════════ */
-      /* ═══════════════════════════════════════════════════════════
-         RESTORE ON PAGE LOAD
+         RESTORE ON PAGE LOAD — now loads cache automatically
       ═══════════════════════════════════════════════════════════ */
       async function restoreHandles() {
         let _drawsH = null, _drawsN = null, _arrH = null, _arrN = null;
         try { _drawsH=await dbGet("drawsH"); _drawsN=await dbGet("drawsN"); } catch(e){}
         try { _arrH=await dbGet("arrH"); _arrN=await dbGet("arrN"); } catch(e){}
-        // Restore names so the UI shows the filename immediately
-        if (_drawsH) { drawsHandle=_drawsH; drawsName=_drawsN||"unknown"; }
-        if (_arrH)   { arrHandle=_arrH;   arrName=_arrN||"unknown"; }
-        updateDrawsUI(); updateArrUI(); fullRender();
-        // Permission must be requested inside a user gesture.
-        // Register a one-time listener on the first tap/keypress.
+
+        // 1. Load cached draws immediately — so the grid shows data on first paint
+        const cached = await loadCachedDraws();
+        if (cached && cached.length) {
+          draws = cached;
+          drawsOk = false; // not yet writable
+          if (_drawsH) { drawsHandle = _drawsH; drawsName = _drawsN || "unknown"; }
+          updateDrawsUI();
+          fullRender();
+        }
+
+        if (_drawsH) { drawsHandle = _drawsH; drawsName = _drawsN || "unknown"; }
+        if (_arrH)   { arrHandle = _arrH;   arrName = _arrN || "unknown"; }
+        updateDrawsUI(); updateArrUI();
+
+        // Set up a one-time handler to re-grant permission on user interaction
         if (_drawsH || _arrH) {
           const handler = async () => {
             document.removeEventListener('click', handler, true);
@@ -977,7 +1048,6 @@
         }
       }
 
-      
       /* ═══════════════════════════════════════════════════════════
          PARSING
       ═══════════════════════════════════════════════════════════ */
@@ -993,7 +1063,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-         CORE ANALYSIS
+         CORE ANALYSIS (unchanged)
       ═══════════════════════════════════════════════════════════ */
       function windowDraws(range) {
         const n=Math.min(range,draws.length);
@@ -1026,7 +1096,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-         PREDICTION ENGINE
+         PREDICTION ENGINE (unchanged)
       ═══════════════════════════════════════════════════════════ */
       function isValid(combo) {
         const s=[...combo].sort((a,b)=>a-b);
@@ -1047,28 +1117,21 @@
         const s=[...pool];for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];}return s.slice(0,n);
       }
       function genCustomStrategy(ds,sc,peak,clusters,cCount,nCount,rCount) {
-        // Build per-cluster pools sorted by weight descending
         const perCluster = clusters.map(comp => [...comp].sort((a,b) => sc[b]-sc[a]));
         const cSet = new Set();
         clusters.forEach(c => c.forEach(n => cSet.add(n)));
 
-        // Per-cluster neighbour pools: cells adjacent to each cluster but not in any cluster
         const perClusterNeighbours = clusters.map(comp => {
           const nbSet = new Set();
           comp.forEach(n => { ADJ[n].forEach(adj => { if (!cSet.has(adj)) nbSet.add(adj); }); });
           return [...nbSet].sort((a,b) => sc[b]-sc[a]);
         });
 
-        // Random pool: not in any cluster, not in any neighbourhood
         const allNbSet = new Set(perClusterNeighbours.flat());
         const rPool = [];
         for (let n=1; n<=40; n++) { if (!cSet.has(n) && !allNbSet.has(n)) rPool.push(n); }
         const totalNbAvail = allNbSet.size;
 
-        // Feasibility check — only fail if we actually need pools we can't fill
-        // C=0 means we don't need any cluster numbers (clusters don't need to exist)
-        // N=0 means we don't need any neighbour numbers
-        // R=0 means we don't need any random numbers
         const needClusters = cCount > 0;
         const needNeighbours = nCount > 0;
         const needRandom = rCount > 0;
@@ -1083,13 +1146,10 @@
           return[...all].sort((a,b)=>sc[b]-sc[a]).slice(0,6);
         }
 
-        // Try combos: cCount numbers from DIFFERENT clusters (round-robin),
-        // nCount neighbours from DIFFERENT cluster neighbourhoods (round-robin)
         for (let attempt=0; attempt<3000; attempt++) {
           const picked = new Set();
           let ok = true;
 
-          // Cluster picks — one per cluster, cycling
           for (let i=0; i<cCount; i++) {
             const ci = i % perCluster.length;
             const pool = perCluster[ci].filter(n => !picked.has(n));
@@ -1100,7 +1160,6 @@
           }
           if (!ok) continue;
 
-          // Neighbour picks — one per cluster neighbourhood, cycling
           for (let i=0; i<nCount; i++) {
             const ci = i % perClusterNeighbours.length;
             const pool = perClusterNeighbours[ci].filter(n => !picked.has(n));
@@ -1111,7 +1170,6 @@
           }
           if (!ok) continue;
 
-          // Random picks
           const rAvail = rPool.filter(n => !picked.has(n));
           if (rAvail.length < rCount) continue;
           const rChosen = weightedPick(rAvail, rAvail.map(n=>sc[n]), rCount);
@@ -1122,7 +1180,6 @@
           if (combo.length===6 && isValid(combo)) return combo;
         }
 
-        // Deterministic fallback
         const fb = new Set();
         for (let i=0; i<cCount; i++) { const n=perCluster[i%perCluster.length].find(x=>!fb.has(x)); if(n!==undefined)fb.add(n); }
         for (let i=0; i<nCount; i++) { const n=perClusterNeighbours[i%perClusterNeighbours.length].find(x=>!fb.has(x)); if(n!==undefined)fb.add(n); }
@@ -1150,12 +1207,10 @@
         return oh.slice(0,6).sort((a,b)=>a-b);
       }
 
-      // predictFromDraws: ds=training window, clusterDs=cluster detection window (subset of ds)
       function predictFromDraws(ds,strategy="strategy2",clusterDs=null) {
         if(ds.length<3)return null;
         const sc=computeRawWeights(ds);
         const peak=Math.max(1,...Object.values(sc));
-        // Cluster detection uses clusterDs (the cluster window), then weights from full ds
         const cDs=clusterDs&&clusterDs.length>=3?clusterDs:ds;
         const cSc=cDs===ds?sc:computeRawWeights(cDs);
         const cPeak=cDs===ds?peak:Math.max(1,...Object.values(cSc));
@@ -1174,11 +1229,8 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-         GRID VIEW MODAL
+         GRID VIEW MODAL (unchanged)
       ═══════════════════════════════════════════════════════════ */
-      // Fixed 6-row × 7-col grid layout with 2 empty slots at start of row 1
-      // Row 1: [X][X][1][2][3][4][5]
-      // Row 2: [6][7][8][9][10][11][12]  … Row 6: [34..40]
       const MODAL_GRID_LAYOUT = [
         [null, null, 1, 2, 3, 4, 5],
         [6, 7, 8, 9, 10, 11, 12],
@@ -1193,8 +1245,6 @@
         if (existing) existing.remove();
 
         const predSet = new Set(combo);
-
-        // Build the fixed grid
         let gridHtml = `<div class="modal-fixed-grid">`;
         MODAL_GRID_LAYOUT.forEach(row => {
           row.forEach(n => {
@@ -1235,10 +1285,8 @@
       document.addEventListener('keydown', e => { if (e.key === 'Escape') closeGridModal(); });
 
       /* ═══════════════════════════════════════════════════════════
-         GENERATE ACTION
+         GENERATE ACTION (unchanged)
       ═══════════════════════════════════════════════════════════ */
-
-      // Builds a prediction from the single prediction mix and renders it
       function buildMixPrediction() {
         const wsRaw = parseInt(document.getElementById('gWS1').value);
         const wsVal = !isNaN(wsRaw) ? wsRaw : 0;
@@ -1319,7 +1367,6 @@
           _pendingMixResult = buildMixPrediction();
           btn.disabled=false;
           btn.innerHTML='<i class="ti ti-refresh" aria-hidden="true"></i> Regenerate';
-          // Show popup asking about draw simulation
           document.getElementById('simChoiceModal').style.display='flex';
         },60);
       }
@@ -1335,7 +1382,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-         GRID RENDER
+         GRID RENDER (unchanged)
       ═══════════════════════════════════════════════════════════ */
       function renderGrid() {
         const ds=windowDraws(currentRange);
@@ -1382,7 +1429,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-         STATS & ROW BARS
+         STATS & ROW BARS (unchanged)
       ═══════════════════════════════════════════════════════════ */
       function renderStats() {
         const ds=windowDraws(currentRange);const sc=computeRawWeights(ds);const peak=Math.max(1,...Object.values(sc));const clusters=findClusters(sc,peak);
@@ -1404,9 +1451,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-         ANALYSIS TABLE  (paginated, + match distribution)
-         All 4 filters applied: filterClusters, filterNeighbours,
-         filterRandom, and clusterWindow drive every section.
+         ANALYSIS TABLE (unchanged — uses draws global)
       ═══════════════════════════════════════════════════════════ */
       let allTableRows = [];
       let currentPage = 1;
@@ -1414,7 +1459,6 @@
 
       function renderAnalysisTable() {
         const container = document.getElementById("analysis-table-container");
-        // analysisWindow=0 means "use all draws" — need at least 2 draws to have 1 prediction
         const windowSize = analysisWindow === 0 ? Math.max(1, draws.length - 1) : analysisWindow;
         const strategy = analysisStrategy;
 
@@ -1433,10 +1477,8 @@
         for (let i = windowSize; i < draws.length; i++) {
           const trainingData = draws.slice(i - windowSize, i);
           const actual = [...draws[i]].sort((a, b) => a - b);
-          // clusterWindow filter: use only the most recent clusterWindow draws within training data for cluster detection
           const cwSize = clusterWindow === 0 ? trainingData.length : Math.min(clusterWindow, trainingData.length);
           const clusterData = trainingData.slice(Math.max(0, trainingData.length - cwSize));
-          // predictFromDraws uses filterClusters/filterNeighbours/filterRandom globals via genCustomStrategy
           const prediction = predictFromDraws(trainingData, strategy, clusterData);
           const predSorted = prediction ? [...prediction].sort((a, b) => a - b) : null;
           const drawNum = i + 1;
@@ -1457,20 +1499,16 @@
         const avgMatch = totalPredictions > 0 ? (totalMatches / totalPredictions) : 0;
         const avgMatchPercent = totalPredictions > 0 ? (totalMatches / (totalPredictions * 6)) * 100 : 0;
 
-        // Update inline stats bar — shows active filter values
         const bar = document.getElementById("analysis-stats-bar");
         bar.style.display = "flex";
         document.getElementById("asb-predictions").textContent = totalPredictions;
         document.getElementById("asb-window").textContent = windowSize === 0 ? draws.length : windowSize;
         document.getElementById("asb-total").textContent = draws.length;
 
-        // Render match distribution first (fast)
         renderMatchDistribution(matchCounts, totalPredictions, successfulPredictions, avgMatch, avgMatchPercent);
-        // Defer the heavier FCC + comparison stats to the next tick
         setTimeout(() => {
           renderComparisonStats();
         }, 0);
-        // Table removed from Analysis page per user request
       }
 
       function renderTablePage() {
@@ -1498,11 +1536,8 @@
           </tr>`;
         }).join("");
 
-        // Pagination controls
         let pageButtons = '';
-        // Prev
         pageButtons += `<button class="page-btn" onclick="goToPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹</button>`;
-        // Page numbers — show up to 5 around current
         const rangeStart = Math.max(1, currentPage - 2);
         const rangeEnd = Math.min(totalPages, currentPage + 2);
         if (rangeStart > 1) pageButtons += `<button class="page-btn" onclick="goToPage(1)">1</button>${rangeStart>2?'<span class="page-info">…</span>':''}`;
@@ -1510,7 +1545,6 @@
           pageButtons += `<button class="page-btn${p===currentPage?' active':''}" onclick="goToPage(${p})">${p}</button>`;
         }
         if (rangeEnd < totalPages) pageButtons += `${rangeEnd<totalPages-1?'<span class="page-info">…</span>':''}<button class="page-btn" onclick="goToPage(${totalPages})">${totalPages}</button>`;
-        // Next
         pageButtons += `<button class="page-btn" onclick="goToPage(${currentPage+1})" ${currentPage===totalPages?'disabled':''}>›</button>`;
 
         const strategyName = analysisStrategy === "strategy1" ? "Strategy 1 (Hybrid)" : "Strategy 2 (Custom)";
@@ -1557,12 +1591,11 @@
         if (p < 1 || p > totalPages) return;
         currentPage = p;
         renderTablePage();
-        // Scroll table into view
         document.getElementById("analysis-table-container").scrollIntoView({behavior:"smooth",block:"start"});
       };
 
       /* ═══════════════════════════════════════════════════════════
-         MATCH DISTRIBUTION
+         MATCH DISTRIBUTION (unchanged)
       ═══════════════════════════════════════════════════════════ */
       function renderMatchDistribution(matchCounts, totalPredictions, successfulPredictions, avgMatch, avgMatchPercent) {
         const section = document.getElementById("match-dist-section");
@@ -1578,7 +1611,7 @@
         grid.innerHTML = matchCounts.map((count, i) => {
           const pct = totalPredictions > 0 ? ((count / totalPredictions) * 100).toFixed(1) : "0.0";
           const isActive = count === maxCount && count > 0;
-          const isDimmed = i < 2; // 1-match and 2-match are not prize-winning — grey out
+          const isDimmed = i < 2;
           return `<div class="match-dist-card${isDimmed ? ' dimmed' : (isActive ? ' active' : '')}">
             <div class="match-dist-num" style="color:${cardColors[i]}">${count}</div>
             <div class="match-dist-pct">${pct}%</div>
@@ -1586,7 +1619,6 @@
           </div>`;
         }).join('');
 
-        // Total % = predictions with 3 or more matches (prize-winning threshold)
         const threeOrMoreCount = matchCounts.slice(2).reduce((s, c) => s + c, 0);
         const totalMatchedPct = totalPredictions > 0
           ? ((threeOrMoreCount / totalPredictions) * 100).toFixed(1)
@@ -1600,7 +1632,6 @@
         }
 
         insights.innerHTML = "";
-        // Filter Combination Comparison deferred — runs after match dist and comparison stats
         setTimeout(() => renderFilterComparison(), 0);
       }
 
@@ -1613,15 +1644,11 @@
         const cw = clusterWindow;
         const currentLabel = `${filterClusters}C+${filterNeighbours}N+${filterRandom}R`;
 
-        // All 27 valid C+N+R combos that sum to 6 (same list as the matrix)
         const allConfigs = MATRIX_COMBOS.map(([c,n,r]) => ({c,n,r,label:`${c}C+${n}N+${r}R`}));
 
-        // How many presets the user wants to compare
         const presetCountEl = document.getElementById("fccPresetCount");
         const presetCount = presetCountEl ? Math.min(parseInt(presetCountEl.value) || 10, allConfigs.length) : 10;
 
-        // Compute avg matches for all 27 so we can pick the top N to show
-        // (we always compute all so the user's active config always appears regardless of N)
         const allResults = allConfigs.map(cfg => {
           let totalMatches = 0;
           for (let i = windowSize; i < draws.length; i++) {
@@ -1644,20 +1671,16 @@
           return { cfg, avg: total > 0 ? totalMatches / total : 0, label: cfg.label };
         });
 
-        // Pick the top presetCount by avg, always include the active config
         const sorted = [...allResults].sort((a, b) => b.avg - a.avg);
         let shown = sorted.slice(0, presetCount);
-        // Ensure active config is always visible even if outside top N
         if (!shown.find(r => r.label === currentLabel)) {
           const activeResult = allResults.find(r => r.label === currentLabel);
           if (activeResult) { shown.pop(); shown.push(activeResult); }
         }
-        // Re-sort shown by original MATRIX_COMBOS order (fixed placement)
         const orderMap = {};
         allConfigs.forEach((cfg, i) => { orderMap[cfg.label] = i; });
         shown.sort((a, b) => (orderMap[a.label] ?? 99) - (orderMap[b.label] ?? 99));
 
-        // Medals and rank classes for top 3 within the shown set
         const shownSorted = [...shown].sort((a, b) => b.avg - a.avg);
         const rankClass = {};
         const medalLabel = {};
@@ -1665,7 +1688,6 @@
         if (shownSorted[1]) { rankClass[shownSorted[1].label] = 'rank-2'; medalLabel[shownSorted[1].label] = '🥈'; }
         if (shownSorted[2]) { rankClass[shownSorted[2].label] = 'rank-3'; medalLabel[shownSorted[2].label] = '🥉'; }
 
-        // FCC total
         const fccSum = shown.reduce((s, r) => s + r.avg, 0);
         const fccTotalEl = document.getElementById("fcc-total");
         if (fccTotalEl) {
@@ -1673,16 +1695,13 @@
           fccTotalEl.className = "slabel-total highlight-green";
         }
 
-        // Adjust grid columns to match shown count (max 5 per row)
         const gridCols = Math.min(shown.length, 5);
         fccEl.style.gridTemplateColumns = `repeat(${gridCols}, minmax(0, 1fr))`;
 
-        // Fully rebuild — ensures classes are always fresh after count change
         fccEl.innerHTML = shown.map(r => {
           const isCurrent = r.label === currentLabel;
           const rClass = rankClass[r.label] || '';
           const medal = medalLabel[r.label] || '';
-          // rank-1 always overrides current styling via !important in CSS
           const classes = ['fcc-card', rClass, isCurrent ? 'current' : ''].filter(Boolean).join(' ');
           return `<div class="${classes}">
             <div class="fcc-card-label">${medal}${r.label}</div>
@@ -1692,15 +1711,12 @@
         }).join('');
       }
 
-      // Re-render FCC when preset count changes
       document.getElementById("fccPresetCount")?.addEventListener("change", () => {
         if (draws.length > 0) renderFilterComparison();
       });
 
       /* ═══════════════════════════════════════════════════════════
-         COMPARISON STATS (across training windows)
-         Uses all 4 active filters: filterClusters, filterNeighbours,
-         filterRandom, clusterWindow.
+         COMPARISON STATS (unchanged)
       ═══════════════════════════════════════════════════════════ */
       function renderComparisonStats() {
         const container = document.getElementById("comparison-stats");
@@ -1755,7 +1771,6 @@
           </div>`;
         }
         container.innerHTML = html;
-        // Set performance total badge
         const compTotalEl = document.getElementById("comparison-total");
         if (compTotalEl) {
           compTotalEl.textContent = availableWindows > 0 ? `Σ ${totalAvgSum.toFixed(2)}` : "";
@@ -1764,7 +1779,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-         ADD DRAW
+         ADD DRAW (unchanged)
       ═══════════════════════════════════════════════════════════ */
       function renderNumGrid() {
         document.getElementById("num-grid").innerHTML=inputs.map((v,i)=>
@@ -1782,8 +1797,12 @@
         if(vals.some(n=>n<1||n>40)){toast("Numbers must be between 1 and 40.");return;}
         if(new Set(vals).size!==6){toast("All 6 numbers must be unique.");return;}
         const sorted=[...vals].sort((a,b)=>a-b);draws.push(sorted);
-        if(drawsOk){const saved=await appendToFile(sorted);toast(saved?`Draw saved to ${drawsName}.`:"Added to memory — file write failed. Re-activate in Settings.");}
-        else{toast("Draw added to memory. Activate a file in Settings to persist it.");}
+        const saved = await appendToFile(sorted);
+        if (saved) {
+          toast(`Draw saved to ${drawsName}.`);
+        } else {
+          toast(`Draw added to memory and cache. ${drawsOk ? 'File write failed — re-activate in Settings.' : 'Activate the file in Settings to write directly.'}`);
+        }
         inputs=["","","","","",""];fullRender();document.getElementById("predictions").innerHTML="";
       }
       function clearInputs(){inputs=["","","","","",""];renderNumGrid();}
@@ -1821,7 +1840,6 @@
         const n=Math.min(currentRange,draws.length);
         document.getElementById("sliderVal").textContent=`${n} / ${draws.length}`;
         renderStats();renderRowBars();renderGrid();
-        // Predictions are NOT cleared — they persist until Generate is clicked again
       });
       document.querySelectorAll(".mark").forEach(m=>m.addEventListener("click",function(){
         let v=parseInt(this.dataset.v);
@@ -1829,22 +1847,11 @@
         currentRange=v;document.getElementById("drawSlider").value=v;
         document.getElementById("sliderVal").textContent=`${v} / ${draws.length}`;
         renderStats();renderRowBars();renderGrid();
-        // Predictions are NOT cleared — they persist until Generate is clicked again
       }));
 
       /* ═══════════════════════════════════════════════════════════
-         GRID PAGE — 2 PREDICTION MIX ROWS
+         ANALYSIS CONTROLS (unchanged)
       ═══════════════════════════════════════════════════════════ */
-      // No sum display — inputs are self-explanatory; validation happens on generate()
-
-      /* ═══════════════════════════════════════════════════════════
-         ANALYSIS CONTROLS
-         Filters update a "pending" state only.
-         The Generate Analysis button commits pending → active and renders.
-         The displayed results remain unchanged while the user tweaks filters.
-      ═══════════════════════════════════════════════════════════ */
-
-      // Pending state — mirrors the UI inputs, not yet applied to the analysis
       let pendingClusters = filterClusters;
       let pendingNeighbours = filterNeighbours;
       let pendingRandom = filterRandom;
@@ -1855,7 +1862,6 @@
         pendingNeighbours = parseInt(document.getElementById("filterNeighbours").value) || 0;
         pendingRandom = parseInt(document.getElementById("filterRandom").value) || 0;
         pendingWindow = parseInt(document.getElementById("windowSelect").value);
-        // Show a subtle "pending" indicator on the button if pending differs from active
         const btn = document.getElementById("genAnalysisBtn");
         const isDirty =
           pendingClusters !== filterClusters ||
@@ -1878,13 +1884,11 @@
         const btn = document.getElementById("genAnalysisBtn");
         btn.disabled = true;
         btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Analysing…';
-        // Commit pending → active state
         filterClusters = c;
         filterNeighbours = n;
         filterRandom = r;
         analysisWindow = pendingWindow;
         clusterWindow = pendingWindow;
-        // Defer to let the UI paint the disabled state first
         setTimeout(() => {
           renderAnalysisTable();
           btn.disabled = false;
@@ -1892,14 +1896,13 @@
         }, 30);
       }
 
-      // Inputs only update pending state — never trigger a re-render on their own
       document.getElementById("windowSelect").addEventListener("change", updatePendingFromUI);
       document.querySelectorAll('#filterClusters,#filterNeighbours,#filterRandom').forEach(input => {
         input.addEventListener('input', updatePendingFromUI);
       });
 
       /* ═══════════════════════════════════════════════════════════
-         DICE ICON — opens the "How this works" info modal
+         DICE ICON — info modal (unchanged)
       ═══════════════════════════════════════════════════════════ */
       function openInfoModal() {
         const root = document.getElementById('infoModalRoot');
@@ -1957,33 +1960,25 @@
                       <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </marker>
                   </defs>
-                  <!-- Step 1: draw history -->
                   <rect x="195" y="24" width="250" height="48" rx="8" fill="var(--surface2,#f5f5f5)" stroke="var(--border,#ccc)" stroke-width="0.5"/>
                   <text x="320" y="44" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:var(--text,#111)">Your draw history</text>
                   <text x="320" y="62" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:var(--text2,#555)">e.g. 158 total draws</text>
-                  <!-- Arrow -->
                   <line x1="320" y1="72" x2="320" y2="104" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
-                  <!-- Step 2: window -->
                   <rect x="195" y="106" width="250" height="48" rx="8" fill="#EEEDFE" stroke="#534AB7" stroke-width="0.5"/>
                   <text x="320" y="126" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#3C3489">Choose window size</text>
                   <text x="320" y="144" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#534AB7">1M=8 · 2M=17 · … · 6M=52 · All</text>
-                  <!-- Arrow + label -->
                   <line x1="320" y1="154" x2="320" y2="186" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
                   <text x="320" y="198" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">For each draw position i = window+1 to 158</text>
-                  <!-- Split lines -->
                   <path d="M320 208 L175 208 L175 218" fill="none" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
                   <path d="M320 208 L465 208 L465 218" fill="none" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
-                  <!-- Training box -->
                   <rect x="68" y="220" width="214" height="60" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
                   <text x="175" y="240" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#085041">Training data</text>
                   <text x="175" y="257" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#0F6E56">draws[i−window … i−1]</text>
                   <text x="175" y="272" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#0F6E56">e.g. draws 92–99 for i=100</text>
-                  <!-- Target box -->
                   <rect x="358" y="220" width="214" height="60" rx="8" fill="#FAECE7" stroke="#993C1D" stroke-width="0.5"/>
                   <text x="465" y="240" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#4A1B0C">Prediction target</text>
                   <text x="465" y="257" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#993C1D">draws[i] — actual lottery result</text>
                   <text x="465" y="272" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#993C1D">never seen before prediction</text>
-                  <!-- Teal chain -->
                   <line x1="175" y1="280" x2="175" y2="310" stroke="#0F6E56" stroke-width="1" marker-end="url(#im-arrow)"/>
                   <rect x="68" y="312" width="214" height="56" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
                   <text x="175" y="332" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#085041">Compute weights</text>
@@ -2000,22 +1995,17 @@
                   <rect x="68" y="576" width="214" height="48" rx="8" fill="#E1F5EE" stroke="#0F6E56" stroke-width="0.5"/>
                   <text x="175" y="596" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#085041">Generate prediction</text>
                   <text x="175" y="612" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#0F6E56">6 numbers · random-weighted</text>
-                  <!-- Merge lines -->
                   <path d="M175 624 L175 666 L318 666" fill="none" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
                   <path d="M465 280 L465 666 L322 666" fill="none" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
-                  <!-- Count matches -->
                   <rect x="195" y="668" width="250" height="48" rx="8" fill="#FAEEDA" stroke="#854F0B" stroke-width="0.5"/>
                   <text x="320" y="688" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#633806">Count matches</text>
                   <text x="320" y="706" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#854F0B">0–6 numbers in common</text>
-                  <!-- Slide window loop -->
                   <path d="M445 692 L580 692 L580 264 L572 264" fill="none" stroke="var(--text3,#888)" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#im-arrow)"/>
                   <text x="590" y="486" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">slide</text>
                   <text x="590" y="500" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">window</text>
                   <text x="590" y="514" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">+1 &amp;</text>
                   <text x="590" y="528" text-anchor="middle" style="font-size:11px;fill:var(--text3,#888)">repeat</text>
-                  <!-- Arrow to outputs -->
                   <line x1="320" y1="716" x2="320" y2="748" stroke="var(--text3,#888)" stroke-width="1" marker-end="url(#im-arrow)"/>
-                  <!-- Outputs -->
                   <rect x="195" y="750" width="250" height="48" rx="8" fill="#EAF3DE" stroke="#3B6D11" stroke-width="0.5"/>
                   <text x="320" y="770" text-anchor="middle" dominant-baseline="central" style="font-size:13px;font-weight:500;fill:#173404">Outputs</text>
                   <text x="320" y="788" text-anchor="middle" dominant-baseline="central" style="font-size:11px;fill:#3B6D11">Match dist · 3+ rate · Averages · Matrix scores</text>
@@ -2047,32 +2037,13 @@
           </div>`;
         document.getElementById('infoModalOverlay').addEventListener('click', e => { if (e.target.id === 'infoModalOverlay') closeInfoModal(); });
 
-        // Populate window breakdown table dynamically using actual draws.length
         const windowDefs = [
-          {
-            label: '1 month (1M)', size: 8,
-            why: 'The 8 most recent draws before each target are used as training. These 8 draws detect the hot clusters and compute number weights. Because only the first 8 draws have no history before them and cannot be predicted, almost all of your history becomes prediction targets — giving the most data points to test against, but with very limited pattern context per prediction.'
-          },
-          {
-            label: '2 months (2M)', size: 17,
-            why: 'The 17 draws before each target are used as training. A wider window than 1M — the algorithm sees more past draws to build clusters, which are likely to be more stable. The first 17 draws have no history before them and cannot be predicted, so fewer draws become prediction targets compared to 1M.'
-          },
-          {
-            label: '3 months (3M)', size: 26,
-            why: 'The 26 draws before each target are used as training. This is the default balance point — enough history to detect meaningful cluster patterns, while still leaving a good number of draws as prediction targets. Most users find this gives reliable cluster detection without over-fitting to old data.'
-          },
-          {
-            label: '4 months (4M)', size: 35,
-            why: 'The 35 draws before each target are used as training. The algorithm has a quarter-year of context per prediction. Clusters and weights are computed from a broader history, which can smooth out short-term noise. Fewer targets than 3M.'
-          },
-          {
-            label: '5 months (5M)', size: 43,
-            why: 'The 43 draws before each target are used as training. Almost half a year of draws inform each prediction. Useful if lottery patterns shift slowly over time. The first 43 draws have no history before them and cannot be predicted, so significantly fewer draws are available as prediction targets.'
-          },
-          {
-            label: '6 months (6M)', size: 52,
-            why: 'The 52 draws before each target are used as training — a full half-year of weekly draws. The algorithm sees the widest context of any fixed window, capturing seasonal or long-term trends. The trade-off is the fewest prediction targets among the fixed windows.'
-          },
+          { label: '1 month (1M)', size: 8, why: 'The 8 most recent draws before each target are used as training. These 8 draws detect the hot clusters and compute number weights. Because only the first 8 draws have no history before them and cannot be predicted, almost all of your history becomes prediction targets — giving the most data points to test against, but with very limited pattern context per prediction.' },
+          { label: '2 months (2M)', size: 17, why: 'The 17 draws before each target are used as training. A wider window than 1M — the algorithm sees more past draws to build clusters, which are likely to be more stable. The first 17 draws have no history before them and cannot be predicted, so fewer draws become prediction targets compared to 1M.' },
+          { label: '3 months (3M)', size: 26, why: 'The 26 draws before each target are used as training. This is the default balance point — enough history to detect meaningful cluster patterns, while still leaving a good number of draws as prediction targets. Most users find this gives reliable cluster detection without over-fitting to old data.' },
+          { label: '4 months (4M)', size: 35, why: 'The 35 draws before each target are used as training. The algorithm has a quarter-year of context per prediction. Clusters and weights are computed from a broader history, which can smooth out short-term noise. Fewer targets than 3M.' },
+          { label: '5 months (5M)', size: 43, why: 'The 43 draws before each target are used as training. Almost half a year of draws inform each prediction. Useful if lottery patterns shift slowly over time. The first 43 draws have no history before them and cannot be predicted, so significantly fewer draws are available as prediction targets.' },
+          { label: '6 months (6M)', size: 52, why: 'The 52 draws before each target are used as training — a full half-year of weekly draws. The algorithm sees the widest context of any fixed window, capturing seasonal or long-term trends. The trade-off is the fewest prediction targets among the fixed windows.' },
         ];
         const tbody = document.getElementById('info-window-table-body');
         if (tbody) {
@@ -2090,7 +2061,6 @@
             </tr>`;
           }).join('');
 
-          // Live example block below the table
           const exampleEl = document.getElementById('info-window-example');
           if (exampleEl && total > 0) {
             const rows = windowDefs.map((w, idx) => {
@@ -2125,10 +2095,7 @@
       document.getElementById('diceIcon').addEventListener('click', openInfoModal);
 
       /* ═══════════════════════════════════════════════════════════
-         COMBINATION MATRIX PAGE
-         27 C+N+R combos × 7 window options. For each cell, run the
-         analysis N times; each run that scores >6% on the 3+ match
-         rate increments that cell's counter.
+         COMBINATION MATRIX (unchanged)
       ═══════════════════════════════════════════════════════════ */
       const MATRIX_COMBOS = [
         [0,1,5],[0,2,4],[0,3,3],[0,4,2],[0,5,1],[0,6,0],
@@ -2146,15 +2113,11 @@
       let matrixRunning = false;
 
       function openMatrixPage() {
-        // Stats bar click — navigate to matrix tab programmatically
         const btn = document.querySelector('.tab[onclick*="matrix"]');
         document.querySelectorAll(".pane").forEach(p => p.classList.remove("active"));
         document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
         document.getElementById("pane-matrix").classList.add("active");
         if (btn) btn.classList.add("active");
-      }
-      function closeMatrixPage() {
-        // No longer used (matrix is a direct tab), keep for backwards compat
       }
 
       function singleAnalysisPass(windowSize, c, n, r) {
@@ -2182,7 +2145,6 @@
         }
         const threeOrMoreCount = matchCounts.slice(2).reduce((s, c) => s + c, 0);
         const pct = totalPredictions > 0 ? (threeOrMoreCount / totalPredictions) * 100 : 0;
-        // Return both the threshold metric AND the full match breakdown
         return { pct, matchCounts, totalPredictions };
       }
 
@@ -2202,7 +2164,6 @@
 
         const totalCells = MATRIX_COMBOS.length * MATRIX_WINDOWS.length;
         let cellsDone = 0;
-        // results[ci][wi] = { count, possible, matchDetail: [0..5], totalPredictions, runsPerCell }
         const results = MATRIX_COMBOS.map(() => MATRIX_WINDOWS.map(() => ({ count: 0, possible: true, matchDetail: [0,0,0,0,0,0], totalPredictions: 0 })));
 
         for (let ci = 0; ci < MATRIX_COMBOS.length; ci++) {
@@ -2262,7 +2223,6 @@
         const runsPerCell = window._matrixRunsPerCell || 1;
         if (!results) return;
 
-        // Show sub-tabs (only 3+ Match Rate tab now)
         document.getElementById('matrix-subtabs').style.display = 'block';
         document.getElementById('matrix-pane-pred').style.display = 'none';
         document.getElementById('matrix-pane-rate').style.display = 'block';
@@ -2270,10 +2230,6 @@
 
         const include3 = document.getElementById('include3Matches')?.checked !== false;
 
-        // weightedScore: each match tier weighted by its count, with higher tiers valued more.
-        // 6 matches = weight 6, 5 = weight 5, 4 = weight 4, 3 = weight 3 (optional).
-        // This ensures 6>5>4>3 in the score: a cell with more 6-match predictions always
-        // ranks above one with more 4-match predictions of equal total.
         const cellData = MATRIX_COMBOS.map((combo, ci) =>
           MATRIX_WINDOWS.map((w, wi) => {
             const cell = results[ci]?.[wi];
@@ -2284,7 +2240,6 @@
             const w3 = include3 ? 3*md[2] : 0;
             const weightedRaw = w3 + 4*md[3] + 5*md[4] + 6*md[5];
             const weightedScore = totalSlots > 0 ? (weightedRaw / totalSlots) * 100 : 0;
-            // Best tier: highest match level with ≥1 occurrence (3–6 only)
             let bestTier = 2;
             for (let i = 5; i >= 2; i--) { if (md[i] > 0) { bestTier = i; break; } }
             return { possible: true, totalSlots, md, pct3, weightedScore, bestTier };
@@ -2294,7 +2249,6 @@
         let globalMaxW = 0;
         cellData.forEach(row => row.forEach(c => { if (c.possible && c.weightedScore > globalMaxW) globalMaxW = c.weightedScore; }));
 
-        // ── LEADERBOARD (top 5 by weightedScore) ───────────────────────────
         const allCells = [];
         MATRIX_COMBOS.forEach((combo, ci) => {
           MATRIX_WINDOWS.forEach((w, wi) => {
@@ -2320,15 +2274,13 @@
           </div>`;
         }).join('');
 
-        // ── HEATMAP TABLE ───────────────────────────────────────────────────
-        // Color by best tier; value shown is the weighted score
         function cellStyle(c) {
           if (!c.possible) return { bg:'var(--surface2)', color:'var(--text3)', text:'—', cursor:'default' };
           const txt = c.weightedScore.toFixed(1);
-          if (c.bestTier >= 5) return { bg:'rgba(220,38,38,.22)',   color:'#dc2626',           text:txt, cursor:'pointer' }; // 6 matches — red
-          if (c.bestTier === 4) return { bg:'rgba(5,150,105,.35)',   color:'var(--green-text)', text:txt, cursor:'pointer' }; // 5 matches — strong green
-          if (c.bestTier === 3) return { bg:'rgba(5,150,105,.12)',   color:'var(--green-text)', text:txt, cursor:'pointer' }; // 4 matches — light green
-          if (c.bestTier === 2) return { bg:'rgba(234,179,8,.22)',   color:'#854d0e',           text:txt, cursor:'pointer' }; // 3 matches — yellow
+          if (c.bestTier >= 5) return { bg:'rgba(220,38,38,.22)',   color:'#dc2626',           text:txt, cursor:'pointer' };
+          if (c.bestTier === 4) return { bg:'rgba(5,150,105,.35)',   color:'var(--green-text)', text:txt, cursor:'pointer' };
+          if (c.bestTier === 3) return { bg:'rgba(5,150,105,.12)',   color:'var(--green-text)', text:txt, cursor:'pointer' };
+          if (c.bestTier === 2) return { bg:'rgba(234,179,8,.22)',   color:'#854d0e',           text:txt, cursor:'pointer' };
           return { bg:'transparent', color:'var(--text3)', text:txt, cursor:'pointer' };
         }
 
@@ -2353,7 +2305,6 @@
           `<table style="border-collapse:separate;border-spacing:0;table-layout:fixed;width:max-content;min-width:100%;">${colgroup}<thead style="position:sticky;top:0;z-index:3;">${headRow}</thead><tbody>${bodyRows}</tbody></table>`;
       }
 
-      // ── MODAL BREAKDOWN ──────────────────────────────────────────────────
       window.openBreakdownModal = function(ci, wi) {
         const results = window._matrixResults;
         const runsPerCell = window._matrixRunsPerCell || 1;
@@ -2375,10 +2326,8 @@
         }
 
         const md = cell.matchDetail;
-        const totalSlots = cell.totalPredictions * runsPerCell; // total prediction slots
-        const perPos = cell.totalPredictions; // draw positions per run (the meaningful denominator)
-        // Base % on per-position average: md[i] accumulated across runs / runsPerCell / totalPredictions
-        // This gives average % of draw positions per run that produced exactly i+1 matches
+        const totalSlots = cell.totalPredictions * runsPerCell;
+        const perPos = cell.totalPredictions;
         const maxCount = Math.max(1, ...md.slice(2));
         const labels = ['1 match','2 matches','3 matches','4 matches','5 matches','6 matches 🎉'];
 
@@ -2391,7 +2340,6 @@
         }
 
         const rowsHtml = md.map((count, i) => {
-          // % = avg per run per draw position
           const avgPerRun = runsPerCell > 0 ? count / runsPerCell : 0;
           const pct = i < 2
             ? '—'
@@ -2445,6 +2393,7 @@
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') closeBreakdownModal();
       });
+
       function renderMatrixTable(results, runsPerCell, pctThreshold) {
         const container = document.getElementById("matrix-table-container");
         const COL_W = 44;
@@ -2476,11 +2425,9 @@
       }
 
       function populateTopCombosFromMatrix(results, runsPerCell) {
-        // Store globally for renderMatchDetail and breakdown modal
         window._matrixResults = results;
         window._matrixRunsPerCell = runsPerCell;
 
-        // Rank combos by weighted score (3×m3 + 4×m4 + 5×m5 + 6×m6) / totalSlots
         const comboTotals = MATRIX_COMBOS.map((combo, ci) => {
           let totalWeighted = 0;
           let totalSlotSum = 0;
@@ -2504,7 +2451,6 @@
         const top1 = comboTotals[0];
         if (!top1) return;
 
-        // Populate only Mix 1 (single prediction mix)
         const [c, n, r] = top1.combo;
         document.getElementById('gFC1').value = c;
         document.getElementById('gFN1').value = n;
@@ -2530,7 +2476,7 @@
         requestAnimationFrame(function(){
           requestAnimationFrame(function(){
             if(name==="grid") renderGrid();
-            if(name==="matrix") { /* matrix renders on Run, no auto-render needed */ }
+            if(name==="matrix") { /* matrix renders on Run */ }
           });
         });
       };
@@ -2544,10 +2490,7 @@
       }
 
       /* ═══════════════════════════════════════════════════════════
-         DRAW SIMULATION
-         Grid layout mirrors the main app grid (rows bottom-to-top,
-         columns left-to-right). 40 balls shuffle for 8s then one
-         is drawn in 3s. Repeats 6 times. Purely random.
+         DRAW SIMULATION (unchanged)
       ═══════════════════════════════════════════════════════════ */
       const SIM_GRID_ROWS = [
         [5,10,15,20,25,30,35,40],
@@ -2556,14 +2499,10 @@
         [2, 7,12,17,22,27,32,37],
         [1, 6,11,16,21,26,31,36],
       ];
-      const SIM_NUMBERS = SIM_GRID_ROWS.flat(); // 40 numbers in grid order
+      const SIM_NUMBERS = SIM_GRID_ROWS.flat();
       const MIX_MS   = 8000;
       const DRAW_MS  = 3000;
       let simRunning = false;
-      let simNumbers = [...Array(40)].map((_,i)=>i+1); // the 40 display slots
-      let simDrawn   = [];
-      let simAnimFrame = null;
-      let simTimerInterval = null;
 
       function buildSimGrid() {
         const g = document.getElementById('simGrid');
@@ -2577,31 +2516,6 @@
             g.appendChild(cell);
           });
         });
-      }
-
-      function simSetAllText(numbers) {
-        // Scatter numbers randomly across the cells during mixing
-        const flat = SIM_NUMBERS.slice(); // grid positions
-        flat.forEach((pos, i) => {
-          const cell = document.getElementById(`sc-${pos}`);
-          if (cell) cell.textContent = numbers[i] ?? '';
-        });
-      }
-
-      function simStartTimer(durationMs, color) {
-        const fill = document.getElementById('simTimerFill');
-        fill.style.background = color || 'var(--rose)';
-        fill.style.transition = 'none';
-        fill.style.width = '100%';
-        const start = performance.now();
-        clearInterval(simTimerInterval);
-        simTimerInterval = setInterval(() => {
-          const elapsed = performance.now() - start;
-          const pct = Math.max(0, 100 - (elapsed / durationMs) * 100);
-          fill.style.transition = 'width .1s linear';
-          fill.style.width = pct + '%';
-          if (elapsed >= durationMs) clearInterval(simTimerInterval);
-        }, 50);
       }
 
       function simShuffle(arr) {
@@ -2618,7 +2532,7 @@
       async function startSimulation() {
         if (simRunning) return;
         simRunning = true;
-        simDrawn = [];
+        let simDrawn = [];
         buildSimGrid();
         document.getElementById('simResults').innerHTML = '';
         document.getElementById('simRoundLabel').textContent = '';
@@ -2627,33 +2541,36 @@
         btn.disabled = true;
         btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Drawing…';
 
-        let remaining = [...Array(40)].map((_,i)=>i+1); // 1–40, not yet drawn
+        let remaining = [...Array(40)].map((_,i)=>i+1);
 
         for (let round = 1; round <= 6; round++) {
-          // ── MIX PHASE (8 seconds) ──────────────────────────────────
           document.getElementById('simPhase').textContent = `Mixing…`;
           document.getElementById('simStatus').textContent = `Ball ${round} of 6 — mixing for 8 seconds`;
-          simStartTimer(MIX_MS, 'var(--amber)');
-          document.getElementById('simTimerFill').style.background = '#e8a020';
+          const fill = document.getElementById('simTimerFill');
+          fill.style.background = '#e8a020';
+          fill.style.transition = 'none';
+          fill.style.width = '100%';
+          const mixEnd = Date.now() + MIX_MS;
+          const timer = setInterval(() => {
+            const pct = Math.max(0, 100 - ((Date.now() - (mixEnd - MIX_MS)) / MIX_MS) * 100);
+            fill.style.transition = 'width .1s linear';
+            fill.style.width = pct + '%';
+          }, 50);
 
-          // Mark already-drawn cells as gone
           simDrawn.forEach(n => {
             const c = document.getElementById(`sc-${n}`);
             if (c) { c.className = 'sim-cell gone'; c.textContent = n; }
           });
 
-          // Animate shuffling for MIX_MS
-          const mixEnd = Date.now() + MIX_MS;
-          const SHUFFLE_INTERVAL = 180; // ms between visual shuffles
+          const SHUFFLE_INTERVAL = 180;
           while (Date.now() < mixEnd) {
             const shuffled = simShuffle(remaining);
-            // Scatter remaining numbers across their original grid slots
             let si = 0;
             SIM_NUMBERS.forEach(pos => {
               const cell = document.getElementById(`sc-${pos}`);
               if (!cell) return;
               if (simDrawn.includes(pos) || simDrawn.some(d => d === parseInt(cell.textContent))) {
-                // already drawn — keep gone styling
+                // already drawn
               } else if (!simDrawn.includes(pos)) {
                 const val = shuffled[si++];
                 if (val !== undefined) {
@@ -2664,8 +2581,8 @@
             });
             await sleep(SHUFFLE_INTERVAL);
           }
+          clearInterval(timer);
 
-          // Stop shuffling animation
           SIM_NUMBERS.forEach(pos => {
             const cell = document.getElementById(`sc-${pos}`);
             if (cell && !cell.classList.contains('gone')) {
@@ -2673,17 +2590,23 @@
             }
           });
 
-          // ── DRAW PHASE (3 seconds) ─────────────────────────────────
           document.getElementById('simPhase').textContent = `Drawing…`;
           document.getElementById('simStatus').textContent = `Ball ${round} of 6 — drawing in 3 seconds`;
-          simStartTimer(DRAW_MS, 'var(--rose)');
+          const dFill = document.getElementById('simTimerFill');
+          dFill.style.background = 'var(--rose)';
+          dFill.style.transition = 'none';
+          dFill.style.width = '100%';
+          const drawEnd = Date.now() + DRAW_MS;
+          const dTimer = setInterval(() => {
+            const pct = Math.max(0, 100 - ((Date.now() - (drawEnd - DRAW_MS)) / DRAW_MS) * 100);
+            dFill.style.transition = 'width .1s linear';
+            dFill.style.width = pct + '%';
+          }, 50);
 
-          // Cycle through remaining numbers rapidly for 2.5s then land on winner
           const winner = remaining[Math.floor(Math.random() * remaining.length)];
           const cycleEnd = Date.now() + 2500;
           let cycleIdx = 0;
           while (Date.now() < cycleEnd) {
-            // Highlight a rotating candidate on the grid
             SIM_NUMBERS.forEach(pos => {
               const cell = document.getElementById(`sc-${pos}`);
               if (cell && !cell.classList.contains('gone')) {
@@ -2691,7 +2614,6 @@
               }
             });
             const candidate = remaining[cycleIdx % remaining.length];
-            // Find which cell currently shows this number
             SIM_NUMBERS.forEach(pos => {
               const cell = document.getElementById(`sc-${pos}`);
               if (cell && parseInt(cell.textContent) === candidate) {
@@ -2699,15 +2621,14 @@
               }
             });
             cycleIdx++;
-            await sleep(80 + Math.floor((Date.now() - (cycleEnd - 2500)) / 50)); // slow down
+            await sleep(80 + Math.floor((Date.now() - (cycleEnd - 2500)) / 50));
           }
+          clearInterval(dTimer);
 
-          // Final 0.5s — highlight winner
           SIM_NUMBERS.forEach(pos => {
             const cell = document.getElementById(`sc-${pos}`);
             if (cell && !cell.classList.contains('gone')) cell.className = 'sim-cell';
           });
-          // Restore proper numbers after shuffle (winner needs to show in its actual slot)
           buildSimGrid();
           simDrawn.forEach(n => {
             const c = document.getElementById(`sc-${n}`);
@@ -2722,11 +2643,8 @@
           document.getElementById('simStatus').textContent = `Number ${winner} drawn!`;
           await sleep(500);
 
-          // Record
           simDrawn.push(winner);
           remaining = remaining.filter(n => n !== winner);
-
-          // Re-render results in ascending order
           const sorted = [...simDrawn].sort((a,b)=>a-b);
           document.getElementById('simResults').innerHTML = sorted.map(n =>
             `<div class="sim-ball">${n}</div>`
@@ -2734,32 +2652,27 @@
           document.getElementById('simRoundLabel').textContent =
             `Drawn so far: ${sorted.join('  ·  ')}`;
 
-          // Mark as gone
           if (winnerCell) winnerCell.className = 'sim-cell gone';
-
           await sleep(300);
         }
 
-        // ── COMPLETE ──────────────────────────────────────────────
         const sorted = [...simDrawn].sort((a,b)=>a-b);
         document.getElementById('simPhase').textContent = '✅ Draw complete';
         document.getElementById('simStatus').textContent = `Result: ${sorted.join(' · ')}`;
         document.getElementById('simRoundLabel').textContent = `Final numbers (sorted): ${sorted.join('  ·  ')}`;
         document.getElementById('simTimerFill').style.width = '0%';
-        clearInterval(simTimerInterval);
 
         btn.disabled = false;
         btn.innerHTML = '<i class="ti ti-refresh" aria-hidden="true"></i> Draw Again';
         simRunning = false;
       }
 
-      // Build the grid on first render when the tab is opened
       document.querySelector('.tab[onclick*="draw-sim"]').addEventListener('click', () => {
         setTimeout(() => { if (!simRunning) buildSimGrid(); }, 60);
       });
 
       /* ═══════════════════════════════════════════════════════════
-         INLINE DRAW SIMULATION (modal, triggered from Generate)
+         INLINE DRAW SIMULATION (unchanged)
       ═══════════════════════════════════════════════════════════ */
       let iSimRunning = false;
 
@@ -2796,21 +2709,6 @@
         });
       }
 
-      function iSimStartTimer(durationMs, color) {
-        const fill = document.getElementById('iSimTimerFill');
-        fill.style.background = color;
-        fill.style.transition = 'none';
-        fill.style.width = '100%';
-        const start = performance.now();
-        const iv = setInterval(() => {
-          const elapsed = performance.now() - start;
-          const pct = Math.max(0, 100 - (elapsed / durationMs) * 100);
-          fill.style.transition = 'width .1s linear';
-          fill.style.width = pct + '%';
-          if (elapsed >= durationMs) clearInterval(iv);
-        }, 50);
-      }
-
       async function startInlineSimulation() {
         if (iSimRunning) return;
         iSimRunning = true;
@@ -2826,9 +2724,19 @@
         for (let round = 1; round <= 6; round++) {
           document.getElementById('iSimPhase').textContent = `Mixing…`;
           document.getElementById('iSimStatus').textContent = `Ball ${round} of 6 — mixing for 8 seconds`;
-          iSimStartTimer(MIX_MS, '#e8a020');
-          iSimDrawn.forEach(n => { const c=document.getElementById(`isc-${n}`); if(c){c.className='sim-cell gone';c.textContent=n;} });
+          const fill = document.getElementById('iSimTimerFill');
+          fill.style.background = '#e8a020';
+          fill.style.transition = 'none';
+          fill.style.width = '100%';
           const mixEnd = Date.now() + MIX_MS;
+          const timer = setInterval(() => {
+            const pct = Math.max(0, 100 - ((Date.now() - (mixEnd - MIX_MS)) / MIX_MS) * 100);
+            fill.style.transition = 'width .1s linear';
+            fill.style.width = pct + '%';
+          }, 50);
+
+          iSimDrawn.forEach(n => { const c=document.getElementById(`isc-${n}`); if(c){c.className='sim-cell gone';c.textContent=n;} });
+          const SHUFFLE_INTERVAL = 180;
           while (Date.now() < mixEnd) {
             const shuffled = simShuffle(remaining);
             let si = 0;
@@ -2838,13 +2746,25 @@
               const val = shuffled[si++];
               if (val !== undefined) { cell.textContent = val; cell.className = 'sim-cell shuffling'; }
             });
-            await sleep(180);
+            await sleep(SHUFFLE_INTERVAL);
           }
+          clearInterval(timer);
+
           SIM_NUMBERS.forEach(pos => { const c=document.getElementById(`isc-${pos}`); if(c&&!c.classList.contains('gone'))c.className='sim-cell'; });
 
           document.getElementById('iSimPhase').textContent = `Drawing…`;
           document.getElementById('iSimStatus').textContent = `Ball ${round} of 6 — drawing in 3 seconds`;
-          iSimStartTimer(DRAW_MS, 'var(--rose)');
+          const dFill = document.getElementById('iSimTimerFill');
+          dFill.style.background = 'var(--rose)';
+          dFill.style.transition = 'none';
+          dFill.style.width = '100%';
+          const drawEnd = Date.now() + DRAW_MS;
+          const dTimer = setInterval(() => {
+            const pct = Math.max(0, 100 - ((Date.now() - (drawEnd - DRAW_MS)) / DRAW_MS) * 100);
+            dFill.style.transition = 'width .1s linear';
+            dFill.style.width = pct + '%';
+          }, 50);
+
           const winner = remaining[Math.floor(Math.random() * remaining.length)];
           const cycleEnd = Date.now() + 2500;
           let cycleIdx = 0;
@@ -2855,6 +2775,8 @@
             cycleIdx++;
             await sleep(80 + Math.floor((Date.now()-(cycleEnd-2500))/50));
           }
+          clearInterval(dTimer);
+
           SIM_NUMBERS.forEach(pos => { const c=document.getElementById(`isc-${pos}`); if(c&&!c.classList.contains('gone'))c.className='sim-cell'; });
           buildInlineSimGrid();
           iSimDrawn.forEach(n => { const c=document.getElementById(`isc-${n}`); if(c)c.className='sim-cell gone'; });
@@ -2878,7 +2800,6 @@
         document.getElementById('iSimStatus').textContent = `Result: ${finalSorted.join(' · ')}`;
         document.getElementById('iSimTimerFill').style.width = '0%';
 
-        // Wait 2 seconds then close and show both predictions
         await sleep(2000);
         closeInlineSimModal();
         renderPredictions(_pendingMixResult, finalSorted);
@@ -2887,7 +2808,9 @@
         iSimRunning = false;
       }
 
-      /* INIT */
+      /* ═══════════════════════════════════════════════════════════
+         INIT — restore handles + cache
+      ═══════════════════════════════════════════════════════════ */
       restoreHandles();
     </script>
   </body>
