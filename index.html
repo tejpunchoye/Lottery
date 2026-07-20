@@ -462,27 +462,27 @@
           <div id="row-bars"></div>
         </div>
         <div class="pred-filter-card">
-          <div class="slabel" style="margin-bottom:10px">Prediction mix — 2 sets (each must sum to 6)</div>
+          <div class="slabel" style="margin-bottom:10px">Prediction mix</div>
           <div class="pred-mix-rows">
             <div class="pred-mix-row">
               <span class="pred-mix-month" id="gMW1" title="Best window from matrix">—</span>
               <input type="hidden" id="gWS1" value="0" />
+              <!-- Keep gWS2/gFC2 etc as hidden stubs so JS doesn't crash -->
+              <input type="hidden" id="gWS2" value="0" />
+              <input type="hidden" id="gFC2" value="0" />
+              <input type="hidden" id="gFN2" value="0" />
+              <input type="hidden" id="gFR2" value="0" />
+              <span id="gMW2" style="display:none"></span>
+              <input type="hidden" id="gMW2-val" value="" />
               <div class="pred-filter-group"><label>Clusters</label><input type="number" id="gFC1" value="2" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Neighbours</label><input type="number" id="gFN1" value="2" min="0" max="6" /></div>
               <div class="pred-filter-group"><label>Random</label><input type="number" id="gFR1" value="2" min="0" max="6" /></div>
-            </div>
-            <div class="pred-mix-row">
-              <span class="pred-mix-month" id="gMW2" title="Best window from matrix">—</span>
-              <input type="hidden" id="gWS2" value="0" />
-              <div class="pred-filter-group"><label>Clusters</label><input type="number" id="gFC2" value="3" min="0" max="6" /></div>
-              <div class="pred-filter-group"><label>Neighbours</label><input type="number" id="gFN2" value="2" min="0" max="6" /></div>
-              <div class="pred-filter-group"><label>Random</label><input type="number" id="gFR2" value="1" min="0" max="6" /></div>
             </div>
           </div>
         </div>
         <button class="gen-btn" id="gen-btn" onclick="generate()">
           <i class="ti ti-bolt" aria-hidden="true"></i>
-          Generate 2 predictions
+          Generate prediction
         </button>
         <div class="legend">
           <span class="leg"><span class="leg-dot" style="background:var(--rose)"></span>Cluster</span>
@@ -596,10 +596,6 @@
             <label>Runs per cell:</label>
             <input type="number" id="matrixRuns" value="20" min="1" max="200" />
           </div>
-          <div class="filter-group">
-            <label>Threshold %:</label>
-            <input type="number" id="matrixThreshold" value="6" min="0" max="100" step="0.1" />
-          </div>
           <button class="gen-analysis-btn matrix-run-btn" id="matrixRunBtn" onclick="runMatrix()">
             <i class="ti ti-player-play" aria-hidden="true"></i> Run Matrix
           </button>
@@ -612,17 +608,13 @@
         <!-- Sub-tabs — hidden until matrix has run -->
         <div id="matrix-subtabs" style="display:none;margin-bottom:0;">
           <div class="tabs" style="position:static;border-bottom:1px solid var(--border);padding:8px 0 0;margin-bottom:0;">
-            <button class="tab active" id="mst-pred" onclick="switchMatrixTab('pred',this)">Prediction Analysis</button>
-            <button class="tab" id="mst-rate" onclick="switchMatrixTab('rate',this)">3+ Match Rate</button>
+            <button class="tab active" id="mst-rate" onclick="switchMatrixTab('rate',this)">Match Rate</button>
           </div>
         </div>
 
-        <!-- Tab 1: Prediction Analysis (original matrix table) -->
-        <div id="matrix-pane-pred" style="display:none;margin-top:0;">
-          <div class="table-wrap matrix-table-wrap" id="matrix-table-container" style="margin-top:12px;">
-            <div class="empty">Set runs per cell and threshold, then tap <strong>Run Matrix</strong>.</div>
-          </div>
-        </div>
+        <!-- matrix-pane-pred and matrix-table-container kept as hidden stubs for JS compatibility -->
+        <div id="matrix-pane-pred" style="display:none;"></div>
+        <div id="matrix-table-container" style="display:none;"></div>
 
         <!-- Tab 2: 3+ Match Rate heatmap -->
         <div id="matrix-pane-rate" style="display:none;margin-top:12px;">
@@ -632,6 +624,13 @@
           </div>
           <div id="matrix-leaderboard" style="margin-bottom:18px;"></div>
 
+          <!-- 3-match inclusion toggle -->
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--text2);">
+              <input type="checkbox" id="include3Matches" checked onchange="if(window._matrixResults)renderMatchDetail();" style="cursor:pointer;">
+              Include 3-match combinations in weighted score
+            </label>
+          </div>
           <!-- Heatmap colour legend -->
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:10px;">
             <span style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Best match tier per cell:</span>
@@ -656,6 +655,54 @@
           <div id="modal-breakdown-body"></div>
           <p id="modal-breakdown-caption" style="font-size:11px;color:var(--text3);margin-top:8px;"></p>
         </div>
+      </div>
+
+      <!-- ── DRAW SIMULATION ── -->
+      <div id="pane-draw-sim" class="pane">
+        <style>
+          .sim-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:4px; padding:12px; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius-md); margin-bottom:16px; position:relative; }
+          .sim-cell { aspect-ratio:1; border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; font-family:var(--font-mono); background:var(--surface); border:1.5px solid var(--border); color:var(--text); transition:background .15s, color .15s; position:relative; }
+          .sim-cell.shuffling { animation:simShake .18s ease-in-out infinite alternate; }
+          .sim-cell.hot { background:rgba(225,29,72,.18); border-color:var(--rose); color:var(--rose-text); }
+          .sim-cell.drawn { background:var(--rose); border-color:var(--rose); color:#fff; transform:scale(1.12); box-shadow:0 4px 14px rgba(225,29,72,.4); z-index:2; }
+          .sim-cell.gone { background:var(--surface2); border-color:var(--border); color:var(--text3); opacity:.35; }
+          @keyframes simShake { from{transform:translate(-1px,-1px)} to{transform:translate(1px,1px)} }
+          @keyframes simPop { 0%{transform:scale(1)} 40%{transform:scale(1.22)} 100%{transform:scale(1.1)} }
+          .sim-status { text-align:center; font-size:13px; color:var(--text2); margin-bottom:8px; min-height:20px; font-family:var(--font-mono); }
+          .sim-phase { text-align:center; font-size:22px; font-weight:700; color:var(--text); margin-bottom:6px; min-height:32px; font-family:var(--font-mono); }
+          .sim-timer { display:flex; align-items:center; justify-content:center; margin-bottom:16px; }
+          .sim-timer-bar { height:8px; background:var(--border); border-radius:4px; overflow:hidden; flex:1; max-width:300px; }
+          .sim-timer-fill { height:8px; border-radius:4px; background:var(--rose); transition:width .1s linear; }
+          .sim-results { display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-bottom:16px; min-height:56px; }
+          .sim-ball { width:52px; height:52px; border-radius:50%; background:var(--rose-bg); border:2px solid var(--rose); color:var(--rose-text); display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; font-family:var(--font-mono); animation:simPop .35s ease; }
+          .sim-start-btn { width:100%; padding:13px; background:linear-gradient(135deg,var(--rose),#be123c); color:#fff; border:none; border-radius:var(--radius-md); font-size:14px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; box-shadow:0 4px 12px rgba(225,29,72,.25); transition:opacity .15s,transform .1s; }
+          .sim-start-btn:hover{opacity:.93;transform:translateY(-1px);}
+          .sim-start-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none;}
+          .sim-round-label { font-size:10px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); text-align:center; margin-bottom:6px; }
+        </style>
+
+        <div class="slabel" style="margin-bottom:12px;">Draw Simulation</div>
+
+        <!-- Phase label -->
+        <div class="sim-phase" id="simPhase">Ready</div>
+        <div class="sim-status" id="simStatus">Press Start to begin the draw</div>
+
+        <!-- Timer bar -->
+        <div class="sim-timer">
+          <div class="sim-timer-bar"><div class="sim-timer-fill" id="simTimerFill" style="width:0%"></div></div>
+        </div>
+
+        <!-- The 40-number grid -->
+        <div class="sim-grid" id="simGrid"></div>
+
+        <!-- Results balls -->
+        <div class="sim-round-label" id="simRoundLabel"></div>
+        <div class="sim-results" id="simResults"></div>
+
+        <!-- Start/Reset button -->
+        <button class="sim-start-btn" id="simStartBtn" onclick="startSimulation()">
+          <i class="ti ti-player-play" aria-hidden="true"></i> Start Draw
+        </button>
       </div>
 
       <!-- ── ADD DRAW ── -->
@@ -689,8 +736,8 @@
             <button class="refresh-btn" id="clearDrawsBtn"><i class="ti ti-trash" aria-hidden="true"></i> Forget</button>
           </div>
           <p class="hint">
-            <strong>📌 Once you select a file, its path is saved permanently.</strong><br />
-            If the status shows <strong>Not active</strong>, tap <strong>Activate</strong> to re‑grant permission for this session.
+            <strong>📌 Select a file once — the path is saved permanently.</strong><br />
+            On reload, tap <strong>Activate</strong> to re‑grant permission for that session.
             The path is <span class="highlight">never forgotten</span> unless you click <strong>Forget</strong>.
           </p>
         </div>
@@ -708,8 +755,8 @@
             <button class="refresh-btn" id="clearArrBtn"><i class="ti ti-trash" aria-hidden="true"></i> Forget</button>
           </div>
           <p class="hint">
-            <strong>📌 Arrangement file path is also saved permanently.</strong><br />
-            Tap <strong>Activate</strong> to grant read permission for this session.
+            <strong>📌 Select a file once — the path is saved permanently.</strong><br />
+            On reload, tap <strong>Activate</strong> to re‑grant read permission for that session.
             The path is <span class="highlight">never forgotten</span> unless you click <strong>Forget</strong>.
           </p>
         </div>
@@ -720,6 +767,39 @@
     </div>
 
     <div id="infoModalRoot"></div>
+
+    <!-- Sim choice popup -->
+    <div id="simChoiceModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:260;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px);">
+      <div style="background:var(--surface);border-radius:var(--radius-lg);padding:24px;max-width:340px;width:100%;box-shadow:0 24px 64px rgba(0,0,0,.2);text-align:center;">
+        <div style="font-size:28px;margin-bottom:12px;">🎲</div>
+        <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;">Launch Draw Simulation?</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:20px;line-height:1.6;">Run the draw simulation to get a second set of numbers, or use only the prediction mix.</div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="simChoiceNo()" style="flex:1;padding:11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-md);font-size:13px;font-weight:600;color:var(--text2);cursor:pointer;">No — show prediction</button>
+          <button onclick="simChoiceYes()" style="flex:1;padding:11px;background:var(--rose);border:none;border-radius:var(--radius-md);font-size:13px;font-weight:600;color:#fff;cursor:pointer;">Yes — simulate draw</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inline draw simulation modal -->
+    <div id="inlineSimModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:270;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px;backdrop-filter:blur(4px);">
+      <div style="background:var(--surface);border-radius:var(--radius-lg);padding:20px;width:100%;max-width:520px;margin:auto;box-shadow:0 24px 64px rgba(0,0,0,.3);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+          <span style="font-size:15px;font-weight:700;color:var(--text);">Draw Simulation</span>
+          <button onclick="closeInlineSimModal()" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:20px;line-height:1;">✕</button>
+        </div>
+        <div class="sim-phase" id="iSimPhase">Ready</div>
+        <div class="sim-status" id="iSimStatus">Press Start to begin</div>
+        <div class="sim-timer"><div class="sim-timer-bar"><div class="sim-timer-fill" id="iSimTimerFill" style="width:0%"></div></div></div>
+        <div class="sim-grid" id="iSimGrid" style="margin-bottom:16px;"></div>
+        <div class="sim-round-label" id="iSimRoundLabel"></div>
+        <div class="sim-results" id="iSimResults" style="margin-bottom:16px;"></div>
+        <button class="sim-start-btn" id="iSimStartBtn" onclick="startInlineSimulation()">
+          <i class="ti ti-player-play" aria-hidden="true"></i> Start Draw
+        </button>
+      </div>
+    </div>
+
     <div class="toast" id="toast"></div>
 
     <script>
@@ -774,8 +854,8 @@
           r.onupgradeneeded = e => { if (!e.target.result.objectStoreNames.contains(DB_STORE)) e.target.result.createObjectStore(DB_STORE); };
         });
       }
-      async function dbSet(k, v) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readwrite");const r=tx.objectStore(DB_STORE).put(v,k);r.onerror=()=>rej(r.error);r.onsuccess=()=>res();tx.oncomplete=()=>db.close();}); }
-      async function dbGet(k) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readonly");const r=tx.objectStore(DB_STORE).get(k);r.onerror=()=>rej(r.error);r.onsuccess=()=>res(r.result||null);tx.oncomplete=()=>db.close();}); }
+      async function dbSet(k, v) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readwrite");const r=tx.objectStore(DB_STORE).put(v,k);r.onerror=()=>{console.error("[DB] save FAILED",k,r.error);rej(r.error);};r.onsuccess=()=>{console.log("[DB] saved OK",k, typeof v==='string'?v:(v?.name||typeof v));res();};tx.oncomplete=()=>db.close();}); }
+      async function dbGet(k) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readonly");const r=tx.objectStore(DB_STORE).get(k);r.onerror=()=>{console.error("[DB] get FAILED",k,r.error);rej(r.error);};r.onsuccess=()=>{console.log("[DB] get",k,"→",r.result?.name||r.result||"null");res(r.result||null);};tx.oncomplete=()=>db.close();}); }
       async function dbDel(k) { const db=await openDB(); return new Promise((res,rej)=>{const tx=db.transaction(DB_STORE,"readwrite");const r=tx.objectStore(DB_STORE).delete(k);r.onerror=()=>rej(r.error);r.onsuccess=()=>res();tx.oncomplete=()=>db.close();}); }
 
       /* ═══════════════════════════════════════════════════════════
@@ -793,13 +873,13 @@
       });
       document.getElementById("refreshDrawsBtn").addEventListener("click", async () => { await activateDraws(true); });
       async function activateDraws(showToast=true) {
-        if (!drawsHandle) { if (showToast) toast("No draws file selected. Choose one first."); return false; }
+        if (!drawsHandle) { if (showToast) toast("No draws file selected."); return false; }
         try {
           const p = await drawsHandle.requestPermission({ mode:"readwrite" });
           if (p !== "granted") { if (showToast) toast("Permission denied."); drawsOk=false; updateDrawsUI(); return false; }
-          drawsOk = true;
           const file = await drawsHandle.getFile();
           draws = parseDrawsText(await file.text());
+          drawsOk = true;
           updateDrawsUI(); fullRender();
           if (showToast) toast(`Loaded ${draws.length} draws from ${drawsName}.`);
           return true;
@@ -823,8 +903,17 @@
         const btn=document.getElementById("selectDrawsBtn"),lbl=document.getElementById("drawsBtnLabel"),s=document.getElementById("drawsStatus");
         if (drawsName) { lbl.textContent=drawsName; btn.className="file-select-btn has-file"; }
         else { lbl.textContent="Select file"; btn.className="file-select-btn no-file"; }
-        s.textContent=drawsOk?"✅ Active & writable":"⚠️ Not active";
-        s.className="status-badge"+(drawsOk?" ok":drawsName?" has-path":"");
+        if (drawsOk) { s.textContent="✅ Active & writable"; s.className="status-badge ok"; }
+        else if (drawsName) { s.textContent="🔒 Needs access"; s.className="status-badge has-path"; }
+        else { s.textContent="Not active"; s.className="status-badge"; }
+      }
+      function updateArrUI() {
+        const btn=document.getElementById("selectArrBtn"),lbl=document.getElementById("arrBtnLabel"),s=document.getElementById("arrStatus");
+        if (arrName) { lbl.textContent=arrName; btn.className="file-select-btn has-file"; }
+        else { lbl.textContent="Select file"; btn.className="file-select-btn no-file"; }
+        if (arrOk) { s.textContent="✅ Active"; s.className="status-badge ok"; }
+        else if (arrName) { s.textContent="🔒 Needs access"; s.className="status-badge has-path"; }
+        else { s.textContent="Not active"; s.className="status-badge"; }
       }
 
       /* ═══════════════════════════════════════════════════════════
@@ -836,7 +925,8 @@
           const [h] = await window.showOpenFilePicker({ types: [{ description:"Text file", accept:{"text/plain":[".txt"]} }] });
           arrHandle=h; arrName=h.name; arrOk=false;
           await dbSet("arrH",h); await dbSet("arrN",arrName);
-          updateArrUI(); fullRender(); toast(`Selected: ${arrName}. Tap Activate.`);
+          updateArrUI();
+          await activateArrangement(true);
         } catch(e) { if (e.name !== "AbortError") toast(e.message); }
       });
       document.getElementById("refreshArrBtn").addEventListener("click", async () => { await activateArrangement(true); });
@@ -845,9 +935,9 @@
         try {
           const p = await arrHandle.requestPermission({ mode:"read" });
           if (p !== "granted") { if (showToast) toast("Permission denied."); arrOk=false; updateArrUI(); return false; }
-          arrOk=true;
           const file = await arrHandle.getFile();
           arrangement = parseArrText(await file.text());
+          arrOk = true;
           updateArrUI(); fullRender();
           if (showToast) toast(`Loaded ${arrangement.length} rows from ${arrName}.`);
           return true;
@@ -858,23 +948,36 @@
         arrHandle=null; arrName=""; arrOk=false; arrangement=[];
         updateArrUI(); fullRender(); toast("Arrangement forgotten.");
       });
-      function updateArrUI() {
-        const btn=document.getElementById("selectArrBtn"),lbl=document.getElementById("arrBtnLabel"),s=document.getElementById("arrStatus");
-        if (arrName) { lbl.textContent=arrName; btn.className="file-select-btn has-file"; }
-        else { lbl.textContent="Select file"; btn.className="file-select-btn no-file"; }
-        s.textContent=arrOk?"✅ Active":"⚠️ Not active";
-        s.className="status-badge"+(arrOk?" ok":arrName?" has-path":"");
-      }
 
       /* ═══════════════════════════════════════════════════════════
          RESTORE ON PAGE LOAD
       ═══════════════════════════════════════════════════════════ */
+      /* ═══════════════════════════════════════════════════════════
+         RESTORE ON PAGE LOAD
+      ═══════════════════════════════════════════════════════════ */
       async function restoreHandles() {
-        try { const h=await dbGet("drawsH");const n=await dbGet("drawsN");if(h){drawsHandle=h;drawsName=n||"unknown";await activateDraws(false);} } catch(e){}
-        try { const h=await dbGet("arrH");const n=await dbGet("arrN");if(h){arrHandle=h;arrName=n||"unknown";await activateArrangement(false);} } catch(e){}
+        let _drawsH = null, _drawsN = null, _arrH = null, _arrN = null;
+        try { _drawsH=await dbGet("drawsH"); _drawsN=await dbGet("drawsN"); } catch(e){}
+        try { _arrH=await dbGet("arrH"); _arrN=await dbGet("arrN"); } catch(e){}
+        // Restore names so the UI shows the filename immediately
+        if (_drawsH) { drawsHandle=_drawsH; drawsName=_drawsN||"unknown"; }
+        if (_arrH)   { arrHandle=_arrH;   arrName=_arrN||"unknown"; }
         updateDrawsUI(); updateArrUI(); fullRender();
+        // Permission must be requested inside a user gesture.
+        // Register a one-time listener on the first tap/keypress.
+        if (_drawsH || _arrH) {
+          const handler = async () => {
+            document.removeEventListener('click', handler, true);
+            document.removeEventListener('keydown', handler, true);
+            if (drawsHandle && !drawsOk) await activateDraws(false);
+            if (arrHandle && !arrOk) await activateArrangement(false);
+          };
+          document.addEventListener('click', handler, true);
+          document.addEventListener('keydown', handler, true);
+        }
       }
 
+      
       /* ═══════════════════════════════════════════════════════════
          PARSING
       ═══════════════════════════════════════════════════════════ */
@@ -898,7 +1001,7 @@
       }
       function computeRawWeights(ds) {
         const sc={};for(let n=1;n<=40;n++)sc[n]=0;
-        ds.forEach((nums,i)=>{const w=i+1;nums.forEach(n=>{sc[n]+=w;});});
+        ds.forEach((nums)=>{nums.forEach(n=>{sc[n]+=1;});});
         return sc;
       }
       function findClusters(sc,peak) {
@@ -1134,96 +1237,101 @@
       /* ═══════════════════════════════════════════════════════════
          GENERATE ACTION
       ═══════════════════════════════════════════════════════════ */
+
+      // Builds a prediction from the single prediction mix and renders it
+      function buildMixPrediction() {
+        const wsRaw = parseInt(document.getElementById('gWS1').value);
+        const wsVal = !isNaN(wsRaw) ? wsRaw : 0;
+        const mDs = wsVal === 0 ? windowDraws(currentRange) : windowDraws(wsVal);
+        const m = {
+          c: parseInt(document.getElementById('gFC1').value) || 0,
+          n: parseInt(document.getElementById('gFN1').value) || 0,
+          r: parseInt(document.getElementById('gFR1').value) || 0,
+          ds: mDs,
+          windowLabel: document.getElementById('gMW1').textContent || '—',
+        };
+        if (m.c + m.n + m.r !== 6) { toast('Clusters + Neighbours + Random must sum to 6.'); return null; }
+        if (mDs.length < 3) { toast('Not enough draws in this window.'); return null; }
+        const mSc = computeRawWeights(mDs);
+        const mPeak = Math.max(1,...Object.values(mSc));
+        const mClusters = findClusters(mSc, mPeak);
+        const freq={};for(let n=1;n<=40;n++)freq[n]=0;mDs.forEach(d=>d.forEach(n=>freq[n]++));
+        const rf={};for(let n=1;n<=40;n++)rf[n]=0;mDs.slice(-20).forEach(d=>d.forEach(n=>rf[n]++));
+        const hotSet=new Set(Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
+        const recentSet=new Set(Object.entries(rf).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
+        const clusterSet=new Set();mClusters.forEach(c=>c.forEach(n=>clusterSet.add(n)));
+        let combo=genCustomStrategy(mDs,mSc,mPeak,mClusters,m.c,m.n,m.r);
+        if(!combo)combo=genMix(mDs);
+        if(!combo) return null;
+        combo.sort((a,b)=>a-b);
+        return {combo,strategy:`${m.c}C + ${m.n}N + ${m.r}R`,windowLabel:m.windowLabel,ds:mDs,hotSet,recentSet,clusterSet};
+      }
+
+      function renderPredictions(mixResult, simResult) {
+        const el = document.getElementById('predictions');
+        const items = [];
+        if (mixResult) items.push({...mixResult, label:'Mix prediction'});
+        if (simResult) items.push({combo:simResult, label:'Simulation draw', strategy:'Draw Simulation', windowLabel:'', isSimulation:true, hotSet:new Set(), recentSet:new Set(), clusterSet:new Set()});
+        if (!items.length) { el.innerHTML='<div class="no-combo">No valid combinations found.</div>'; return; }
+        el.innerHTML = items.map(r => {
+          const balls = r.combo.map(n => {
+            const cls = r.isSimulation ? 'sim' : classifyBall(n,r.hotSet,r.recentSet,r.clusterSet);
+            return `<div class="ball ball-${cls}" title="${cls}">${n}</div>`;
+          }).join('');
+          const reasons = [];
+          if (!r.isSimulation) {
+            const cNums=r.combo.filter(n=>r.clusterSet.has(n));
+            const hNums=r.combo.filter(n=>r.hotSet.has(n)&&!r.clusterSet.has(n)&&!r.recentSet.has(n));
+            const fNums=r.combo.filter(n=>!r.clusterSet.has(n)&&!r.hotSet.has(n)&&!r.recentSet.has(n));
+            if(cNums.length)reasons.push({t:`${cNums.join(", ")} from active grid clusters.`,c:"#e11d48"});
+            if(hNums.length)reasons.push({t:`${hNums.join(", ")} most drawn across ${r.ds.length} draws.`,c:"#e8a020"});
+            if(fNums.length)reasons.push({t:`${fNums.join(", ")} chosen by frequency-weighted probability.`,c:"#8a94a5"});
+            const sum=r.combo.reduce((a,b)=>a+b,0);
+            const odd=r.combo.filter(x=>x%2!==0).length;
+            const low=r.combo.filter(x=>x<=25).length;
+            reasons.push({t:`Balance: ${odd} odd / ${6-odd} even · ${low} low / ${6-low} high · sum ${sum}`,c:"#8a94a5"});
+          } else {
+            reasons.push({t:'Numbers drawn from the physical draw simulation.',c:'#8a94a5'});
+          }
+          const comboJson = JSON.stringify(r.combo);
+          const windowBadge = r.windowLabel ? `<span style="font-size:10px;background:var(--green-bg);color:var(--green-text);border:1px solid rgba(5,150,105,.3);border-radius:20px;padding:1px 7px;margin-left:6px;font-family:var(--font-mono);font-weight:700;">${r.windowLabel}</span>` : '';
+          const simBadge = r.isSimulation ? '<span style="font-size:10px;background:var(--purple-bg);color:var(--purple-text);border:1px solid rgba(124,58,237,.3);border-radius:20px;padding:1px 7px;margin-left:6px;font-family:var(--font-mono);font-weight:700;">Simulated</span>' : '';
+          return `<div class="pred-card">
+            <div class="pred-header">
+              <div class="pred-lbl">${r.label}${windowBadge}${simBadge} <span style="font-weight:400;color:var(--text3)">· ${r.strategy}</span></div>
+              <button class="grid-view-btn" onclick='openGridModal(${comboJson},"${r.label}")'>
+                <i class="ti ti-layout-grid" aria-hidden="true"></i> View on Grid
+              </button>
+            </div>
+            <div class="ball-row">${balls}</div>
+            ${reasons.map(re=>`<div class="reason-row"><div class="r-dot" style="background:${re.c}"></div><div class="r-text">${re.t}</div></div>`).join("")}
+          </div>`;
+        }).join('');
+      }
+
+      let _pendingMixResult = null;
+
       function generate() {
-        // Each mix has its own window — just ensure we have draws at all
         if(draws.length < 3){toast("Need at least 3 draws loaded.");return;}
-
-        // Read the 2 prediction mix rows — each may have its own window from the matrix
-        const mixes = [1,2].map(i => {
-          const wsRaw = parseInt(document.getElementById(`gWS${i}`).value);
-          // If window size is set by matrix (not default 0), use it; else fall back to slider
-          const wsVal = !isNaN(wsRaw) ? wsRaw : 0;
-          const ds = wsVal === 0 ? windowDraws(currentRange) : windowDraws(wsVal);
-          return {
-            c: parseInt(document.getElementById(`gFC${i}`).value) || 0,
-            n: parseInt(document.getElementById(`gFN${i}`).value) || 0,
-            r: parseInt(document.getElementById(`gFR${i}`).value) || 0,
-            ds,
-            windowLabel: document.getElementById(`gMW${i}`).textContent || "—",
-          };
-        });
-        for (let i = 0; i < mixes.length; i++) {
-          const m = mixes[i];
-          if (m.c + m.n + m.r !== 6) { toast(`Mix ${i+1}: Clusters + Neighbours + Random must sum to 6 (currently ${m.c+m.n+m.r}).`); return; }
-        }
-
         const btn=document.getElementById("gen-btn");
         btn.disabled=true;btn.innerHTML='<i class="ti ti-loader" aria-hidden="true"></i> Generating…';
         setTimeout(()=>{
-          const results=[];
-          // Each mix uses its own draw window (from matrix) for weights, clusters, and prediction
-          mixes.forEach((m,i)=>{
-            const mDs = m.ds;
-            if (mDs.length < 3) {
-              results.push(null); return;
-            }
-            const mSc = computeRawWeights(mDs);
-            const mPeak = Math.max(1,...Object.values(mSc));
-            const mClusters = findClusters(mSc, mPeak);
-            // Classify balls relative to this mix's own data
-            const freq={};for(let n=1;n<=40;n++)freq[n]=0;mDs.forEach(d=>d.forEach(n=>freq[n]++));
-            const rf={};for(let n=1;n<=40;n++)rf[n]=0;mDs.slice(-20).forEach(d=>d.forEach(n=>rf[n]++));
-            const hotSet=new Set(Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
-            const recentSet=new Set(Object.entries(rf).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k])=>+k));
-            const clusterSet=new Set();mClusters.forEach(c=>c.forEach(n=>clusterSet.add(n)));
-            let c=genCustomStrategy(mDs,mSc,mPeak,mClusters,m.c,m.n,m.r);
-            if(!c)c=genMix(mDs);
-            if(c){
-              c.sort((a,b)=>a-b);
-              results.push({combo:c,label:`Prediction ${i+1}`,strategy:`${m.c}C + ${m.n}N + ${m.r}R`,windowLabel:m.windowLabel,ds:mDs,hotSet,recentSet,clusterSet});
-            }
-          });
-
-          const el=document.getElementById("predictions");
-          const validResults = results.filter(Boolean);
-          if(!validResults.length){
-            el.innerHTML='<div class="no-combo">No valid combinations found. Try widening the draw window.</div>';
-          } else {
-            el.innerHTML=validResults.map((r,ri)=>{
-              const balls=r.combo.map(n=>{
-                const cls=classifyBall(n,r.hotSet,r.recentSet,r.clusterSet);
-                return `<div class="ball ball-${cls}" title="${cls}">${n}</div>`;
-              }).join("");
-              const cNums=r.combo.filter(n=>r.clusterSet.has(n));
-              const hNums=r.combo.filter(n=>r.hotSet.has(n)&&!r.clusterSet.has(n)&&!r.recentSet.has(n));
-              const rNums=r.combo.filter(n=>r.recentSet.has(n)&&!r.clusterSet.has(n));
-              const fNums=r.combo.filter(n=>!r.clusterSet.has(n)&&!r.hotSet.has(n)&&!r.recentSet.has(n));
-              const reasons=[];
-              if(cNums.length)reasons.push({t:`${cNums.join(", ")} from active grid clusters.`,c:"#e11d48"});
-              if(hNums.length)reasons.push({t:`${hNums.join(", ")} most drawn across ${r.ds.length} draws.`,c:"#e8a020"});
-              if(rNums.length)reasons.push({t:`${rNums.join(", ")} trending in last 20 draws.`,c:"#2563eb"});
-              if(fNums.length)reasons.push({t:`${fNums.join(", ")} chosen by recency-weighted probability.`,c:"#8a94a5"});
-              const sum=r.combo.reduce((a,b)=>a+b,0);
-              const odd=r.combo.filter(x=>x%2!==0).length;
-              const low=r.combo.filter(x=>x<=25).length;
-              reasons.push({t:`Balance: ${odd} odd / ${6-odd} even · ${low} low / ${6-low} high · sum ${sum}`,c:"#8a94a5"});
-              const comboJson = JSON.stringify(r.combo);
-              const windowBadge = r.windowLabel && r.windowLabel !== "—" ? `<span style="font-size:10px;background:var(--green-bg);color:var(--green-text);border:1px solid rgba(5,150,105,.3);border-radius:20px;padding:1px 7px;margin-left:6px;font-family:var(--font-mono);font-weight:700;">${r.windowLabel}</span>` : "";
-              return `<div class="pred-card">
-                <div class="pred-header">
-                  <div class="pred-lbl">${r.label}${windowBadge} <span style="font-weight:400;color:var(--text3)">· ${r.strategy}</span></div>
-                  <button class="grid-view-btn" onclick='openGridModal(${comboJson},"${r.label}")'>
-                    <i class="ti ti-layout-grid" aria-hidden="true"></i> View on Grid
-                  </button>
-                </div>
-                <div class="ball-row">${balls}</div>
-                ${reasons.map(re=>`<div class="reason-row"><div class="r-dot" style="background:${re.c}"></div><div class="r-text">${re.t}</div></div>`).join("")}
-              </div>`;
-            }).join("");
-          }
+          _pendingMixResult = buildMixPrediction();
           btn.disabled=false;
           btn.innerHTML='<i class="ti ti-refresh" aria-hidden="true"></i> Regenerate';
+          // Show popup asking about draw simulation
+          document.getElementById('simChoiceModal').style.display='flex';
         },60);
+      }
+
+      function simChoiceNo() {
+        document.getElementById('simChoiceModal').style.display='none';
+        renderPredictions(_pendingMixResult, null);
+      }
+
+      function simChoiceYes() {
+        document.getElementById('simChoiceModal').style.display='none';
+        openInlineDrawSim();
       }
 
       /* ═══════════════════════════════════════════════════════════
@@ -1270,7 +1378,7 @@
           });
           g.appendChild(svg);
         }
-        document.getElementById("grid-info").textContent=`${ds.length} draws · peak weight ${Math.round(peak)} · ${clusters.length} cluster${clusters.length===1?"":"s"}`;
+        document.getElementById("grid-info").textContent=`${ds.length} draws · ${clusters.length} cluster${clusters.length===1?"":"s"}`;
       }
 
       /* ═══════════════════════════════════════════════════════════
@@ -1804,53 +1912,6 @@
               </div>
 
               <div class="info-section">
-                <span class="info-section-title">Match Distribution &amp; Accuracy Insights</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Shows how many historical predictions landed exactly 1–6 matching numbers. <strong>1 and 2 matches are greyed out</strong> — most lotteries require 3+ to win any prize. The header badge shows the <strong>% of predictions with 3+ matches</strong> and turns green when above 6%.</div></div>
-              </div>
-
-              <div class="info-section">
-                <span class="info-section-title">Performance across training windows</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Runs your <strong>current C/N/R mix</strong> against 6 fixed history lengths (1m=8 draws, 2m=17, 3m=26, 4m=35, 5m=43, 6m=52). For each length it rolls through every historical draw: train on the draws before it, generate a prediction, count how many numbers matched. The card shows the <strong>average matches per prediction</strong>. Your active window is highlighted in amber. Sub-text shows average match % and hit-rate (% of predictions with ≥1 match). Use this to answer: does more or less history help my current mix?</div></div>
-              </div>
-
-              <div class="info-section">
-                <span class="info-section-title">Filter Combination Comparison</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Keeps the window fixed at your active setting and tests <strong>10 preset C/N/R splits</strong>. Each card shows the average matches per prediction for that split. Your active config is amber, best three get 🥇🥈🥉. Use this to answer: for my chosen window length, which cluster/neighbour/random split produces the most matches?</div></div>
-              </div>
-
-              <div class="info-section">
-                <span class="info-section-title">Filter Combination Comparison vs Combination Matrix</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">
-                  These two tools answer related but different questions about which C/N/R mix works best:
-                </div></div>
-                <div style="overflow-x:auto;margin:8px 0 4px;">
-                  <table class="info-table">
-                    <colgroup>
-                      <col style="width:18%">
-                      <col style="width:41%">
-                      <col style="width:41%">
-                    </colgroup>
-                    <thead>
-                      <tr>
-                        <th></th>
-                        <th style="color:var(--purple-text);">Filter Combination Comparison</th>
-                        <th style="color:var(--green-text);">Combination Matrix</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr><td>Window</td><td>Fixed at your active window setting</td><td>All 7 sizes tested simultaneously (1M–6M, All)</td></tr>
-                      <tr><td>Combos shown</td><td>5, 10, 15, or all 27 (your choice)</td><td>All 27 combos always</td></tr>
-                      <tr><td>Metric</td><td>Average matches per prediction (1 pass through history)</td><td>How often 3+ match rate beats your threshold across N runs</td></tr>
-                      <tr><td>Randomness</td><td>1 deterministic pass — same result every time</td><td>N random runs — measures consistency, not just average</td></tr>
-                      <tr><td>Speed</td><td>Fast — runs instantly</td><td>Slow — 189 cells × N runs each</td></tr>
-                      <tr><td>Best for</td><td>Quick scan: which C/N/R split averages the most matches?</td><td>Deep scan: which (combo + window) pair reliably beats a threshold?</td></tr>
-                    </tbody>
-                  </table>
-                </div>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Recommended workflow:</strong> use FCC for a fast first pass to find promising C/N/R splits at your current window, then run the Matrix to validate those splits across all windows and see which holds up consistently under repeated random sampling.</div></div>
-              </div>
-
-              <div class="info-section">
                 <span class="info-section-title">Training draws vs prediction targets — what they mean</span>
                 <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Training draws</strong> are the past draws the algorithm looks at to detect clusters and compute number weights. They are the input — the history it learns from before making a guess.</div></div>
                 <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Prediction target</strong> is the actual draw the algorithm tries to match. After generating a 6-number prediction from the training draws, the app counts how many of those 6 numbers appeared in the target draw. This tells you how good the prediction was.</div></div>
@@ -1963,7 +2024,7 @@
                   <strong style="color:var(--text);display:block;margin-bottom:6px;">How to read this diagram</strong>
                   <strong style="color:var(--text)">Top — setup:</strong> You load your draw history (e.g. 158 draws) and choose a window size (1M = 8 draws).<br>
                   <strong style="color:var(--text)">The split:</strong> For each draw position, history splits into two roles simultaneously. The 8 draws before it become <span style="color:#0F6E56;font-weight:600">training data</span> (left). Draw i itself becomes the <span style="color:#993C1D;font-weight:600">prediction target</span> (right) — set aside and not seen yet.<br>
-                  <strong style="color:var(--text)">Left branch:</strong> Training draws flow through four steps — compute recency-weighted scores → detect clusters → build C/N/R pools → generate a 6-number prediction.<br>
+                  <strong style="color:var(--text)">Left branch:</strong> Training draws flow through four steps — compute frequency scores → detect clusters → build C/N/R pools → generate a 6-number prediction.<br>
                   <strong style="color:var(--text)">Merge:</strong> The prediction meets the target. The app counts how many of the 6 predicted numbers appeared in the actual draw (0–6).<br>
                   <strong style="color:var(--text)">Dashed loop:</strong> The window slides forward by 1 and the whole process repeats. With 158 draws and a 1M window, this runs 150 times.<br>
                   <strong style="color:var(--text)">Bottom — outputs:</strong> All 150 match counts accumulate into the match distribution, 3+ match rate, averages, and matrix scores.
@@ -1971,12 +2032,16 @@
               </div>
 
               <div class="info-section">
+                <span class="info-section-title">Generate prediction &amp; Draw Simulation</span>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body">Pressing <strong>Generate prediction</strong> builds a 6-number combination from your prediction mix (C/N/R settings auto-populated by the Matrix). A popup then asks whether you want to launch the Draw Simulation. If you choose <strong>No</strong>, the prediction mix result is shown immediately. If you choose <strong>Yes</strong>, the draw simulation runs in a modal — the same physical-draw process (8s mix, 3s draw × 6 rounds) — and after it completes you see two predictions side by side: the prediction mix result and the simulated draw numbers.</div></div>
+              </div>
+
+              <div class="info-section">
                 <span class="info-section-title">Strategies used</span>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Cluster detection:</strong> the grid is divided into 8×5 cells (numbers 1–40). A recency-weighted score is computed for each number — draws are weighted by position, so the most recent draws count more. Numbers scoring above 50% of the peak weight form the "hot zone". Connected hot-zone cells are grouped into up to 4 spatial clusters using a flood-fill algorithm.</div></div>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Custom strategy (C/N/R):</strong> the default. Numbers are drawn from three separate pools. <em>Cluster picks</em> — one number per cluster, cycling across different clusters (e.g. with C=3: one from Cluster 1, one from Cluster 2, one from Cluster 3). This prevents all cluster picks from coming from the same hot zone. <em>Neighbour picks</em> — one from each cluster's border zone (the grid cells touching that cluster but not inside it), also cycling across different cluster borders. <em>Random picks</em> — from numbers not in any cluster or border zone, weighted by draw frequency. All picks use weighted-random selection so higher-frequency numbers appear more often.</div></div>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Hybrid strategy (fallback):</strong> used automatically when the custom strategy can't form a valid combination (e.g. not enough detected clusters for the requested C count). Takes 4 numbers from the union of all clusters weighted by frequency, plus 2 numbers chosen uniformly from the remaining pool. Less precise than custom but always produces a result.</div></div>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Balance filter:</strong> every generated combination — regardless of strategy — must pass three checks before being accepted: (1) 2–4 odd numbers out of 6, (2) 2–4 low numbers (≤25) out of 6, and (3) a total sum between 100 and 200. Combinations failing any check are discarded and regenerated. Up to 3000 attempts are made before falling back to a deterministic top-weight selection.</div></div>
-                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Why these constraints?</strong> Real lottery draws rarely produce all-odd, all-even, all-high or all-low results. The odd/even and high/low splits reflect the statistical distribution of historical draws. The sum range (100–200) eliminates extreme outliers — with 6 numbers from 1–40, the theoretical min is 21 and max is 225, but actual draws cluster in the 100–200 band in most pick-6 lotteries.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Cluster detection:</strong> the grid is divided into 8×5 cells (numbers 1–40). A frequency score is computed for each number — how many times it appeared across the training draws, every draw counting equally. Numbers scoring above 50% of the peak frequency form the hot zone. Connected hot-zone cells are grouped into up to 4 spatial clusters using flood-fill.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Custom strategy (C/N/R):</strong> numbers are drawn from three pools. Cluster picks — one per cluster, cycling across different clusters so no single hot zone dominates. Neighbour picks — one from each cluster's adjacent border zone, also cycling. Random picks — from remaining numbers, weighted by frequency. The C/N/R split is determined automatically by the Matrix's weighted score.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Balance filter:</strong> every combination must pass: (1) 2–4 odd numbers, (2) 2–4 low numbers ≤25, (3) sum between 100–200. Failing combinations are regenerated up to 3000 times.</div></div>
+                <div class="info-item"><div class="info-item-dot"></div><div class="info-item-body"><strong>Matrix weighted score:</strong> the Matrix ranks each C/N/R + window combination using the formula <em>(4×count4 + 5×count5 + 6×count6) / totalSlots × 100</em>, optionally including 3-match combinations when the toggle is on. This ensures combinations that produce higher-tier matches (5 or 6 correct) score above those with more but lower-tier matches. The top-scoring combination is automatically set as your prediction mix.</div></div>
               </div>
             </div>
           </div>`;
@@ -2007,10 +2072,6 @@
           {
             label: '6 months (6M)', size: 52,
             why: 'The 52 draws before each target are used as training — a full half-year of weekly draws. The algorithm sees the widest context of any fixed window, capturing seasonal or long-term trends. The trade-off is the fewest prediction targets among the fixed windows.'
-          },
-          {
-            label: 'All draws', size: 0,
-            why: 'All available draws except the very last one are used as training for the final prediction. When rolling, each position uses every draw before it as training. This maximises context but means only 1 draw is left as a prediction target — making the result statistically unreliable. Only useful if you have very few draws total.'
           },
         ];
         const tbody = document.getElementById('info-window-table-body');
@@ -2081,7 +2142,6 @@
       const MATRIX_WINDOWS = [
         {label:"1M", size:8}, {label:"2M", size:17}, {label:"3M", size:26},
         {label:"4M", size:35}, {label:"5M", size:43}, {label:"6M", size:52},
-        {label:"All", size:0},
       ];
       let matrixRunning = false;
 
@@ -2129,8 +2189,6 @@
       async function runMatrix() {
         if (matrixRunning) return;
         const runsPerCell = Math.max(1, Math.min(200, parseInt(document.getElementById("matrixRuns").value) || 20));
-        const threshold = parseFloat(document.getElementById("matrixThreshold").value);
-        const pctThreshold = isNaN(threshold) ? 6 : Math.max(0, Math.min(100, threshold));
         if (draws.length < 10) { toast("Need at least 10 draws to run the matrix."); return; }
 
         matrixRunning = true;
@@ -2156,45 +2214,40 @@
             const wSize = w.size === 0 ? Math.max(1, draws.length - 1) : w.size;
             const matchDetail = [0,0,0,0,0,0];
             let totalPredictions = 0;
-            let pctSum = 0; // sum of per-run 3+ match rates for averaging
+            let pctSum = 0;
             if (draws.length < wSize + 1) {
               possible = false;
             } else {
               for (let run = 0; run < runsPerCell; run++) {
                 const res = singleAnalysisPass(w.size, c, n, r);
                 if (res !== null) {
-                  if (res.pct > pctThreshold) count++;
                   res.matchCounts.forEach((v, i) => { matchDetail[i] += v; });
                   totalPredictions = res.totalPredictions;
                   pctSum += res.pct;
                 }
               }
             }
-            // avgPct = average 3+ match rate across all runs (not diluted by totalSlots)
             const avgPct3 = runsPerCell > 0 ? pctSum / runsPerCell : 0;
-            results[ci][wi] = { count, possible, matchDetail, totalPredictions, runsPerCell, avgPct3 };
+            results[ci][wi] = { possible, matchDetail, totalPredictions, runsPerCell, avgPct3 };
             cellsDone++;
             if (cellsDone % 3 === 0 || cellsDone === totalCells) {
               const prog = Math.round((cellsDone / totalCells) * 100);
               progressFill.style.width = `${prog}%`;
-              progressText.textContent = `${cellsDone} / ${totalCells} cells · ${c}C+${n}N+${r}R @ ${w.label} · threshold ${pctThreshold}%`;
+              progressText.textContent = `${cellsDone} / ${totalCells} cells · ${c}C+${n}N+${r}R @ ${w.label}`;
               await new Promise(res => setTimeout(res, 0));
             }
           }
         }
 
-        renderMatrixTable(results, runsPerCell, pctThreshold);
+        renderMatrixTable(results, runsPerCell);
         populateTopCombosFromMatrix(results, runsPerCell);
-        // Store globally so the detail selectors can re-render without re-running
-        window._matrixResults = results;
-        window._matrixRunsPerCell = runsPerCell;
         renderMatchDetail();
-        progressText.textContent = `Done — ${totalCells} cells × ${runsPerCell} runs · threshold ${pctThreshold}%.`;
+        progressText.textContent = `Done — ${totalCells} cells × ${runsPerCell} runs.`;
         progressFill.style.width = "100%";
         btn.disabled = false;
         btn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Run Matrix';
         matrixRunning = false;
-        toast(`Matrix complete: ${totalCells} cells tested at >${pctThreshold}% threshold.`);
+        toast(`Matrix complete: ${totalCells} cells tested.`);
       }
 
       function switchMatrixTab(name, btn) {
@@ -2209,69 +2262,74 @@
         const runsPerCell = window._matrixRunsPerCell || 1;
         if (!results) return;
 
-        // Show sub-tabs
+        // Show sub-tabs (only 3+ Match Rate tab now)
         document.getElementById('matrix-subtabs').style.display = 'block';
-        document.getElementById('matrix-pane-pred').style.display = 'block';
-        document.getElementById('matrix-pane-rate').style.display = 'none';
-        // Reset tab active state
-        document.getElementById('mst-pred').classList.add('active');
-        document.getElementById('mst-rate').classList.remove('active');
+        document.getElementById('matrix-pane-pred').style.display = 'none';
+        document.getElementById('matrix-pane-rate').style.display = 'block';
+        document.getElementById('mst-rate').classList.add('active');
 
-        // Pre-compute per-cell using avgPct3 = average 3+ match rate across all runs
-        // denominator = totalPredictions (draw positions), NOT totalPredictions × runs
+        const include3 = document.getElementById('include3Matches')?.checked !== false;
+
+        // weightedScore: each match tier weighted by its count, with higher tiers valued more.
+        // 6 matches = weight 6, 5 = weight 5, 4 = weight 4, 3 = weight 3 (optional).
+        // This ensures 6>5>4>3 in the score: a cell with more 6-match predictions always
+        // ranks above one with more 4-match predictions of equal total.
         const cellData = MATRIX_COMBOS.map((combo, ci) =>
           MATRIX_WINDOWS.map((w, wi) => {
             const cell = results[ci]?.[wi];
             if (!cell || !cell.possible) return { possible: false };
             const totalSlots = cell.totalPredictions * runsPerCell;
             const md = cell.matchDetail;
-            // Use stored avgPct3: average of per-run (threeOrMore/totalPredictions)*100
             const pct3 = cell.avgPct3 || 0;
-            // Best tier: highest match level with ≥1 occurrence across all runs (3–6 only)
+            const w3 = include3 ? 3*md[2] : 0;
+            const weightedRaw = w3 + 4*md[3] + 5*md[4] + 6*md[5];
+            const weightedScore = totalSlots > 0 ? (weightedRaw / totalSlots) * 100 : 0;
+            // Best tier: highest match level with ≥1 occurrence (3–6 only)
             let bestTier = 2;
             for (let i = 5; i >= 2; i--) { if (md[i] > 0) { bestTier = i; break; } }
-            return { possible: true, totalSlots, md, pct3, bestTier };
+            return { possible: true, totalSlots, md, pct3, weightedScore, bestTier };
           })
         );
 
-        let globalMax3 = 0;
-        cellData.forEach(row => row.forEach(c => { if (c.possible && c.pct3 > globalMax3) globalMax3 = c.pct3; }));
+        let globalMaxW = 0;
+        cellData.forEach(row => row.forEach(c => { if (c.possible && c.weightedScore > globalMaxW) globalMaxW = c.weightedScore; }));
 
-        // ── LEADERBOARD (top 5 by 3+ pct) ─────────────────────────────────
+        // ── LEADERBOARD (top 5 by weightedScore) ───────────────────────────
         const allCells = [];
         MATRIX_COMBOS.forEach((combo, ci) => {
           MATRIX_WINDOWS.forEach((w, wi) => {
             const c = cellData[ci][wi];
-            if (c.possible) allCells.push({ ci, wi, combo, w, pct3: c.pct3 });
+            if (c.possible) allCells.push({ ci, wi, combo, w, pct3: c.pct3, weightedScore: c.weightedScore });
           });
         });
-        allCells.sort((a, b) => b.pct3 - a.pct3);
+        allCells.sort((a, b) => b.weightedScore - a.weightedScore);
         const top5 = allCells.slice(0, 5);
         const medals = ['🥇','🥈','🥉','4th','5th'];
 
         const lb = document.getElementById("matrix-leaderboard");
         lb.innerHTML = top5.map((entry, rank) => {
-          const pctStr = entry.pct3.toFixed(2);
+          const wStr = entry.weightedScore.toFixed(2);
+          const pctStr = entry.pct3.toFixed(1);
           return `<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:${rank===0?'var(--green-bg)':'var(--surface2)'};border:1px solid ${rank===0?'rgba(5,150,105,.3)':'var(--border)'};border-radius:var(--radius-md);margin-bottom:6px;cursor:pointer;" onclick="openBreakdownModal(${entry.ci},${entry.wi})">
             <span style="font-size:16px;flex-shrink:0;">${medals[rank]}</span>
             <span style="font-family:var(--font-mono);font-weight:700;font-size:13px;color:${rank===0?'var(--green-text)':'var(--text)'};">${entry.combo[0]}-${entry.combo[1]}-${entry.combo[2]}</span>
             <span style="font-size:11px;color:var(--text3);">@ ${entry.w.label}</span>
-            <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="height:6px;width:${globalMax3>0?(entry.pct3/globalMax3*100).toFixed(1):0}%;background:${rank===0?'var(--green)':'var(--amber)'};border-radius:3px;"></div></div>
-            <span style="font-family:var(--font-mono);font-weight:700;font-size:13px;color:${entry.pct3>6?'var(--green-text)':'var(--text2)'};">${pctStr}%</span>
+            <div style="flex:1;height:6px;background:var(--border);border-radius:3px;overflow:hidden;"><div style="height:6px;width:${globalMaxW>0?(entry.weightedScore/globalMaxW*100).toFixed(1):0}%;background:${rank===0?'var(--green)':'var(--amber)'};border-radius:3px;"></div></div>
+            <span style="font-family:var(--font-mono);font-weight:700;font-size:13px;color:${rank===0?'var(--green-text)':'var(--text2)'};">${wStr}</span>
+            <span style="font-size:10px;color:var(--text3);">(${pctStr}% 3+)</span>
           </div>`;
         }).join('');
 
         // ── HEATMAP TABLE ───────────────────────────────────────────────────
-        // Cell color based on best tier (highest match level with ≥1 occurrence among 3–6)
-        // 6 = red (jackpot), 5 = strong green, 4 = light green, 3 = yellow
+        // Color by best tier; value shown is the weighted score
         function cellStyle(c) {
           if (!c.possible) return { bg:'var(--surface2)', color:'var(--text3)', text:'—', cursor:'default' };
-          const pctStr = c.pct3.toFixed(1) + '%';
-          if (c.bestTier >= 5) return { bg:'rgba(220,38,38,.22)',   color:'#dc2626',             text:pctStr, cursor:'pointer' }; // 6 matches — red
-          if (c.bestTier === 4) return { bg:'rgba(5,150,105,.35)',   color:'var(--green-text)',   text:pctStr, cursor:'pointer' }; // 5 matches — strong green
-          if (c.bestTier === 3) return { bg:'rgba(5,150,105,.12)',   color:'var(--green-text)',   text:pctStr, cursor:'pointer' }; // 4 matches — light green
-          if (c.bestTier === 2) return { bg:'rgba(234,179,8,.22)',   color:'#854d0e',             text:pctStr, cursor:'pointer' }; // 3 matches — yellow
-          return { bg:'transparent', color:'var(--text3)', text:pctStr, cursor:'pointer' };
+          const txt = c.weightedScore.toFixed(1);
+          if (c.bestTier >= 5) return { bg:'rgba(220,38,38,.22)',   color:'#dc2626',           text:txt, cursor:'pointer' }; // 6 matches — red
+          if (c.bestTier === 4) return { bg:'rgba(5,150,105,.35)',   color:'var(--green-text)', text:txt, cursor:'pointer' }; // 5 matches — strong green
+          if (c.bestTier === 3) return { bg:'rgba(5,150,105,.12)',   color:'var(--green-text)', text:txt, cursor:'pointer' }; // 4 matches — light green
+          if (c.bestTier === 2) return { bg:'rgba(234,179,8,.22)',   color:'#854d0e',           text:txt, cursor:'pointer' }; // 3 matches — yellow
+          return { bg:'transparent', color:'var(--text3)', text:txt, cursor:'pointer' };
         }
 
         const COL_W = 52, LABEL_W = 58;
@@ -2418,43 +2476,47 @@
       }
 
       function populateTopCombosFromMatrix(results, runsPerCell) {
-        // For each combo: sum counts across all windows (for ranking combos)
-        // and find the best individual window (highest count for that combo)
+        // Store globally for renderMatchDetail and breakdown modal
+        window._matrixResults = results;
+        window._matrixRunsPerCell = runsPerCell;
+
+        // Rank combos by weighted score (3×m3 + 4×m4 + 5×m5 + 6×m6) / totalSlots
         const comboTotals = MATRIX_COMBOS.map((combo, ci) => {
-          let total = 0;
-          let bestWi = 0, bestCount = -1;
+          let totalWeighted = 0;
+          let totalSlotSum = 0;
+          let bestWi = 0, bestW = 0;
           MATRIX_WINDOWS.forEach((w, wi) => {
-            const cell = results[ci][wi];
-            if (cell.possible) {
-              total += cell.count;
-              if (cell.count > bestCount) { bestCount = cell.count; bestWi = wi; }
-            }
+            const cell = results[ci]?.[wi];
+            if (!cell || !cell.possible) return;
+            const slots = cell.totalPredictions * runsPerCell;
+            const md = cell.matchDetail;
+            const ws = (3*md[2] + 4*md[3] + 5*md[4] + 6*md[5]);
+            totalWeighted += ws;
+            totalSlotSum += slots;
+            const cellW = slots > 0 ? ws / slots : 0;
+            if (cellW > bestW) { bestW = cellW; bestWi = wi; }
           });
-          return { combo, total, bestWi };
+          const score = totalSlotSum > 0 ? totalWeighted / totalSlotSum : 0;
+          return { combo, score, bestWi };
         });
 
-        // Sort descending by total, take top 2
-        comboTotals.sort((a, b) => b.total - a.total);
-        const top2 = comboTotals.slice(0, 2);
+        comboTotals.sort((a, b) => b.score - a.score);
+        const top1 = comboTotals[0];
+        if (!top1) return;
 
-        top2.forEach((entry, i) => {
-          const rowNum = i + 1;
-          const [c, n, r] = entry.combo;
-          // Populate C/N/R inputs
-          document.getElementById(`gFC${rowNum}`).value = c;
-          document.getElementById(`gFN${rowNum}`).value = n;
-          document.getElementById(`gFR${rowNum}`).value = r;
-          // Populate best window
-          const bestWindow = MATRIX_WINDOWS[entry.bestWi];
-          document.getElementById(`gWS${rowNum}`).value = bestWindow.size;
-          // Update month badge
-          const badge = document.getElementById(`gMW${rowNum}`);
-          badge.textContent = bestWindow.label;
-          badge.className = "pred-mix-month populated";
-          badge.title = `Best window from matrix: ${bestWindow.label} (${bestWindow.size === 0 ? "all draws" : bestWindow.size + " draws"})`;
-        });
+        // Populate only Mix 1 (single prediction mix)
+        const [c, n, r] = top1.combo;
+        document.getElementById('gFC1').value = c;
+        document.getElementById('gFN1').value = n;
+        document.getElementById('gFR1').value = r;
+        const bestWindow = MATRIX_WINDOWS[top1.bestWi];
+        document.getElementById('gWS1').value = bestWindow.size;
+        const badge = document.getElementById('gMW1');
+        badge.textContent = bestWindow.label;
+        badge.className = "pred-mix-month populated";
+        badge.title = `Best window from matrix: ${bestWindow.label}`;
 
-        toast(`Prediction mix updated: #1 ${top2[0].combo.join('-')} @ ${MATRIX_WINDOWS[top2[0].bestWi].label}, #2 ${top2[1].combo.join('-')} @ ${MATRIX_WINDOWS[top2[1].bestWi].label}`);
+        toast(`Prediction mix updated: ${top1.combo.join('-')} @ ${bestWindow.label}`);
       }
 
       /* ═══════════════════════════════════════════════════════════
@@ -2479,6 +2541,350 @@
       function toast(msg){
         const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");
         clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove("show"),2800);
+      }
+
+      /* ═══════════════════════════════════════════════════════════
+         DRAW SIMULATION
+         Grid layout mirrors the main app grid (rows bottom-to-top,
+         columns left-to-right). 40 balls shuffle for 8s then one
+         is drawn in 3s. Repeats 6 times. Purely random.
+      ═══════════════════════════════════════════════════════════ */
+      const SIM_GRID_ROWS = [
+        [5,10,15,20,25,30,35,40],
+        [4, 9,14,19,24,29,34,39],
+        [3, 8,13,18,23,28,33,38],
+        [2, 7,12,17,22,27,32,37],
+        [1, 6,11,16,21,26,31,36],
+      ];
+      const SIM_NUMBERS = SIM_GRID_ROWS.flat(); // 40 numbers in grid order
+      const MIX_MS   = 8000;
+      const DRAW_MS  = 3000;
+      let simRunning = false;
+      let simNumbers = [...Array(40)].map((_,i)=>i+1); // the 40 display slots
+      let simDrawn   = [];
+      let simAnimFrame = null;
+      let simTimerInterval = null;
+
+      function buildSimGrid() {
+        const g = document.getElementById('simGrid');
+        g.innerHTML = '';
+        SIM_GRID_ROWS.forEach(row => {
+          row.forEach(n => {
+            const cell = document.createElement('div');
+            cell.className = 'sim-cell';
+            cell.id = `sc-${n}`;
+            cell.textContent = n;
+            g.appendChild(cell);
+          });
+        });
+      }
+
+      function simSetAllText(numbers) {
+        // Scatter numbers randomly across the cells during mixing
+        const flat = SIM_NUMBERS.slice(); // grid positions
+        flat.forEach((pos, i) => {
+          const cell = document.getElementById(`sc-${pos}`);
+          if (cell) cell.textContent = numbers[i] ?? '';
+        });
+      }
+
+      function simStartTimer(durationMs, color) {
+        const fill = document.getElementById('simTimerFill');
+        fill.style.background = color || 'var(--rose)';
+        fill.style.transition = 'none';
+        fill.style.width = '100%';
+        const start = performance.now();
+        clearInterval(simTimerInterval);
+        simTimerInterval = setInterval(() => {
+          const elapsed = performance.now() - start;
+          const pct = Math.max(0, 100 - (elapsed / durationMs) * 100);
+          fill.style.transition = 'width .1s linear';
+          fill.style.width = pct + '%';
+          if (elapsed >= durationMs) clearInterval(simTimerInterval);
+        }, 50);
+      }
+
+      function simShuffle(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
+
+      function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+      async function startSimulation() {
+        if (simRunning) return;
+        simRunning = true;
+        simDrawn = [];
+        buildSimGrid();
+        document.getElementById('simResults').innerHTML = '';
+        document.getElementById('simRoundLabel').textContent = '';
+
+        const btn = document.getElementById('simStartBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Drawing…';
+
+        let remaining = [...Array(40)].map((_,i)=>i+1); // 1–40, not yet drawn
+
+        for (let round = 1; round <= 6; round++) {
+          // ── MIX PHASE (8 seconds) ──────────────────────────────────
+          document.getElementById('simPhase').textContent = `Mixing…`;
+          document.getElementById('simStatus').textContent = `Ball ${round} of 6 — mixing for 8 seconds`;
+          simStartTimer(MIX_MS, 'var(--amber)');
+          document.getElementById('simTimerFill').style.background = '#e8a020';
+
+          // Mark already-drawn cells as gone
+          simDrawn.forEach(n => {
+            const c = document.getElementById(`sc-${n}`);
+            if (c) { c.className = 'sim-cell gone'; c.textContent = n; }
+          });
+
+          // Animate shuffling for MIX_MS
+          const mixEnd = Date.now() + MIX_MS;
+          const SHUFFLE_INTERVAL = 180; // ms between visual shuffles
+          while (Date.now() < mixEnd) {
+            const shuffled = simShuffle(remaining);
+            // Scatter remaining numbers across their original grid slots
+            let si = 0;
+            SIM_NUMBERS.forEach(pos => {
+              const cell = document.getElementById(`sc-${pos}`);
+              if (!cell) return;
+              if (simDrawn.includes(pos) || simDrawn.some(d => d === parseInt(cell.textContent))) {
+                // already drawn — keep gone styling
+              } else if (!simDrawn.includes(pos)) {
+                const val = shuffled[si++];
+                if (val !== undefined) {
+                  cell.textContent = val;
+                  cell.className = 'sim-cell shuffling';
+                }
+              }
+            });
+            await sleep(SHUFFLE_INTERVAL);
+          }
+
+          // Stop shuffling animation
+          SIM_NUMBERS.forEach(pos => {
+            const cell = document.getElementById(`sc-${pos}`);
+            if (cell && !cell.classList.contains('gone')) {
+              cell.className = 'sim-cell';
+            }
+          });
+
+          // ── DRAW PHASE (3 seconds) ─────────────────────────────────
+          document.getElementById('simPhase').textContent = `Drawing…`;
+          document.getElementById('simStatus').textContent = `Ball ${round} of 6 — drawing in 3 seconds`;
+          simStartTimer(DRAW_MS, 'var(--rose)');
+
+          // Cycle through remaining numbers rapidly for 2.5s then land on winner
+          const winner = remaining[Math.floor(Math.random() * remaining.length)];
+          const cycleEnd = Date.now() + 2500;
+          let cycleIdx = 0;
+          while (Date.now() < cycleEnd) {
+            // Highlight a rotating candidate on the grid
+            SIM_NUMBERS.forEach(pos => {
+              const cell = document.getElementById(`sc-${pos}`);
+              if (cell && !cell.classList.contains('gone')) {
+                cell.className = 'sim-cell';
+              }
+            });
+            const candidate = remaining[cycleIdx % remaining.length];
+            // Find which cell currently shows this number
+            SIM_NUMBERS.forEach(pos => {
+              const cell = document.getElementById(`sc-${pos}`);
+              if (cell && parseInt(cell.textContent) === candidate) {
+                cell.className = 'sim-cell hot';
+              }
+            });
+            cycleIdx++;
+            await sleep(80 + Math.floor((Date.now() - (cycleEnd - 2500)) / 50)); // slow down
+          }
+
+          // Final 0.5s — highlight winner
+          SIM_NUMBERS.forEach(pos => {
+            const cell = document.getElementById(`sc-${pos}`);
+            if (cell && !cell.classList.contains('gone')) cell.className = 'sim-cell';
+          });
+          // Restore proper numbers after shuffle (winner needs to show in its actual slot)
+          buildSimGrid();
+          simDrawn.forEach(n => {
+            const c = document.getElementById(`sc-${n}`);
+            if (c) c.className = 'sim-cell gone';
+          });
+          const winnerCell = document.getElementById(`sc-${winner}`);
+          if (winnerCell) {
+            winnerCell.className = 'sim-cell drawn';
+            winnerCell.style.animation = 'simPop .35s ease';
+          }
+          document.getElementById('simPhase').textContent = `🎯 Ball ${round}: ${winner}`;
+          document.getElementById('simStatus').textContent = `Number ${winner} drawn!`;
+          await sleep(500);
+
+          // Record
+          simDrawn.push(winner);
+          remaining = remaining.filter(n => n !== winner);
+
+          // Re-render results in ascending order
+          const sorted = [...simDrawn].sort((a,b)=>a-b);
+          document.getElementById('simResults').innerHTML = sorted.map(n =>
+            `<div class="sim-ball">${n}</div>`
+          ).join('');
+          document.getElementById('simRoundLabel').textContent =
+            `Drawn so far: ${sorted.join('  ·  ')}`;
+
+          // Mark as gone
+          if (winnerCell) winnerCell.className = 'sim-cell gone';
+
+          await sleep(300);
+        }
+
+        // ── COMPLETE ──────────────────────────────────────────────
+        const sorted = [...simDrawn].sort((a,b)=>a-b);
+        document.getElementById('simPhase').textContent = '✅ Draw complete';
+        document.getElementById('simStatus').textContent = `Result: ${sorted.join(' · ')}`;
+        document.getElementById('simRoundLabel').textContent = `Final numbers (sorted): ${sorted.join('  ·  ')}`;
+        document.getElementById('simTimerFill').style.width = '0%';
+        clearInterval(simTimerInterval);
+
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-refresh" aria-hidden="true"></i> Draw Again';
+        simRunning = false;
+      }
+
+      // Build the grid on first render when the tab is opened
+      document.querySelector('.tab[onclick*="draw-sim"]').addEventListener('click', () => {
+        setTimeout(() => { if (!simRunning) buildSimGrid(); }, 60);
+      });
+
+      /* ═══════════════════════════════════════════════════════════
+         INLINE DRAW SIMULATION (modal, triggered from Generate)
+      ═══════════════════════════════════════════════════════════ */
+      let iSimRunning = false;
+
+      function openInlineDrawSim() {
+        iSimRunning = false;
+        document.getElementById('iSimPhase').textContent = 'Ready';
+        document.getElementById('iSimStatus').textContent = 'Press Start to begin';
+        document.getElementById('iSimResults').innerHTML = '';
+        document.getElementById('iSimRoundLabel').textContent = '';
+        document.getElementById('iSimTimerFill').style.width = '0%';
+        const btn = document.getElementById('iSimStartBtn');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-player-play" aria-hidden="true"></i> Start Draw';
+        buildInlineSimGrid();
+        document.getElementById('inlineSimModal').style.display = 'flex';
+      }
+
+      function closeInlineSimModal() {
+        document.getElementById('inlineSimModal').style.display = 'none';
+        iSimRunning = false;
+      }
+
+      function buildInlineSimGrid() {
+        const g = document.getElementById('iSimGrid');
+        g.innerHTML = '';
+        SIM_GRID_ROWS.forEach(row => {
+          row.forEach(n => {
+            const cell = document.createElement('div');
+            cell.className = 'sim-cell';
+            cell.id = `isc-${n}`;
+            cell.textContent = n;
+            g.appendChild(cell);
+          });
+        });
+      }
+
+      function iSimStartTimer(durationMs, color) {
+        const fill = document.getElementById('iSimTimerFill');
+        fill.style.background = color;
+        fill.style.transition = 'none';
+        fill.style.width = '100%';
+        const start = performance.now();
+        const iv = setInterval(() => {
+          const elapsed = performance.now() - start;
+          const pct = Math.max(0, 100 - (elapsed / durationMs) * 100);
+          fill.style.transition = 'width .1s linear';
+          fill.style.width = pct + '%';
+          if (elapsed >= durationMs) clearInterval(iv);
+        }, 50);
+      }
+
+      async function startInlineSimulation() {
+        if (iSimRunning) return;
+        iSimRunning = true;
+        let iSimDrawn = [];
+        buildInlineSimGrid();
+        document.getElementById('iSimResults').innerHTML = '';
+        document.getElementById('iSimRoundLabel').textContent = '';
+        const btn = document.getElementById('iSimStartBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ti ti-loader" aria-hidden="true"></i> Drawing…';
+        let remaining = [...Array(40)].map((_,i)=>i+1);
+
+        for (let round = 1; round <= 6; round++) {
+          document.getElementById('iSimPhase').textContent = `Mixing…`;
+          document.getElementById('iSimStatus').textContent = `Ball ${round} of 6 — mixing for 8 seconds`;
+          iSimStartTimer(MIX_MS, '#e8a020');
+          iSimDrawn.forEach(n => { const c=document.getElementById(`isc-${n}`); if(c){c.className='sim-cell gone';c.textContent=n;} });
+          const mixEnd = Date.now() + MIX_MS;
+          while (Date.now() < mixEnd) {
+            const shuffled = simShuffle(remaining);
+            let si = 0;
+            SIM_NUMBERS.forEach(pos => {
+              const cell = document.getElementById(`isc-${pos}`);
+              if (!cell || cell.classList.contains('gone')) return;
+              const val = shuffled[si++];
+              if (val !== undefined) { cell.textContent = val; cell.className = 'sim-cell shuffling'; }
+            });
+            await sleep(180);
+          }
+          SIM_NUMBERS.forEach(pos => { const c=document.getElementById(`isc-${pos}`); if(c&&!c.classList.contains('gone'))c.className='sim-cell'; });
+
+          document.getElementById('iSimPhase').textContent = `Drawing…`;
+          document.getElementById('iSimStatus').textContent = `Ball ${round} of 6 — drawing in 3 seconds`;
+          iSimStartTimer(DRAW_MS, 'var(--rose)');
+          const winner = remaining[Math.floor(Math.random() * remaining.length)];
+          const cycleEnd = Date.now() + 2500;
+          let cycleIdx = 0;
+          while (Date.now() < cycleEnd) {
+            SIM_NUMBERS.forEach(pos => { const c=document.getElementById(`isc-${pos}`); if(c&&!c.classList.contains('gone'))c.className='sim-cell'; });
+            const candidate = remaining[cycleIdx % remaining.length];
+            SIM_NUMBERS.forEach(pos => { const c=document.getElementById(`isc-${pos}`); if(c&&parseInt(c.textContent)===candidate)c.className='sim-cell hot'; });
+            cycleIdx++;
+            await sleep(80 + Math.floor((Date.now()-(cycleEnd-2500))/50));
+          }
+          SIM_NUMBERS.forEach(pos => { const c=document.getElementById(`isc-${pos}`); if(c&&!c.classList.contains('gone'))c.className='sim-cell'; });
+          buildInlineSimGrid();
+          iSimDrawn.forEach(n => { const c=document.getElementById(`isc-${n}`); if(c)c.className='sim-cell gone'; });
+          const winnerCell = document.getElementById(`isc-${winner}`);
+          if (winnerCell) { winnerCell.className='sim-cell drawn'; }
+          document.getElementById('iSimPhase').textContent = `🎯 Ball ${round}: ${winner}`;
+          document.getElementById('iSimStatus').textContent = `Number ${winner} drawn!`;
+          await sleep(500);
+
+          iSimDrawn.push(winner);
+          remaining = remaining.filter(n => n !== winner);
+          const sorted = [...iSimDrawn].sort((a,b)=>a-b);
+          document.getElementById('iSimResults').innerHTML = sorted.map(n=>`<div class="sim-ball">${n}</div>`).join('');
+          document.getElementById('iSimRoundLabel').textContent = `Drawn so far: ${sorted.join(' · ')}`;
+          if (winnerCell) winnerCell.className='sim-cell gone';
+          await sleep(300);
+        }
+
+        const finalSorted = [...iSimDrawn].sort((a,b)=>a-b);
+        document.getElementById('iSimPhase').textContent = '✅ Draw complete';
+        document.getElementById('iSimStatus').textContent = `Result: ${finalSorted.join(' · ')}`;
+        document.getElementById('iSimTimerFill').style.width = '0%';
+
+        // Wait 2 seconds then close and show both predictions
+        await sleep(2000);
+        closeInlineSimModal();
+        renderPredictions(_pendingMixResult, finalSorted);
+        document.getElementById('gen-btn').disabled = false;
+        document.getElementById('gen-btn').innerHTML = '<i class="ti ti-refresh" aria-hidden="true"></i> Regenerate';
+        iSimRunning = false;
       }
 
       /* INIT */
